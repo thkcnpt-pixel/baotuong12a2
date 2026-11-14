@@ -1,0 +1,522 @@
+/* ==========================================================================
+   TRẠM KÝ ỨC 12A2 - HỆ MÀU VINTAGE / GIẤY KRAFT & SỔ LẬT TRANG 3D
+   (TỐI ƯU KHÔNG GIAN HIỂN THỊ - KHÔNG LÃNG PHÍ LỀ)
+   ========================================================================== */
+
+:root {
+    --kraft-bg-dark: #b89466;
+    --kraft-bg-main: #d8be98;
+    --kraft-paper-light: #f4ead5;
+    --kraft-paper-aged: #e6d3b3;
+    --polaroid-frame: #fbf8f1;
+
+    --ink-sepia-dark: #2c1e14;
+    --ink-brown-muted: #5e4430;
+    --ink-blue-pen: #1b3b6f;
+    --stamp-red: #8c2d19;
+    --wax-gold: #c59b27;
+
+    --chalkboard-bg: #1e3528;
+    --chalkboard-frame: #6e4726;
+    --chalk-white: #f2f0e6;
+    --chalk-yellow: #f7d969;
+    --chalk-pink: #f4978e;
+    --neon-glow: #72efdd;
+
+    --font-handwriting-title: 'Caveat', cursive;
+    --font-handwriting-body: 'Pangolin', cursive;
+    --font-handwriting-note: 'Patrick Hand', cursive;
+    --font-typewriter: 'Special Elite', 'Courier Prime', monospace;
+
+    --shadow-paper: 0 5px 14px rgba(44, 30, 20, 0.18), 0 1px 4px rgba(44, 30, 20, 0.12);
+    --shadow-lifted: 0 12px 26px rgba(44, 30, 20, 0.28), 0 4px 10px rgba(44, 30, 20, 0.18);
+    --shadow-inset: inset 0 0 28px rgba(44, 30, 20, 0.18);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body.kraft-theme {
+    background-color: var(--kraft-bg-main);
+    background-image: 
+        radial-gradient(circle at 15% 25%, rgba(255, 248, 231, 0.38) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(139, 98, 52, 0.25) 0%, transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            rgba(44, 30, 20, 0.015) 0px,
+            rgba(44, 30, 20, 0.015) 2px,
+            transparent 2px,
+            transparent 6px
+        );
+    color: var(--ink-sepia-dark);
+    font-family: var(--font-handwriting-body);
+    line-height: 1.55;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.vintage-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: inset 0 0 55px rgba(44, 30, 20, 0.32);
+}
+
+/* ==========================================================================
+   THANH ĐIỀU KHIỂN NỔI (FLOATING CONTROLS)
+   ========================================================================== */
+.floating-controls {
+    position: fixed;
+    top: 8px;
+    right: 10px;
+    z-index: 950;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vintage-btn {
+    background: var(--kraft-paper-light);
+    color: var(--ink-sepia-dark);
+    border: 1.5px dashed var(--ink-brown-muted);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-paper);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.vintage-btn.is-playing {
+    background: #fff6dc;
+    border-color: var(--stamp-red);
+    color: var(--stamp-red);
+}
+
+.vintage-btn:hover {
+    transform: translateY(-1px);
+    background: #fff9eb;
+}
+
+.stamp-badge {
+    background: rgba(244, 234, 213, 0.92);
+    color: var(--stamp-red);
+    border: 2px solid var(--stamp-red);
+    padding: 4px 10px;
+    font-family: var(--font-typewriter);
+    font-weight: 700;
+    font-size: 0.74rem;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transform: rotate(1.5deg);
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(140, 45, 25, 0.18);
+}
+
+/* ==========================================================================
+   KHUNG BÁO TƯỜNG TỐI ƯU DIỆN TÍCH (GIẢM LỀ THỪA, TẬP TRUNG NỘI DUNG)
+   ========================================================================== */
+.scrapbook-wrapper {
+    max-width: 1260px;
+    width: 98%;
+    margin: 44px auto 24px;
+    padding: 6px 4px;
+    position: relative;
+}
+
+.scrapbook-header {
+    background: var(--kraft-paper-light);
+    border: 1px solid rgba(94, 68, 48, 0.25);
+    padding: 16px 16px 14px;
+    text-align: center;
+    position: relative;
+    box-shadow: var(--shadow-paper), var(--shadow-inset);
+    margin-bottom: 12px;
+    border-radius: 6px;
+}
+
+.washi-tape {
+    position: absolute;
+    width: 90px;
+    height: 24px;
+    background: rgba(235, 210, 165, 0.75);
+    border-left: 2px dotted rgba(44, 30, 20, 0.18);
+    border-right: 2px dotted rgba(44, 30, 20, 0.18);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+    z-index: 5;
+}
+
+.tape-top-left {
+    top: -8px;
+    left: -14px;
+    transform: rotate(-28deg);
+}
+
+.tape-top-right {
+    top: -8px;
+    right: -14px;
+    transform: rotate(26deg);
+}
+
+.header-sub {
+    font-family: var(--font-typewriter);
+    font-size: 0.76rem;
+    color: var(--stamp-red);
+    letter-spacing: 1.5px;
+    margin-bottom: 2px;
+}
+
+.header-title {
+    font-family: var(--font-typewriter);
+    font-size: clamp(1.65rem, 3.8vw, 2.5rem);
+    color: var(--ink-sepia-dark);
+    text-shadow: 2px 2px 0px rgba(184, 148, 102, 0.45);
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+}
+
+.header-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: var(--font-handwriting-note);
+    color: var(--ink-brown-muted);
+    font-size: 0.96rem;
+    margin-bottom: 4px;
+}
+
+.header-divider::before,
+.header-divider::after {
+    content: "";
+    height: 1px;
+    width: 45px;
+    background: var(--ink-brown-muted);
+    opacity: 0.5;
+}
+
+.header-quote {
+    font-family: var(--font-handwriting-title);
+    font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+    color: var(--ink-blue-pen);
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   HỆ THỐNG MỤC LỤC & CHUYỂN TRANG SỔ LƯU BÚT 3D (INTERACTIVE BOOK FLIP)
+   ========================================================================== */
+.book-bookmarks-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.bookmark-tab {
+    background: #e5cfa9;
+    color: var(--ink-sepia-dark);
+    border: 1px solid #9e7850;
+    border-bottom: 2.5px solid #7d5b36;
+    padding: 5px 10px;
+    border-radius: 5px 5px 2px 2px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bookmark-tab:hover {
+    background: #f7ebd2;
+}
+
+.bookmark-tab.active {
+    background: var(--stamp-red);
+    color: #fff9eb;
+    border-color: #5e190b;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(140, 45, 25, 0.3);
+}
+
+.book-nav-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: rgba(244, 234, 213, 0.82);
+    border: 1px dashed #8a6443;
+    padding: 7px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.book-nav-controls.bottom-nav {
+    margin-top: 12px;
+    margin-bottom: 0;
+}
+
+.book-turn-btn {
+    background: linear-gradient(145deg, #9e341e, #782210);
+    color: #fff8eb;
+    border: 1px solid #f5d487;
+    padding: 7px 14px;
+    border-radius: 5px;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 8px rgba(44, 30, 20, 0.22);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.book-turn-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: linear-gradient(145deg, #b53d24, #8c2814);
+}
+
+.book-turn-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+}
+
+.book-page-indicator {
+    font-family: var(--font-typewriter);
+    font-size: 0.86rem;
+    color: var(--ink-sepia-dark);
+    text-align: center;
+}
+
+.book-page-indicator strong {
+    color: var(--stamp-red);
+}
+
+.book-swipe-tip {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.9rem;
+    color: var(--ink-brown-muted);
+}
+
+/* Sân khấu 3D chứa các trang sổ */
+.book-stage-3d {
+    position: relative;
+    perspective: 1800px;
+}
+
+.book-spiral-spine {
+    position: absolute;
+    left: -8px;
+    top: 22px;
+    bottom: 22px;
+    width: 18px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    pointer-events: none;
+}
+
+.book-spiral-spine span {
+    display: block;
+    width: 18px;
+    height: 10px;
+    background: linear-gradient(to right, #3a2e25, #b8b0a4, #4a3b30);
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Từng trang giấy trong sổ - giảm lề thừa để nội dung rộng tối đa */
+.section-card.book-page {
+    display: none;
+    background: var(--kraft-paper-light);
+    background-image:
+        linear-gradient(to right, rgba(94, 68, 48, 0.12) 0%, rgba(94, 68, 48, 0.02) 3%, transparent 8%);
+    padding: 18px 18px 22px 22px;
+    border-radius: 4px 10px 10px 4px;
+    box-shadow:
+        var(--shadow-lifted),
+        var(--shadow-inset),
+        4px 4px 0px #dfccb0,
+        8px 8px 0px #cbb391;
+    border: 1px solid rgba(94, 68, 48, 0.3);
+    position: relative;
+    transform-origin: left center;
+    backface-visibility: hidden;
+}
+
+.section-card.book-page.is-active {
+    display: block;
+}
+
+.section-card.book-page.flip-next-in {
+    animation: pageFlipNextIn 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.section-card.book-page.flip-prev-in {
+    animation: pageFlipPrevIn 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pageFlipNextIn {
+    0% {
+        opacity: 0;
+        transform: rotateY(-65deg) translateX(28px) scale(0.97);
+    }
+    60% {
+        opacity: 1;
+        transform: rotateY(5deg) translateX(0) scale(1.003);
+    }
+    100% {
+        opacity: 1;
+        transform: rotateY(0deg) translateX(0) scale(1);
+    }
+}
+
+@keyframes pageFlipPrevIn {
+    0% {
+        opacity: 0;
+        transform: rotateY(62deg) translateX(-28px) scale(0.97);
+    }
+    60% {
+        opacity: 1;
+        transform: rotateY(-4deg) translateX(0) scale(1.003);
+    }
+    100% {
+        opacity: 1;
+        transform: rotateY(0deg) translateX(0) scale(1);
+    }
+}
+
+.page-corner-num {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    font-family: var(--font-typewriter);
+    font-size: 0.74rem;
+    color: var(--ink-brown-muted);
+    background: rgba(184, 148, 102, 0.2);
+    padding: 2px 9px;
+    border-radius: 10px;
+    border: 1px dashed rgba(94, 68, 48, 0.35);
+}
+
+.section-heading {
+    font-family: var(--font-handwriting-title);
+    font-size: clamp(1.65rem, 3.4vw, 2.2rem);
+    color: var(--ink-sepia-dark);
+    margin-bottom: 4px;
+    padding-right: 95px;
+}
+
+.section-desc {
+    font-family: var(--font-handwriting-body);
+    color: var(--ink-brown-muted);
+    font-size: 0.94rem;
+    margin-bottom: 14px;
+}
+
+.sepia-photo {
+    filter: sepia(0.22) contrast(1.04) brightness(0.98);
+    transition: filter 0.35s ease;
+}
+
+.sepia-photo:hover {
+    filter: sepia(0.03) contrast(1.05) brightness(1);
+}
+
+/* ==========================================================================
+   FOOTER SỔ LƯU BÚT GỌN GÀNG
+   ========================================================================== */
+.scrapbook-footer {
+    text-align: center;
+    padding: 26px 12px 10px;
+    border-top: 2px dashed rgba(94, 68, 48, 0.35);
+    margin-top: 28px;
+    position: relative;
+}
+
+.wax-seal {
+    width: 56px;
+    height: 56px;
+    margin: -44px auto 10px;
+    background: radial-gradient(circle at 35% 35%, #b83b24, #6e1b0d);
+    color: #f9d98c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-typewriter);
+    font-weight: 700;
+    font-size: 0.98rem;
+    box-shadow: 0 5px 12px rgba(44, 30, 20, 0.35);
+    border: 3px double rgba(249, 217, 140, 0.65);
+    transform: rotate(-8deg);
+}
+
+.footer-handwriting {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.5rem;
+    color: var(--ink-blue-pen);
+    margin-bottom: 2px;
+}
+
+.footer-meta {
+    font-family: var(--font-typewriter);
+    font-size: 0.76rem;
+    color: var(--ink-brown-muted);
+}
+
+@media (max-width: 768px) {
+    .scrapbook-wrapper {
+        width: 100%;
+        margin: 42px auto 16px;
+        padding: 4px;
+    }
+
+    .scrapbook-header {
+        padding: 12px 10px 10px;
+        margin-bottom: 8px;
+    }
+
+    .section-card.book-page {
+        padding: 14px 10px 16px;
+        border-radius: 6px;
+        box-shadow: var(--shadow-paper);
+    }
+
+    .book-spiral-spine {
+        display: none;
+    }
+
+    .book-nav-controls {
+        padding: 6px 8px;
+    }
+
+    .book-turn-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .book-swipe-tip {
+        display: none;
+    }
+}

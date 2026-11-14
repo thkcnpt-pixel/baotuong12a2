@@ -1,0 +1,1912 @@
+/* ==========================================================================
+   TRẠM KÝ ỨC 12A2 - CSS CHO 11 TÍNH NĂNG TƯƠNG TÁC
+   ĐỢT 1: TƯƠNG TÁC 1 (PHONG BÌ), 2 (POLAROID 3D), 3 (TV CỔ), 4 (BẢNG ĐEN)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 1: PHONG BÌ MA THUẬT (MAGIC ENVELOPE INTRO)
+   -------------------------------------------------------------------------- */
+.envelope-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: radial-gradient(circle at center, rgba(62, 42, 27, 0.92), rgba(24, 15, 9, 0.98));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+.envelope-overlay.is-dismissed {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.envelope-stage {
+    text-align: center;
+    max-width: 520px;
+    width: 100%;
+}
+
+.envelope-hint {
+    color: var(--kraft-paper-light);
+    font-family: var(--font-handwriting-body);
+    font-size: 1.15rem;
+    margin-bottom: 28px;
+    animation: pulseHint 2s infinite ease-in-out;
+}
+
+@keyframes pulseHint {
+    0%, 100% { opacity: 0.75; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-4px); }
+}
+
+.magic-envelope {
+    position: relative;
+    width: min(440px, 92vw);
+    height: 290px;
+    margin: 0 auto;
+    background: #c79f6c;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+    perspective: 1200px;
+}
+
+/* Nắp phong bì tam giác phía trên */
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 165px;
+    background: #b58952;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transform-origin: top center;
+    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.35s;
+    z-index: 4;
+    border-top: 2px solid rgba(255, 245, 225, 0.35);
+}
+
+/* Thân túi phong bì che phía trước */
+.envelope-pocket {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #d3ae7e 0%, #c19660 50%, #b3864f 100%);
+    clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
+    border-radius: 0 0 8px 8px;
+    z-index: 3;
+    box-shadow: inset 0 -10px 25px rgba(44, 30, 20, 0.25);
+}
+
+/* Tờ thư bên trong */
+.envelope-letter {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    bottom: 12px;
+    height: 265px;
+    background: var(--kraft-paper-light);
+    border: 1px solid rgba(94, 68, 48, 0.35);
+    border-radius: 6px;
+    padding: 20px 18px;
+    z-index: 2;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.35s, height 0.6s ease 0.35s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    overflow: hidden;
+}
+
+.letter-stamp {
+    font-family: var(--font-typewriter);
+    font-size: 0.72rem;
+    color: var(--stamp-red);
+    border: 1.5px dashed var(--stamp-red);
+    align-self: flex-end;
+    padding: 2px 8px;
+}
+
+.letter-title {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.75rem;
+    color: var(--ink-sepia-dark);
+    margin-top: 2px;
+}
+
+.letter-body {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.94rem;
+    color: var(--ink-brown-muted);
+    line-height: 1.48;
+}
+
+.letter-open-btn {
+    align-self: center;
+    margin-top: 8px;
+    background: var(--stamp-red);
+    color: #fff8eb;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 4px;
+    font-family: var(--font-typewriter);
+    font-size: 0.88rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(140, 45, 25, 0.35);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.letter-open-btn:hover {
+    background: #a5351d;
+    transform: scale(1.04);
+}
+
+/* Con dấu sáp niêm phong */
+.envelope-wax-seal {
+    position: absolute;
+    top: 132px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #c93b22, #6e1709);
+    border: 3px double #f5d487;
+    color: #f5d487;
+    font-family: var(--font-typewriter);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+    transition: transform 0.45s ease, opacity 0.45s ease;
+}
+
+/* Trạng thái khi mở phong bì */
+.magic-envelope.is-open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.magic-envelope.is-open .envelope-wax-seal {
+    transform: translate(-50%, -50%) scale(1.35);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.magic-envelope.is-open .envelope-letter {
+    transform: translateY(-125px);
+    height: 295px;
+    z-index: 6;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 2: GÓC ẢNH POLAROID LẬT 3D (3D FLIP POLAROIDS)
+   -------------------------------------------------------------------------- */
+.polaroid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+    gap: 28px;
+    padding: 12px 4px;
+}
+
+.polaroid-card {
+    perspective: 1100px;
+    height: 350px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.polaroid-card:nth-child(odd) {
+    transform: rotate(-1.8deg);
+}
+
+.polaroid-card:nth-child(even) {
+    transform: rotate(1.6deg);
+}
+
+.polaroid-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.polaroid-card.is-flipped .polaroid-inner {
+    transform: rotateY(180deg);
+}
+
+.polaroid-front,
+.polaroid-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--polaroid-frame);
+    border-radius: 4px;
+    box-shadow: var(--shadow-paper);
+    border: 1px solid rgba(94, 68, 48, 0.22);
+    padding: 14px 14px 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ghim sắt trang trí trên đầu Polaroid */
+.polaroid-pin {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #d9534f, #8c1d19);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+    z-index: 3;
+}
+
+.polaroid-img-wrap {
+    width: 100%;
+    height: 235px;
+    overflow: hidden;
+    background: #2b211a;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.polaroid-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.polaroid-caption {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.45rem;
+    text-align: center;
+    color: var(--ink-sepia-dark);
+    margin-top: 10px;
+}
+
+.flip-hint {
+    margin-top: auto;
+    text-align: center;
+    font-family: var(--font-typewriter);
+    font-size: 0.72rem;
+    color: var(--ink-brown-muted);
+    opacity: 0.8;
+}
+
+/* Mặt sau giấy cũ có dòng kẻ viết tay */
+.polaroid-back {
+    transform: rotateY(180deg);
+    background-color: #f5ebd6;
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 27px,
+        rgba(27, 59, 111, 0.14) 28px
+    );
+    padding: 22px 18px;
+    justify-content: space-between;
+}
+
+.back-date {
+    font-family: var(--font-typewriter);
+    font-size: 0.75rem;
+    color: var(--stamp-red);
+    border-bottom: 1px dashed rgba(140, 45, 25, 0.35);
+    padding-bottom: 4px;
+}
+
+.back-message {
+    font-family: var(--font-handwriting-body);
+    font-size: 1.02rem;
+    color: var(--ink-blue-pen);
+    line-height: 1.65;
+    margin: auto 0;
+}
+
+.back-sign {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.35rem;
+    color: var(--ink-sepia-dark);
+    text-align: right;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 3: THƯỚC PHIM TUA NGƯỢC (RETRO CRT TV)
+   -------------------------------------------------------------------------- */
+.retro-tv-wrapper {
+    max-width: 820px;
+    margin: 10px auto 0;
+}
+
+.tv-antenna {
+    position: relative;
+    height: 44px;
+    width: 180px;
+    margin: 0 auto;
+}
+
+.antenna-rod {
+    position: absolute;
+    bottom: 6px;
+    width: 3px;
+    height: 55px;
+    background: linear-gradient(to top, #5c5346, #b8b0a4);
+    transform-origin: bottom center;
+}
+
+.antenna-rod.left {
+    left: 50%;
+    transform: rotate(-38deg);
+}
+
+.antenna-rod.right {
+    left: 50%;
+    transform: rotate(38deg);
+}
+
+.antenna-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 12px;
+    background: #4a3525;
+    border-radius: 8px 8px 0 0;
+}
+
+.retro-tv-cabinet {
+    background: linear-gradient(145deg, #6e4726, #4a2e16);
+    border: 5px solid #38210e;
+    border-radius: 22px;
+    padding: 22px;
+    box-shadow: var(--shadow-lifted), inset 0 2px 6px rgba(255, 220, 180, 0.25);
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.tv-crt-bezel {
+    background: #231c18;
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: inset 0 0 18px #000;
+}
+
+.tv-crt-screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #0d0d0d;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.85);
+}
+
+.tv-media-element {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000;
+    filter: sepia(0.18) contrast(1.05);
+}
+
+.tv-media-element.hidden {
+    display: none;
+}
+
+/* Sọc ngang màn hình CRT cổ điển */
+.tv-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0, 0, 0, 0.22) 3px
+    );
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* Hiệu ứng nhiễu hạt trắng đen khi bấm chuyển kênh */
+.tv-static-noise {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 0);
+    background-size: 4px 4px;
+    background-color: #1c1c1c;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity 0.15s ease;
+}
+
+.tv-static-noise.is-active {
+    opacity: 0.92;
+    animation: staticFlicker 0.12s infinite;
+}
+
+@keyframes staticFlicker {
+    0% { background-position: 0 0; }
+    50% { background-position: 8px -6px; }
+    100% { background-position: -6px 8px; }
+}
+
+.tv-osd-channel {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    font-family: var(--font-typewriter);
+    font-size: 0.82rem;
+    color: #52ff7c;
+    text-shadow: 0 0 6px rgba(82, 255, 124, 0.8);
+    background: rgba(0, 0, 0, 0.55);
+    padding: 3px 8px;
+    border-radius: 3px;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.tv-control-panel {
+    background: #332012;
+    border: 2px solid #24150a;
+    border-radius: 14px;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--kraft-paper-light);
+}
+
+.tv-brand {
+    font-family: var(--font-typewriter);
+    font-size: 0.76rem;
+    text-align: center;
+    color: var(--wax-gold);
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 6px;
+}
+
+.tv-dial-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tv-knob-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #c7a06b, #704f2a);
+    border: 2px solid #201208;
+    color: #201208;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease;
+}
+
+.tv-knob-btn:hover {
+    transform: rotate(20deg) scale(1.06);
+}
+
+.tv-channel-led {
+    background: #140c07;
+    color: #ff5e3a;
+    font-family: var(--font-typewriter);
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid #593a22;
+    text-shadow: 0 0 6px rgba(255, 94, 58, 0.7);
+}
+
+.tv-channel-title {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.92rem;
+    text-align: center;
+    color: #f3dfc1;
+    min-height: 2.6em;
+}
+
+.tv-channel-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.tv-ch-pill {
+    background: #4d321d;
+    color: #e6d3b3;
+    border: 1px solid #755033;
+    border-radius: 4px;
+    padding: 5px 6px;
+    font-family: var(--font-typewriter);
+    font-size: 0.73rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.tv-ch-pill.active,
+.tv-ch-pill:hover {
+    background: var(--stamp-red);
+    color: #fff;
+    border-color: #f5d487;
+}
+
+.tv-speaker-grille {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-top: 4px;
+}
+
+.tv-speaker-grille span {
+    display: block;
+    height: 4px;
+    background: #1a0f08;
+    border-radius: 2px;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 4: GÓC BẢNG ĐEN LỚP HỌC (CHALKBOARD 12A2)
+   -------------------------------------------------------------------------- */
+.chalkboard-frame {
+    background: #6e4726;
+    border: 10px ridge #523318;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lifted);
+    overflow: hidden;
+}
+
+.chalkboard-surface {
+    position: relative;
+    background-color: var(--chalkboard-bg);
+    background-image:
+        radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 75% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    min-height: 460px;
+    padding: 22px;
+    color: var(--chalk-white);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.55);
+}
+
+.chalkboard-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.chalk-content-layer {
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 265px 1fr;
+    gap: 18px;
+}
+
+.chalk-box {
+    border: 1.5px dashed rgba(242, 240, 230, 0.38);
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.16);
+}
+
+.chalk-title-underline {
+    font-family: var(--font-typewriter);
+    font-size: 0.86rem;
+    color: var(--chalk-yellow);
+    border-bottom: 1px solid rgba(247, 217, 105, 0.45);
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+}
+
+.chalk-doodle-note {
+    margin-top: 8px;
+    font-family: var(--font-handwriting-title);
+    font-size: 1.25rem;
+    color: #9bf6ff;
+}
+
+.chalk-yellow-text {
+    color: var(--chalk-yellow);
+}
+
+.chalk-pink-text {
+    color: var(--chalk-pink);
+}
+
+.chalk-formulas {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.98rem;
+}
+
+.chalk-formula-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chalk-math-story,
+.chalk-physics-story {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--chalk-pink);
+    color: var(--chalk-white);
+    line-height: 1.5;
+}
+
+.chalk-physics-story {
+    border-left-color: var(--chalk-yellow);
+}
+
+.math-highlight,
+.physics-highlight {
+    display: inline-block;
+    font-family: var(--font-typewriter);
+    font-size: 0.92rem;
+    color: var(--chalk-yellow);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+/* Khoảng bảng trống bên dưới để người xem thoải mái cầm phấn vẽ */
+.chalk-free-draw-zone {
+    grid-column: 1 / -1;
+    min-height: 185px;
+    border: 1.5px dotted rgba(242, 240, 230, 0.25);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    color: rgba(242, 240, 230, 0.55);
+    font-family: var(--font-handwriting-body);
+    font-size: 0.92rem;
+    text-align: center;
+}
+
+/* Khay đựng phấn dưới đáy bảng */
+.chalk-tray {
+    background: #4e3118;
+    border-top: 4px solid #38210e;
+    padding: 10px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.chalk-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--kraft-paper-light);
+    font-size: 0.9rem;
+}
+
+.chalk-piece {
+    width: 34px;
+    height: 14px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s;
+}
+
+.chalk-piece.white { background: #f2f0e6; }
+.chalk-piece.yellow { background: #f7d969; }
+.chalk-piece.pink { background: #f4978e; }
+.chalk-piece.blue { background: #8ecae6; }
+
+.chalk-piece.active {
+    transform: translateY(-4px) scale(1.1);
+    border-color: #fff;
+}
+
+.chalk-eraser-btn {
+    background: #2b211a;
+    color: var(--kraft-paper-light);
+    border: 1px solid #8a6443;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: var(--font-typewriter);
+    font-size: 0.78rem;
+    cursor: pointer;
+}
+
+.chalk-eraser-btn:hover {
+    background: var(--stamp-red);
+}
+
+/* Responsive cho Điện thoại */
+@media (max-width: 768px) {
+    .retro-tv-cabinet {
+        grid-template-columns: 1fr;
+    }
+
+    .chalk-content-layer {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   ĐỢT 2: TƯƠNG TÁC 6 (THẺ CÀO), 7 (POP-UP 3D), 8 (Ổ KHÓA), 5 (HÒM THƯ GISCUS)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 6: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD)
+   -------------------------------------------------------------------------- */
+.scratch-stage {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.scratch-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.scratch-progress-badge {
+    font-family: var(--font-typewriter);
+    font-size: 0.9rem;
+    background: var(--kraft-paper-aged);
+    border: 1.5px dashed var(--ink-brown-muted);
+    padding: 6px 14px;
+    border-radius: 4px;
+    color: var(--ink-sepia-dark);
+}
+
+.scratch-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.scratch-card-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 8px solid var(--polaroid-frame);
+    box-shadow: var(--shadow-lifted);
+    background: #2b211a;
+    user-select: none;
+}
+
+.scratch-secret-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.scratch-caption-banner {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(28, 18, 10, 0.88), transparent);
+    color: #fff8eb;
+    padding: 24px 16px 12px;
+    font-family: var(--font-handwriting-title);
+    font-size: 1.5rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+.scratch-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+    transition: opacity 0.6s ease;
+}
+
+.scratch-canvas.is-cleared {
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 7: GIẤY GẤP POP-UP 3D (MẶC ĐỊNH GẤP LẠI CHỜ NGƯỜI XEM TỰ MỞ)
+   -------------------------------------------------------------------------- */
+.popup-controls {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.popup-scene-wrapper {
+    perspective: 1500px;
+    max-width: 820px;
+    margin: 8px auto 16px;
+    padding: 16px 8px 28px;
+}
+
+.popup-book {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    transform-style: preserve-3d;
+    transform: rotateX(8deg);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    cursor: pointer;
+}
+
+/* Bìa thiệp khi đang gấp kín (Hiển thị rõ khi chưa có class .is-open) */
+.popup-closed-cover {
+    position: absolute;
+    inset: 40px 8%;
+    background: linear-gradient(135deg, #c89f6c, #a87b46);
+    border: 4px solid #6b4423;
+    border-radius: 10px;
+    box-shadow: 0 22px 45px rgba(44, 30, 20, 0.45);
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transform-origin: top center;
+    transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
+}
+
+.closed-cover-border {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #fff3d6;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    color: #fff9eb;
+}
+
+.closed-cover-badge {
+    background: var(--stamp-red);
+    color: #f5d487;
+    font-family: var(--font-typewriter);
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.closed-cover-border h3 {
+    font-family: var(--font-typewriter);
+    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.closed-cover-border p {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.5rem;
+    color: #ffea9f;
+    margin-bottom: 18px;
+}
+
+.closed-cover-cta {
+    background: rgba(28, 18, 10, 0.45);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 249, 235, 0.5);
+    animation: pulseHint 2s infinite ease-in-out;
+}
+
+/* Mặt đáy tấm thiệp */
+.popup-base-page {
+    position: absolute;
+    bottom: 0;
+    left: 3%;
+    right: 3%;
+    height: 120px;
+    background: linear-gradient(to bottom, #dfcaab, #f4ead5);
+    border: 2px solid #8a6443;
+    border-radius: 0 0 10px 10px;
+    transform-origin: top center;
+    transform: rotateX(70deg);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    box-shadow: 0 24px 38px rgba(44, 30, 20, 0.4);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+}
+
+.popup-ground-label {
+    font-family: var(--font-typewriter);
+    font-size: 0.76rem;
+    color: var(--stamp-red);
+    letter-spacing: 1.2px;
+    background: rgba(255, 249, 235, 0.92);
+    padding: 4px 14px;
+    border: 1px dashed var(--stamp-red);
+    border-radius: 3px;
+}
+
+/* Mặt lưng dựng đứng phía sau */
+.popup-backdrop-page {
+    position: absolute;
+    top: 0;
+    left: 3%;
+    right: 3%;
+    height: 315px;
+    background: var(--polaroid-frame);
+    border: 6px solid var(--polaroid-frame);
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    transform-origin: bottom center;
+    transform: rotateX(-88deg);
+    opacity: 0;
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+    box-shadow: var(--shadow-paper);
+}
+
+.popup-backdrop-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.18);
+}
+
+.popup-backdrop-badge {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--stamp-red);
+    color: #fff8eb;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    padding: 4px 14px;
+    border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Các lớp giấy cắt nổi (Standee Layers) được căn chỉnh không đè chữ nhau */
+.popup-layer {
+    position: absolute;
+    bottom: 68px;
+    transform-origin: bottom center;
+    transform: rotateX(-90deg) scale(0.85);
+    opacity: 0;
+    transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.popup-layer-mid {
+    left: 50%;
+    width: min(390px, 56%);
+    margin-left: calc(min(390px, 56%) / -2);
+    z-index: 4;
+    transition-delay: 0.14s;
+}
+
+.popup-cutout-frame {
+    background: #fffdf8;
+    padding: 7px 7px 10px;
+    border-radius: 6px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+    border: 2px solid #fff;
+    text-align: center;
+}
+
+.popup-cutout-frame img {
+    width: 100%;
+    height: 165px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.popup-cutout-frame span {
+    display: block;
+    margin-top: 5px;
+    font-family: var(--font-handwriting-title);
+    font-size: 1.28rem;
+    color: var(--ink-sepia-dark);
+}
+
+.popup-layer-front-left {
+    left: 4%;
+    width: 150px;
+    z-index: 5;
+    transition-delay: 0.24s;
+}
+
+.popup-layer-front-right {
+    right: 4%;
+    width: 150px;
+    z-index: 5;
+    transition-delay: 0.28s;
+}
+
+.popup-mini-standee {
+    background: #fffdf8;
+    padding: 6px 6px 8px;
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.42);
+    text-align: center;
+}
+
+.popup-mini-standee img {
+    width: 100%;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.popup-mini-standee small {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.84rem;
+    color: var(--stamp-red);
+}
+
+/* Khi người xem bấm mở thiệp Pop-up (.is-open) */
+.popup-book.is-open .popup-closed-cover {
+    transform: rotateX(110deg) translateY(-40px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.popup-book.is-open .popup-base-page {
+    opacity: 1;
+}
+
+.popup-book.is-open .popup-backdrop-page {
+    transform: rotateX(0deg);
+    opacity: 1;
+}
+
+.popup-book.is-open .popup-layer-mid {
+    transform: translateZ(45px) rotateX(-5deg) scale(1);
+    opacity: 1;
+}
+
+.popup-book.is-open .popup-layer-front-left {
+    transform: translateZ(85px) rotateX(-4deg) rotateZ(-4deg) scale(1);
+    opacity: 1;
+}
+
+.popup-book.is-open .popup-layer-front-right {
+    transform: translateZ(85px) rotateX(-4deg) rotateZ(4deg) scale(1);
+    opacity: 1;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 8: Ổ KHÓA MẬT MÃ (CIPHER PADLOCK & SECRET VAULT)
+   -------------------------------------------------------------------------- */
+.padlock-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.padlock-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Còng khóa kim loại đồng cổ */
+.padlock-shackle {
+    width: 120px;
+    height: 75px;
+    border: 14px solid #8c6d3b;
+    border-bottom: none;
+    border-radius: 60px 60px 0 0;
+    margin-bottom: -8px;
+    box-shadow: inset 0 3px 6px rgba(255, 235, 180, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom right;
+}
+
+.padlock-box.is-unlocked .padlock-shackle {
+    transform: translateY(-18px) rotate(22deg);
+}
+
+.padlock-body {
+    width: 100%;
+    background: linear-gradient(145deg, #c9a461, #8f6b32);
+    border: 4px solid #593e16;
+    border-radius: 16px;
+    padding: 18px 16px;
+    box-shadow: var(--shadow-lifted), inset 0 2px 8px rgba(255, 240, 200, 0.4);
+    color: var(--ink-sepia-dark);
+}
+
+.riddle-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.riddle-tab {
+    background: rgba(44, 30, 20, 0.15);
+    border: 1px solid #593e16;
+    padding: 6px;
+    border-radius: 4px;
+    font-family: var(--font-typewriter);
+    font-size: 0.76rem;
+    cursor: pointer;
+    color: #2c1e14;
+}
+
+.riddle-tab.active {
+    background: var(--stamp-red);
+    color: #fff8eb;
+    border-color: #fff8eb;
+}
+
+.riddle-content {
+    background: var(--kraft-paper-light);
+    border: 1px dashed #6e4726;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.padlock-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.padlock-input {
+    flex: 1;
+    background: #1c130c;
+    color: #ffd166;
+    border: 2px solid #4a3219;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--font-typewriter);
+    font-size: 1.2rem;
+    text-align: center;
+    letter-spacing: 4px;
+}
+
+.padlock-unlock-btn {
+    background: var(--stamp-red);
+    color: #fff8eb;
+    border: none;
+    border-radius: 6px;
+    padding: 0 16px;
+    font-family: var(--font-typewriter);
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.padlock-unlock-btn:hover {
+    background: #a6341b;
+}
+
+.padlock-quick-hint {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.hint-link {
+    background: none;
+    border: none;
+    color: #2c1e14;
+    text-decoration: underline;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.padlock-feedback {
+    margin-top: 6px;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    color: #2c1e14;
+}
+
+/* Kho ảnh bí mật bên phải */
+.secret-vault {
+    position: relative;
+    min-height: 360px;
+    background: var(--kraft-paper-aged);
+    border: 2px dashed var(--ink-brown-muted);
+    border-radius: 8px;
+    padding: 18px;
+    overflow: hidden;
+}
+
+.vault-locked-cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 320px;
+    padding: 24px;
+    color: var(--ink-brown-muted);
+}
+
+.vault-icon {
+    font-size: 3.4rem;
+    color: var(--stamp-red);
+    margin-bottom: 14px;
+}
+
+.vault-unlocked-content {
+    display: none;
+}
+
+.secret-vault.is-unlocked .vault-locked-cover {
+    display: none;
+}
+
+.secret-vault.is-unlocked .vault-unlocked-content {
+    display: block;
+    animation: fadeInVault 0.65s ease;
+}
+
+@keyframes fadeInVault {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.vault-success-banner {
+    background: #2b593f;
+    color: #f4ead5;
+    font-family: var(--font-typewriter);
+    font-size: 0.88rem;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.vault-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.vault-photo-item {
+    background: var(--polaroid-frame);
+    padding: 8px 8px 12px;
+    border-radius: 4px;
+    box-shadow: var(--shadow-paper);
+}
+
+.vault-photo-item img {
+    width: 100%;
+    height: 155px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.vault-photo-item figcaption {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.88rem;
+    color: var(--ink-sepia-dark);
+    margin-top: 6px;
+    text-align: center;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 5: HÒM THƯ LỜI CHƯA NÓI (MAILBOX + GISCUS)
+   -------------------------------------------------------------------------- */
+.mailbox-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+}
+
+.mailbox-sub {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.6rem;
+    color: var(--stamp-red);
+    margin-bottom: 10px;
+}
+
+.confession-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.vintage-input,
+.vintage-textarea {
+    width: 100%;
+    background: #fffdf7;
+    border: 1.5px solid #b59268;
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.96rem;
+    color: var(--ink-sepia-dark);
+}
+
+.vintage-input:focus,
+.vintage-textarea:focus {
+    outline: 2px solid var(--stamp-red);
+}
+
+.confession-wall {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 330px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.confession-note {
+    background: #fdf6e2;
+    border-left: 4px solid var(--stamp-red);
+    padding: 10px 14px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.confession-meta {
+    font-family: var(--font-typewriter);
+    font-size: 0.75rem;
+    color: var(--stamp-red);
+    margin-bottom: 4px;
+}
+
+.confession-body {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.98rem;
+    color: var(--ink-blue-pen);
+}
+
+.giscus-wrapper {
+    background: rgba(255, 252, 244, 0.75);
+    border: 1.5px dashed #9c7a54;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.giscus-note {
+    font-size: 0.88rem;
+    color: var(--ink-brown-muted);
+    margin-bottom: 12px;
+}
+
+.giscus-frame-box {
+    min-height: 240px;
+}
+
+@media (max-width: 860px) {
+    .padlock-layout,
+    .mailbox-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .popup-layer-front-left,
+    .popup-layer-front-right {
+        width: 110px;
+    }
+}
+
+
+/* ==========================================================================
+   ĐỢT 3: TƯƠNG TÁC 9 (KÉO THẢ), 10 (ĐÈN PIN DẠ QUANG), 11 (CUỘN PHIM NGANG)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 9: KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS BOARD)
+   -------------------------------------------------------------------------- */
+.sticker-board-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.new-note-creator {
+    display: flex;
+    flex: 1;
+    min-width: 280px;
+    gap: 8px;
+}
+
+.corkboard-stage {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    background-color: #b08253;
+    background-image:
+        radial-gradient(rgba(58, 36, 16, 0.22) 1.5px, transparent 0),
+        radial-gradient(rgba(255, 235, 200, 0.16) 1.5px, transparent 0);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+    border: 10px ridge #6b4423;
+    border-radius: 8px;
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.45), var(--shadow-paper);
+    overflow: hidden;
+    touch-action: none;
+}
+
+.draggable-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.draggable-item:active {
+    cursor: grabbing;
+    z-index: 30 !important;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+}
+
+.sticky-note {
+    width: 148px;
+    min-height: 102px;
+    padding: 14px 10px 10px;
+    border-radius: 3px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    color: var(--ink-sepia-dark);
+}
+
+.note-yellow { background: #fff3b0; }
+.note-pink   { background: #ffd6e0; }
+.note-blue   { background: #d8f3dc; }
+
+.note-pin {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #e63946, #780000);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.sticky-note small {
+    display: block;
+    margin-top: 5px;
+    text-align: right;
+    color: var(--stamp-red);
+    font-size: 0.72rem;
+    font-family: var(--font-handwriting-note);
+}
+
+.vintage-sticker {
+    background: #fff8eb;
+    border: 2px dashed var(--stamp-red);
+    color: var(--stamp-red);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-family: var(--font-typewriter);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 9px rgba(0, 0, 0, 0.26);
+}
+
+.vintage-sticker.sticker-red {
+    background: var(--stamp-red);
+    color: #fff8eb;
+    border-color: #f5d487;
+}
+
+.vintage-sticker.sticker-green {
+    background: #1b4332;
+    color: #d8f3dc;
+    border-color: #95d5b2;
+}
+
+.mini-polaroid-drag {
+    width: 112px;
+    background: #fffdf8;
+    padding: 5px 5px 7px;
+    border-radius: 4px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.mini-polaroid-drag img {
+    width: 100%;
+    height: 82px;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.mini-polaroid-drag span {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-handwriting-body);
+    font-size: 0.74rem;
+    color: var(--ink-sepia-dark);
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 10: ĐÈN PIN RỌI CHỮ ẨN (FLASHLIGHT DARK ROOM)
+   -------------------------------------------------------------------------- */
+.flashlight-toolbar {
+    margin-bottom: 12px;
+    text-align: right;
+}
+
+.darkroom-container {
+    position: relative;
+    width: 100%;
+    min-height: 410px;
+    background: #070b0d;
+    border-radius: 10px;
+    border: 4px solid #2b211a;
+    overflow: hidden;
+    padding: 28px 22px;
+    cursor: none;
+    touch-action: none;
+    box-shadow: inset 0 0 50px #000;
+    --spot-x: 50%;
+    --spot-y: 50%;
+    --spot-size: 145px;
+}
+
+.darkroom-secret-layer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    user-select: none;
+}
+
+.glow-header {
+    font-family: var(--font-typewriter);
+    font-size: 1.1rem;
+    color: #ffea79;
+    text-shadow: 0 0 12px rgba(255, 234, 121, 0.85);
+    letter-spacing: 1.5px;
+}
+
+.glow-quote {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.55rem;
+    color: var(--neon-glow);
+    text-shadow: 0 0 10px rgba(114, 239, 221, 0.75);
+    max-width: 760px;
+}
+
+.glow-names-wall {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+    max-width: 900px;
+}
+
+.glow-names-wall span {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.94rem;
+    color: #9bf6ff;
+    text-shadow: 0 0 8px rgba(155, 246, 255, 0.85);
+    padding: 2px 8px;
+    border: 1px dashed rgba(155, 246, 255, 0.25);
+    border-radius: 12px;
+}
+
+.glow-footer-badge {
+    font-family: var(--font-typewriter);
+    font-size: 0.85rem;
+    color: #ff99c8;
+    text-shadow: 0 0 10px rgba(255, 153, 200, 0.9);
+    margin-top: 6px;
+}
+
+/* Lớp mặt nạ bóng tối khoét lỗ tròn đèn pin */
+.darkroom-shadow-mask {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(
+        circle var(--spot-size) at var(--spot-x) var(--spot-y),
+        transparent 0%,
+        rgba(5, 8, 10, 0.65) 58%,
+        rgba(4, 6, 8, 0.97) 100%
+    );
+    transition: opacity 0.45s ease;
+}
+
+.darkroom-container.lights-on {
+    cursor: default;
+}
+
+.darkroom-container.lights-on .darkroom-shadow-mask {
+    opacity: 0.12;
+}
+
+.flashlight-guide-pill {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.12);
+    color: #e0fbfc;
+    font-family: var(--font-typewriter);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   TƯƠNG TÁC 11: CUỘN PHIM NGANG 35MM (HORIZONTAL FILM REEL)
+   -------------------------------------------------------------------------- */
+.film-controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.film-counter-badge {
+    font-family: var(--font-typewriter);
+    font-size: 0.84rem;
+    color: #ffb703;
+    background: #1d1611;
+    padding: 6px 14px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.film-strip-viewport {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    padding: 12px 0 18px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.film-strip-viewport::-webkit-scrollbar {
+    height: 10px;
+}
+
+.film-strip-viewport::-webkit-scrollbar-track {
+    background: #d5be9b;
+    border-radius: 5px;
+}
+
+.film-strip-viewport::-webkit-scrollbar-thumb {
+    background: #6e4726;
+    border-radius: 5px;
+}
+
+.film-strip-track {
+    display: inline-flex;
+    gap: 18px;
+    background: #171310;
+    padding: 28px 24px;
+    border-top: 4px solid #2b231d;
+    border-bottom: 4px solid #2b231d;
+    position: relative;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+    /* Lỗ răng cưa phim 35mm chạy dọc mép trên và mép dưới */
+    background-image:
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 12px,
+            #f4ead5 12px,
+            #f4ead5 26px,
+            transparent 26px,
+            transparent 38px
+        ),
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 12px,
+            #f4ead5 12px,
+            #f4ead5 26px,
+            transparent 26px,
+            transparent 38px
+        );
+    background-size: 100% 14px, 100% 14px;
+    background-position: top 6px left 0, bottom 6px left 0;
+    background-repeat: no-repeat;
+}
+
+.film-frame-card {
+    scroll-snap-align: center;
+    width: 265px;
+    flex-shrink: 0;
+    background: #0c0907;
+    border: 2px solid #332920;
+    border-radius: 4px;
+    padding: 8px 8px 10px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.film-frame-card:hover {
+    transform: scale(1.03);
+    border-color: #ffb703;
+}
+
+.film-frame-num {
+    font-family: var(--font-typewriter);
+    font-size: 0.72rem;
+    color: #ff9f1c;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.film-frame-img-box {
+    width: 100%;
+    height: 175px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+}
+
+.film-frame-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.22) contrast(1.06);
+    transition: filter 0.3s ease, transform 0.35s ease;
+}
+
+.film-frame-card:hover .film-frame-img-box img {
+    filter: sepia(0) contrast(1.05);
+    transform: scale(1.05);
+}
+
+/* Chớp đèn Flash máy ảnh khi bấm vào khung phim */
+.film-frame-card.flash-active::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    animation: cameraFlash 0.35s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes cameraFlash {
+    0% { opacity: 0.95; }
+    100% { opacity: 0; }
+}
+
+.film-frame-caption {
+    font-family: var(--font-handwriting-body);
+    font-size: 0.92rem;
+    color: #f4ead5;
+    margin-top: 6px;
+    text-align: center;
+}
+
+/* Lightbox xem ảnh lớn */
+.film-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    background: rgba(15, 10, 6, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.film-lightbox.hidden {
+    display: none;
+}
+
+.film-lightbox-card {
+    position: relative;
+    max-width: 780px;
+    width: 100%;
+    background: var(--polaroid-frame);
+    padding: 16px 16px 22px;
+    border-radius: 6px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    text-align: center;
+}
+
+.film-lightbox-card img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    background: #140f0b;
+    border-radius: 4px;
+}
+
+.lightbox-caption {
+    font-family: var(--font-handwriting-title);
+    font-size: 1.65rem;
+    color: var(--ink-sepia-dark);
+    margin-top: 10px;
+}
+
+.lightbox-close-btn {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--stamp-red);
+    color: #fff;
+    border: 2px solid #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}

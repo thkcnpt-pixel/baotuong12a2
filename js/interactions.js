@@ -109,12 +109,13 @@ function initBookPageFlipSystem() {
         if (nextBtnTop) nextBtnTop.disabled = isLast;
         if (nextBtnBottom) nextBtnBottom.disabled = isLast;
 
-        // 6. Khởi tạo lại kích thước Canvas nếu người dùng lật tới trang Bảng Đen (trang 3) hoặc Thẻ Cào (trang 4)
+        // 6. Khởi tạo lại kích thước Canvas nếu người dùng lật tới trang Bảng Đen hoặc Thẻ Cào
+        const activePageId = pages[currentPage].id;
         requestAnimationFrame(() => {
-            if (typeof window.refreshChalkboardCanvas === 'function' && currentPage === 2) {
+            if (typeof window.refreshChalkboardCanvas === 'function' && activePageId === 'chalkboard-section') {
                 window.refreshChalkboardCanvas();
             }
-            if (typeof window.refreshScratchCanvas === 'function' && currentPage === 3) {
+            if (typeof window.refreshScratchCanvas === 'function' && activePageId === 'scratch-card-section') {
                 window.refreshScratchCanvas();
             }
         });
@@ -135,6 +136,14 @@ function initBookPageFlipSystem() {
         tab.addEventListener('click', () => {
             const idx = parseInt(tab.getAttribute('data-page'), 10);
             if (!isNaN(idx)) goToPage(idx);
+        });
+    });
+
+    // Các nút chuyển trang nhanh trong Trang Mở Đầu & Trang Kết Thúc (.js-goto-page)
+    document.querySelectorAll('.js-goto-page').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const targetIdx = parseInt(btn.getAttribute('data-target-page'), 10);
+            if (!isNaN(targetIdx)) goToPage(targetIdx);
         });
     });
 }
@@ -402,7 +411,7 @@ function initInteraction4_Chalkboard() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 6: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD)
+   TƯƠNG TÁC 6: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD - CÀO MƯỢT & DỄ DÀNG)
    ========================================================================== */
 function initInteraction6_ScratchCard() {
     const canvas = document.getElementById('scratch-canvas');
@@ -412,14 +421,18 @@ function initInteraction6_ScratchCard() {
     const resetBtn = document.getElementById('btn-scratch-reset');
 
     if (!canvas || !container) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     let isScratching = false;
     let isInitialized = false;
+    let lastPos = null;
 
     function fillFogLayer() {
         const rect = container.getBoundingClientRect();
-        const w = rect.width || 680;
-        const h = rect.height || 420;
+        // Nếu trang đang ẩn (rect.width === 0) thì chưa khởi tạo vội, chờ khi lật tới trang mới lấy đúng kích thước thật
+        if (rect.width === 0 || rect.height === 0) return;
+
+        const w = Math.round(rect.width);
+        const h = Math.round(rect.height);
         canvas.width = w;
         canvas.height = h;
         canvas.classList.remove('is-cleared');
@@ -433,23 +446,26 @@ function initInteraction6_ScratchCard() {
         ctx.fillRect(0, 0, w, h);
 
         ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < 80; i++) {
             ctx.fillRect(Math.random() * w, Math.random() * h, 3, 3);
         }
 
+        const titleFontSize = w < 420 ? 14 : 20;
+        const subFontSize = w < 420 ? 12 : 15;
         ctx.fillStyle = '#3b2818';
-        ctx.font = 'bold 22px "Special Elite", monospace';
+        ctx.font = `bold ${titleFontSize}px "Special Elite", monospace`;
         ctx.textAlign = 'center';
-        ctx.fillText('✨ DÙNG TAY CÀO LỚP SƯƠNG MÙ KÝ ỨC 12A2 ✨', w / 2, h / 2 - 10);
-        ctx.font = '17px "Pangolin", cursive';
-        ctx.fillText('(Chà nhẹ lên khung hình để đánh thức kỷ niệm)', w / 2, h / 2 + 22);
+        ctx.fillText('✨ CÀO NHẸ ĐỂ MỞ KÝ ỨC 12A2 ✨', w / 2, h / 2 - 8);
+        ctx.font = `${subFontSize}px "Pangolin", cursive`;
+        ctx.fillText('(Chỉ cần quẹt nhẹ 1-2 đường là ảnh sẽ hiện ra!)', w / 2, h / 2 + 16);
 
         if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>0%</strong>';
         isInitialized = true;
     }
 
     window.refreshScratchCanvas = () => {
-        if (!isInitialized || canvas.width <= 300) {
+        const rect = container.getBoundingClientRect();
+        if (!isInitialized || Math.abs(canvas.width - rect.width) > 10) {
             fillFogLayer();
         }
     };
@@ -458,25 +474,41 @@ function initInteraction6_ScratchCard() {
 
     function getPointerPos(e) {
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+        const clientX = touch ? touch.clientX : e.clientX;
+        const clientY = touch ? touch.clientY : e.clientY;
+        const scaleX = rect.width ? canvas.width / rect.width : 1;
+        const scaleY = rect.height ? canvas.height / rect.height : 1;
         return {
-            x: clientX - rect.left,
-            y: clientY - rect.top
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
         };
     }
 
-    function scratchAt(e) {
-        if (!isScratching) return;
-        const pos = getPointerPos(e);
+    function scratchStroke(pos) {
         ctx.globalCompositeOperation = 'destination-out';
+        const brushRadius = Math.max(46, Math.round(canvas.width * 0.12));
+
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = brushRadius * 2;
+
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 36, 0, Math.PI * 2);
+        if (lastPos) {
+            ctx.moveTo(lastPos.x, lastPos.y);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, brushRadius, 0, Math.PI * 2);
         ctx.fill();
+
+        lastPos = pos;
         updateProgress();
     }
 
     function updateProgress() {
+        if (canvas.classList.contains('is-cleared')) return;
         try {
             const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
             let transparentPixels = 0;
@@ -487,10 +519,12 @@ function initInteraction6_ScratchCard() {
                 if (imgData[i] < 128) transparentPixels++;
             }
 
-            const percent = Math.min(100, Math.round((transparentPixels / totalSampled) * 100));
-            if (badgeEl) badgeEl.innerHTML = `Đã cào mở: <strong>${percent}%</strong>`;
+            const rawPercent = Math.round((transparentPixels / totalSampled) * 100);
+            // Quy đổi: Chỉ cần cào thật 26% diện tích là đạt 100% và tự động bung sáng toàn bộ bức ảnh
+            const displayPercent = Math.min(100, Math.round((rawPercent / 26) * 100));
+            if (badgeEl) badgeEl.innerHTML = `Đã cào mở: <strong>${displayPercent}%</strong>`;
 
-            if (percent >= 60 && !canvas.classList.contains('is-cleared')) {
+            if (rawPercent >= 26) {
                 canvas.classList.add('is-cleared');
                 if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>100% (Hoàn tất!) ✨</strong>';
                 if (window.SoundFX) window.SoundFX.playPaperFlip();
@@ -498,13 +532,41 @@ function initInteraction6_ScratchCard() {
         } catch (e) {}
     }
 
-    canvas.addEventListener('mousedown', (e) => { isScratching = true; scratchAt(e); });
-    canvas.addEventListener('mousemove', scratchAt);
-    window.addEventListener('mouseup', () => { isScratching = false; });
+    canvas.addEventListener('mousedown', (e) => {
+        if (!isInitialized) fillFogLayer();
+        isScratching = true;
+        lastPos = getPointerPos(e);
+        scratchStroke(lastPos);
+    });
 
-    canvas.addEventListener('touchstart', (e) => { isScratching = true; scratchAt(e); }, { passive: true });
-    canvas.addEventListener('touchmove', scratchAt, { passive: true });
-    window.addEventListener('touchend', () => { isScratching = false; });
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isScratching) return;
+        scratchStroke(getPointerPos(e));
+    });
+
+    window.addEventListener('mouseup', () => {
+        isScratching = false;
+        lastPos = null;
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+        if (!isInitialized) fillFogLayer();
+        if (e.cancelable) e.preventDefault();
+        isScratching = true;
+        lastPos = getPointerPos(e);
+        scratchStroke(lastPos);
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+        if (!isScratching) return;
+        if (e.cancelable) e.preventDefault();
+        scratchStroke(getPointerPos(e));
+    }, { passive: false });
+
+    window.addEventListener('touchend', () => {
+        isScratching = false;
+        lastPos = null;
+    });
 
     if (revealBtn) {
         revealBtn.addEventListener('click', () => {
@@ -828,13 +890,14 @@ function initInteraction10_FlashlightDarkroom() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 11: CUỘN PHIM NGANG 35MM (12 ẢNH KỶ NIỆM + TIẾNG MÁY ẢNH)
+   TƯƠNG TÁC 11: CUỘN PHIM NGANG 35MM (12 ẢNH KỶ NIỆM - TUA CHÍNH XÁC TỪNG ẢNH 1)
    ========================================================================== */
 function initInteraction11_HorizontalFilmReel() {
     const track = document.getElementById('film-strip-track');
     const viewport = document.getElementById('film-strip-viewport');
     const leftBtn = document.getElementById('btn-film-left');
     const rightBtn = document.getElementById('btn-film-right');
+    const counterBadge = document.getElementById('film-counter-badge');
     const lightbox = document.getElementById('film-lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxCaption = document.getElementById('lightbox-caption');
@@ -857,6 +920,34 @@ function initInteraction11_HorizontalFilmReel() {
         { code: '12A', src: 'assets/images/12a2/img_12.jpg', caption: 'Chú nai vàng thủ công – tác phẩm tâm huyết của 12A2' }
     ];
 
+    let currentFrameIndex = 0;
+    const frameCards = [];
+
+    function updateActiveFrameUI(index) {
+        currentFrameIndex = Math.max(0, Math.min(filmPhotos.length - 1, index));
+        frameCards.forEach((c, i) => {
+            c.classList.toggle('is-focused-frame', i === currentFrameIndex);
+        });
+        if (counterBadge) {
+            const numStr = String(currentFrameIndex + 1).padStart(2, '0');
+            counterBadge.innerHTML = `<i class="fa-solid fa-camera"></i> KHUNG ${numStr} / ${filmPhotos.length} • KODAK 200`;
+        }
+        if (leftBtn) leftBtn.disabled = currentFrameIndex === 0;
+        if (rightBtn) rightBtn.disabled = currentFrameIndex === filmPhotos.length - 1;
+    }
+
+    function scrollToFrame(index) {
+        const targetIdx = Math.max(0, Math.min(filmPhotos.length - 1, index));
+        updateActiveFrameUI(targetIdx);
+        const card = frameCards[targetIdx];
+        if (!card) return;
+        const targetLeft = card.offsetLeft - (viewport.clientWidth - card.offsetWidth) / 2;
+        viewport.scrollTo({
+            left: Math.max(0, targetLeft),
+            behavior: 'smooth'
+        });
+    }
+
     filmPhotos.forEach((item, idx) => {
         const card = document.createElement('div');
         card.className = 'film-frame-card';
@@ -873,6 +964,7 @@ function initInteraction11_HorizontalFilmReel() {
 
         card.addEventListener('click', () => {
             if (window.SoundFX) window.SoundFX.playShutterClick();
+            scrollToFrame(idx);
 
             card.classList.remove('flash-active');
             void card.offsetWidth;
@@ -881,26 +973,49 @@ function initInteraction11_HorizontalFilmReel() {
             setTimeout(() => {
                 if (lightbox && lightboxImg && lightboxCaption) {
                     lightboxImg.src = item.src;
-                    lightboxCaption.textContent = item.caption;
+                    lightboxCaption.textContent = `#${idx + 1} (${item.code}) — ${item.caption}`;
                     lightbox.classList.remove('hidden');
                 }
             }, 140);
         });
 
+        frameCards.push(card);
         track.appendChild(card);
     });
+
+    updateActiveFrameUI(0);
+
+    // Đồng bộ chỉ số khung hình khi người dùng tự vuốt tay trên dải phim
+    let scrollTimer = null;
+    viewport.addEventListener('scroll', () => {
+        if (scrollTimer) clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const centerPos = viewport.scrollLeft + viewport.clientWidth / 2;
+            let closestIdx = 0;
+            let minDiff = Infinity;
+            frameCards.forEach((card, idx) => {
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const diff = Math.abs(cardCenter - centerPos);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestIdx = idx;
+                }
+            });
+            updateActiveFrameUI(closestIdx);
+        }, 80);
+    }, { passive: true });
 
     if (leftBtn) {
         leftBtn.addEventListener('click', () => {
             if (window.SoundFX) window.SoundFX.playShutterClick();
-            viewport.scrollBy({ left: -300, behavior: 'smooth' });
+            scrollToFrame(currentFrameIndex - 1);
         });
     }
 
     if (rightBtn) {
         rightBtn.addEventListener('click', () => {
             if (window.SoundFX) window.SoundFX.playShutterClick();
-            viewport.scrollBy({ left: 300, behavior: 'smooth' });
+            scrollToFrame(currentFrameIndex + 1);
         });
     }
 

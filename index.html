@@ -88,16 +88,18 @@
             </button>
 
             <nav class="book-bookmarks-bar" id="book-bookmarks-bar" aria-label="Mục lục các trang sổ lưu bút">
-                <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-camera-retro"></i> 1. Polaroid</button>
-                <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
-                <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-chalkboard"></i> 3. Bảng Đen</button>
-                <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
-                <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
-                <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa</button>
-                <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
-                <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-note-sticky"></i> 8. Sticker</button>
-                <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
-                <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
+                <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-book-bookmark"></i> Mở Đầu</button>
+                <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-camera-retro"></i> 1. Polaroid</button>
+                <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
+                <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-chalkboard"></i> 3. Bảng Đen</button>
+                <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
+                <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
+                <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa</button>
+                <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
+                <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-note-sticky"></i> 8. Sticker</button>
+                <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
+                <button type="button" class="bookmark-tab" data-page="10"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
+                <button type="button" class="bookmark-tab" data-page="11"><i class="fa-solid fa-heart"></i> Kết Thúc</button>
             </nav>
 
             <button type="button" id="btn-next-page" class="book-turn-btn icon-only" title="Trang tiếp theo">
@@ -106,7 +108,7 @@
         </div>
 
         <!-- ==========================================
-             SÂN KHẤU LẬT TRANG 3D (10 TRANG SỔ LƯU BÚT)
+             SÂN KHẤU LẬT TRANG 3D (12 TRANG SỔ LƯU BÚT: MỞ ĐẦU + 10 TƯƠNG TÁC + KẾT THÚC)
              ========================================== -->
         <div class="book-stage-3d" id="book-stage-3d">
             <!-- Gáy sách lò xo cổ điển bên trái -->
@@ -114,9 +116,41 @@
                 <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
 
-            <!-- TRANG 1: GÓC ẢNH POLAROID LẬT 3D -->
-            <article class="section-card book-page is-active" data-page-index="0" data-page-title="Góc Ảnh Polaroid Lật 3D" id="polaroid-section">
-                <div class="page-corner-num">Trang 01 / 10</div>
+            <!-- TRANG MỞ ĐẦU (TRANG 01 / 12): BÌA LƯU BÚT & LỜI TỰA 12A2 -->
+            <article class="section-card book-page is-active" data-page-index="0" data-page-title="Trang Mở Đầu • Trạm Ký Ức 12A2" id="opening-page-section">
+                <div class="page-corner-num">Trang 01 / 12</div>
+                <div class="book-cover-page">
+                    <div class="cover-ornament-border">
+                        <span class="cover-school-badge">TRƯỜNG THCS & THPT PHÚ ĐIỀN • ĐỒNG THÁP</span>
+                        <h1 class="cover-main-title">TRẠM KÝ ỨC 12A2</h1>
+                        <p class="cover-subtitle">✦ Sổ Lưu Bút Kỹ Thuật Số • Niên Khóa 2026 - 2027 ✦</p>
+
+                        <div class="cover-photo-frame">
+                            <img src="assets/images/12a2/img_03.jpg" alt="Tập thể lớp 12A2 THPT Phú Điền">
+                            <span class="cover-photo-caption">41 Trái Tim • Một Thanh Xuân Rực Rỡ</span>
+                        </div>
+
+                        <blockquote class="cover-poem">
+                            "Có một mùa hoa phượng nở rồi tàn,<br>
+                            Nhưng tuổi 18 cùng 12A2 sẽ mãi nằm lại nơi trang giấy này..."
+                        </blockquote>
+
+                        <div class="cover-stats-pills">
+                            <span><i class="fa-solid fa-users"></i> Sĩ số: 41/41</span>
+                            <span><i class="fa-solid fa-campground"></i> Trại: Nguyễn Sinh Sắc</span>
+                            <span><i class="fa-solid fa-trophy"></i> Hạng Nhất Tuần</span>
+                        </div>
+
+                        <button type="button" class="letter-open-btn js-goto-page" data-target-page="1">
+                            Bắt Đầu Lật Sổ Lưu Bút <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TRANG 2 (TƯƠNG TÁC 1): GÓC ẢNH POLAROID LẬT 3D -->
+            <article class="section-card book-page" data-page-index="1" data-page-title="Góc Ảnh Polaroid Lật 3D" id="polaroid-section">
+                <div class="page-corner-num">Trang 02 / 12</div>
                 <h2 class="section-heading">Góc Ảnh Polaroid Lật 3D</h2>
                 <p class="section-desc">Chạm vào từng tấm ảnh Polaroid để lật xem lưu bút viết tay ở mặt sau!</p>
 
@@ -207,9 +241,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 2: THƯỚC PHIM TUA NGƯỢC (RETRO TV) -->
-            <article class="section-card book-page" data-page-index="1" data-page-title="Thước Phim Tua Ngược" id="retro-tv-section">
-                <div class="page-corner-num">Trang 02 / 10</div>
+            <!-- TRANG 3 (TƯƠNG TÁC 2): THƯỚC PHIM TUA NGƯỢC (RETRO TV) -->
+            <article class="section-card book-page" data-page-index="2" data-page-title="Thước Phim Tua Ngược" id="retro-tv-section">
+                <div class="page-corner-num">Trang 03 / 12</div>
                 <h2 class="section-heading">Thước Phim Tua Ngược</h2>
                 <p class="section-desc">Bấm chọn kênh để tua lại 11 thước phim sống động nhất của 12A2 (Nhạc Lofi tự tắt khi xem video).</p>
 
@@ -284,9 +318,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 3: GÓC BẢNG ĐEN LỚP HỌC -->
-            <article class="section-card book-page" data-page-index="2" data-page-title="Góc Bảng Đen 12A2" id="chalkboard-section">
-                <div class="page-corner-num">Trang 03 / 10</div>
+            <!-- TRANG 4 (TƯƠNG TÁC 3): GÓC BẢNG ĐEN LỚP HỌC -->
+            <article class="section-card book-page" data-page-index="3" data-page-title="Góc Bảng Đen 12A2" id="chalkboard-section">
+                <div class="page-corner-num">Trang 04 / 12</div>
                 <h2 class="section-heading">Góc Bảng Đen 12A2</h2>
                 <p class="section-desc">Bảng phấn xanh ghi sĩ số 41/41, câu chuyện Toán - Vật Lý 12 và khoảng trống để bạn cầm phấn ký tên!</p>
 
@@ -347,11 +381,11 @@
                 </div>
             </article>
 
-            <!-- TRANG 4: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD) -->
-            <article class="section-card book-page" data-page-index="3" data-page-title="Thẻ Cào Ký Ức" id="scratch-card-section">
-                <div class="page-corner-num">Trang 04 / 10</div>
+            <!-- TRANG 5 (TƯƠNG TÁC 4): THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD) -->
+            <article class="section-card book-page" data-page-index="4" data-page-title="Thẻ Cào Ký Ức" id="scratch-card-section">
+                <div class="page-corner-num">Trang 05 / 12</div>
                 <h2 class="section-heading">Thẻ Cào Ký Ức</h2>
-                <p class="section-desc">Chà ngón tay lên lớp bạc để đánh thức bức ảnh kỷ niệm ẩn giấu phía dưới!</p>
+                <p class="section-desc">Chà nhẹ ngón tay một đường lên lớp bạc để đánh thức bức ảnh kỷ niệm ẩn giấu phía dưới!</p>
 
                 <div class="scratch-stage">
                     <div class="scratch-toolbar">
@@ -378,9 +412,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 5: GIẤY GẤP POP-UP 3D (MẶC ĐỊNH GẤP LẠI ĐỂ NGƯỜI XEM TỰ MỞ) -->
-            <article class="section-card book-page" data-page-index="4" data-page-title="Giấy Gấp Pop-up 3D" id="popup-card-section">
-                <div class="page-corner-num">Trang 05 / 10</div>
+            <!-- TRANG 6 (TƯƠNG TÁC 5): GIẤY GẤP POP-UP 3D (MẶC ĐỊNH GẤP LẠI ĐỂ NGƯỜI XEM TỰ MỞ) -->
+            <article class="section-card book-page" data-page-index="5" data-page-title="Giấy Gấp Pop-up 3D" id="popup-card-section">
+                <div class="page-corner-num">Trang 06 / 12</div>
                 <h2 class="section-heading">Giấy Gấp Pop-up 3D: Hội Trại 12A2</h2>
                 <p class="section-desc">Chạm vào bìa thiệp (hoặc bấm nút) để tự tay mở mô hình 3D Cổng trại Nguyễn Sinh Sắc!</p>
 
@@ -442,9 +476,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 6: Ổ KHÓA MẬT MÃ HỌC SINH 12 (CIPHER PADLOCK) -->
-            <article class="section-card book-page" data-page-index="5" data-page-title="Ổ Khóa Mật Mã 12A2" id="padlock-section">
-                <div class="page-corner-num">Trang 06 / 10</div>
+            <!-- TRANG 7 (TƯƠNG TÁC 6): Ổ KHÓA MẬT MÃ HỌC SINH 12 (CIPHER PADLOCK) -->
+            <article class="section-card book-page" data-page-index="6" data-page-title="Ổ Khóa Mật Mã 12A2" id="padlock-section">
+                <div class="page-corner-num">Trang 07 / 12</div>
                 <h2 class="section-heading">Ổ Khóa Mật Mã 12A2</h2>
                 <p class="section-desc">Giải đố Toán Xác Suất (trên TV lớp mình) hoặc Vật Lý 12 để mở kho ảnh bí mật!</p>
 
@@ -515,9 +549,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 7: HÒM THƯ LỜI CHƯA NÓI (LƯU BÚT ẨN DANH) -->
-            <article class="section-card book-page" data-page-index="6" data-page-title="Hòm Thư Lời Chưa Nói" id="unsaid-mailbox-section">
-                <div class="page-corner-num">Trang 07 / 10</div>
+            <!-- TRANG 8 (TƯƠNG TÁC 7): HÒM THƯ LỜI CHƯA NÓI (LƯU BÚT ẨN DANH) -->
+            <article class="section-card book-page" data-page-index="7" data-page-title="Hòm Thư Lời Chưa Nói" id="unsaid-mailbox-section">
+                <div class="page-corner-num">Trang 08 / 12</div>
                 <h2 class="section-heading">Hòm Thư "Lời Chưa Nói"</h2>
                 <p class="section-desc">Gửi gắm những tâm sự ẩn danh hoặc ký tên đến các bạn và thầy cô 12A2 (2026 - 2027).</p>
 
@@ -541,9 +575,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 8: BẢNG KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS) -->
-            <article class="section-card book-page" data-page-index="7" data-page-title="Bàn Kéo Thả Sticker & Note" id="drag-drop-section">
-                <div class="page-corner-num">Trang 08 / 10</div>
+            <!-- TRANG 9 (TƯƠNG TÁC 8): BẢNG KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS) -->
+            <article class="section-card book-page" data-page-index="8" data-page-title="Bàn Kéo Thả Sticker & Note" id="drag-drop-section">
+                <div class="page-corner-num">Trang 09 / 12</div>
                 <h2 class="section-heading">Góc Kéo - Thả Sticker & Giấy Note</h2>
                 <p class="section-desc">Chạm kéo thả các tờ giấy Note, hình dán Sticker kỷ niệm và ảnh mini quanh bàn gỗ 12A2!</p>
 
@@ -600,9 +634,9 @@
                 </div>
             </article>
 
-            <!-- TRANG 9: ĐÈN PIN RỌI CHỮ ẨN (FLASHLIGHT DARK ROOM) -->
-            <article class="section-card book-page" data-page-index="8" data-page-title="Đèn Pin Rọi Chữ Dạ Quang" id="flashlight-section">
-                <div class="page-corner-num">Trang 09 / 10</div>
+            <!-- TRANG 10 (TƯƠNG TÁC 9): ĐÈN PIN RỌI CHỮ ẨN (FLASHLIGHT DARK ROOM) -->
+            <article class="section-card book-page" data-page-index="9" data-page-title="Đèn Pin Rọi Chữ Dạ Quang" id="flashlight-section">
+                <div class="page-corner-num">Trang 10 / 12</div>
                 <h2 class="section-heading">Đèn Pin Rọi Chữ Dạ Quang Ẩn</h2>
                 <p class="section-desc">Di chuyển ngón tay như chiếc đèn pin để soi sáng 41 cái tên 12A2 ẩn trong bóng tối!</p>
 
@@ -648,21 +682,21 @@
                 </div>
             </article>
 
-            <!-- TRANG 10: CUỘN PHIM NGANG KỶ NIỆM (HORIZONTAL 35MM FILM REEL) -->
-            <article class="section-card book-page" data-page-index="9" data-page-title="Cuộn Phim Ngang 35mm" id="film-reel-section">
-                <div class="page-corner-num">Trang 10 / 10</div>
+            <!-- TRANG 11 (TƯƠNG TÁC 10): CUỘN PHIM NGANG KỶ NIỆM (HORIZONTAL 35MM FILM REEL) -->
+            <article class="section-card book-page" data-page-index="10" data-page-title="Cuộn Phim Ngang 35mm" id="film-reel-section">
+                <div class="page-corner-num">Trang 11 / 12</div>
                 <h2 class="section-heading">Cuộn Phim Ngang 35mm • 12 Ảnh Kỷ Niệm</h2>
-                <p class="section-desc">Vuốt ngang dải phim Kodak 35mm và chạm vào khung hình để nghe tiếng chụp ảnh & phóng to!</p>
+                <p class="section-desc">Bấm nút Tua Trái / Tua Phải để xem lần lượt từng khung hình 01A đến 12A (chạm vào ảnh để phóng to)!</p>
 
                 <div class="film-controls-bar">
                     <button type="button" id="btn-film-left" class="vintage-btn">
-                        <i class="fa-solid fa-chevron-left"></i> Tua trái
+                        <i class="fa-solid fa-chevron-left"></i> Ảnh trước
                     </button>
                     <span class="film-counter-badge" id="film-counter-badge">
-                        <i class="fa-solid fa-camera"></i> KODAK 200 • 12 EXP
+                        <i class="fa-solid fa-camera"></i> KHUNG 01 / 12 • KODAK 200
                     </span>
                     <button type="button" id="btn-film-right" class="vintage-btn">
-                        Tua phải <i class="fa-solid fa-chevron-right"></i>
+                        Ảnh tiếp <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
 
@@ -677,6 +711,37 @@
                         </button>
                         <img id="lightbox-img" src="assets/images/12a2/img_01.jpg" alt="Ảnh phóng to 12A2">
                         <p id="lightbox-caption" class="lightbox-caption"></p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TRANG KẾT THÚC (TRANG 12 / 12): LỜI CHÀO TẠM BIỆT & HẸN NGÀY HỘI NGỘ -->
+            <article class="section-card book-page" data-page-index="11" data-page-title="Trang Kết Thúc • Tạm Biệt 12A2" id="closing-page-section">
+                <div class="page-corner-num">Trang 12 / 12</div>
+                <div class="book-cover-page closing-theme">
+                    <div class="cover-ornament-border">
+                        <div class="closing-wax-seal">12A2</div>
+                        <h2 class="cover-main-title">HẸN NGÀY HỘI NGỘ!</h2>
+                        <p class="cover-subtitle">✦ Tập Thể 12A2 • THPT Phú Điền (Niên Khóa 2026 - 2027) ✦</p>
+
+                        <div class="cover-photo-frame">
+                            <img src="assets/images/12a2/img_10.jpg" alt="Đêm lửa trại rực cháy của 12A2">
+                            <span class="cover-photo-caption">Ngọn Lửa Thanh Xuân 12A2 Sẽ Cháy Mãi</span>
+                        </div>
+
+                        <blockquote class="cover-poem">
+                            "Khép lại trang lưu bút nhỏ này, 41 cánh chim 12A2 sẽ bay về 41 bầu trời ước mơ.<br>
+                            Chúc tất cả đỗ Tốt nghiệp 100%, đậu Nguyện vọng 1 và mãi nhớ về mái nhà Phú Điền thân yêu!"
+                        </blockquote>
+
+                        <div class="closing-actions">
+                            <button type="button" class="vintage-btn js-goto-page" data-target-page="7">
+                                <i class="fa-solid fa-pen-fancy"></i> Viết Lưu Bút Hòm Thư
+                            </button>
+                            <button type="button" class="letter-open-btn js-goto-page" data-target-page="0">
+                                <i class="fa-solid fa-rotate-left"></i> Lật Lại Trang Mở Đầu
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>

@@ -101,88 +101,79 @@ Danh sách này đang được hiển thị đầy đủ bằng mực dạ quang
 
 ---
 
-## 4. KIẾN TRÚC HỆ THỐNG LẬT TRANG 3D & 11 TÍNH NĂNG TƯƠNG TÁC
+## 4. KIẾN TRÚC HỆ THỐNG LẬT TRANG 3D (12 TRANG) & 11 TÍNH NĂNG TƯƠNG TÁC
 
-Website **không dùng kiểu cuộn dọc dài ngoằng**, mà thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1 Màn hình Intro Phong Bì** + **10 Trang Sổ (`.book-page`)** với thanh mục lục `.bookmark-tab` ở trên và cặp nút `Trang trước / Trang tiếp theo` ở cả trên và dưới.
+Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1 Màn hình Intro Phong Bì** + **12 Trang Sổ (`.book-page`, từ `Trang 01 / 12` đến `Trang 12 / 12`)**:
+- **Trang 01 / 12 (`data-page-index="0"`):** Trang Mở Đầu (Bìa Lưu Bút & Lời Tựa 12A2 — `#opening-page-section`).
+- **Trang 02 → 11 / 12 (`data-page-index="1..10"`):** 10 Trang tương tác vật lý.
+- **Trang 12 / 12 (`data-page-index="11"`):** Trang Kết Thúc (Lời Chào Tạm Biệt & Hẹn Ngày Hội Ngộ — `#closing-page-section`).
 
 ### A. Hệ thống Lật Trang 3D (`initBookPageFlipSystem` trong `js/interactions.js`)
 - Container: `#book-stage-3d` (có gáy sách lò xo `.book-spiral-spine`).
-- Các trang dùng class `.book-page` và thuộc tính `data-page-index="0..9"`, `data-page-title="..."`.
+- Các trang dùng class `.book-page` và thuộc tính `data-page-index="0..11"`, `data-page-title="..."`.
+- Các nút `.js-goto-page` (như nút *"Bắt Đầu Lật Sổ Lưu Bút"* ở Trang Mở Đầu hoặc *"Viết Lưu Bút Hòm Thư"* / *"Lật Lại Trang Mở Đầu"* ở Trang Kết Thúc) chuyển nhanh tới `data-target-page`.
 - Khi gọi `goToPage(targetIndex)`:
   1. Gọi `stopAllVideosOnPageLeave()` để **dừng triệt để mọi video MP4/YouTube** và bật lại nhạc nền Lofi nếu trước đó bị tạm dừng vì xem video.
   2. Phát âm thanh lật trang `window.SoundFX.playPaperFlip()`.
   3. Gắn class `.is-active` cùng animation `.flip-next-in` hoặc `.flip-prev-in`.
-  4. Cập nhật `.bookmark-tab.active`, `#book-page-indicator`, và trạng thái `disabled` của nút Trước/Sau.
-  5. Dùng `requestAnimationFrame` gọi `window.refreshChalkboardCanvas()` (khi vào Trang 3 - index 2) hoặc `window.refreshScratchCanvas()` (khi vào Trang 4 - index 3) vì canvas bị `display: none` trước đó sẽ có kích thước `0x0`.
+  4. Cập nhật `.bookmark-tab.active` (tự động trượt ngang căn giữa tab bằng `scrollIntoView`) và trạng thái `disabled` của nút Trước/Sau.
+  5. Dùng `requestAnimationFrame` kiểm tra `activePageId` (`chalkboard-section` hoặc `scratch-card-section`) để gọi `window.refreshChalkboardCanvas()` hoặc `window.refreshScratchCanvas()` lấy đúng kích thước thật sau khi trang đã `display: block`.
 
-### B. Chi tiết từng tính năng (Intro + 10 Trang)
+### B. Chi tiết từng trang (Intro + 12 Trang Sổ)
 
 1. **Intro Overlay — Phong Bì Ma Thuật (`#envelope-intro-container`)**
    - Hàm: `initInteraction1_MagicEnvelope()`
    - **Trạng thái mặc định:** Gấp kín (`#magic-envelope` KHÔNG có class `.is-open`) để người xem tự chạm vào con dấu sáp `12A2` mở phong bì.
    - Khi mở: Thêm `.is-open`, phát tiếng lật giấy và kích hoạt `window.BgmController.tryPlay()` bật nhạc Lofi Thanh Xuân. Nút `#btn-enter-scrapbook` đóng overlay (`.is-dismissed`).
 
-2. **Trang 1 (`data-page-index="0"`) — Góc Ảnh Polaroid Lật 3D (`#polaroid-section`)**
+2. **Trang 01 / 12 (`data-page-index="0"`) — Trang Mở Đầu (`#opening-page-section`)**
+   - Bìa trong trang trọng với huy hiệu trường THCS & THPT Phú Điền, tiêu đề lớn `TRẠM KÝ ỨC 12A2`, ảnh tập thể `img_03.jpg`, câu thơ thanh xuân, 3 huy hiệu thống kê (`Sĩ số: 41/41`, `Trại: Nguyễn Sinh Sắc`, `Hạng Nhất Tuần`) và nút bắt đầu lật sổ (`data-target-page="1"`).
+
+3. **Trang 02 / 12 (`data-page-index="1"`) — 1. Góc Ảnh Polaroid Lật 3D (`#polaroid-section`)**
    - Hàm: `initInteraction2_PolaroidFlip()`
    - Gồm 4 thẻ `.polaroid-card` sử dụng ảnh `img_03.jpg`, `img_01.jpg`, `img_02.jpg`, `img_05.jpg`.
    - Chạm/nhấn Enter để toggle `.is-flipped` (xoay 3D 180 độ xem lưu bút viết tay mặt sau).
 
-3. **Trang 2 (`data-page-index="1"`) — Thước Phim Tua Ngược / Retro TV (`#retro-tv-section`)**
+4. **Trang 03 / 12 (`data-page-index="2"`) — 2. Thước Phim Tua Ngược / Retro TV (`#retro-tv-section`)**
    - Hàm: `initInteraction3_RetroTV()`
    - Gồm 12 kênh: `CH-01` đến `CH-11` phát `assets/video/video_01.mp4` .. `video_11.mp4`, và kênh thứ 12 (`CH-YT`) là iframe YouTube (`#tv-youtube-iframe`).
-   - Cơ chế chuyển kênh `switchChannel(index, autoPlayNow = true)`:
-     - Phát tiếng tap gỗ `playTvClick()`, bật nhiễu CRT `#tv-static-noise` trong 220ms.
-     - Cập nhật cả `<source src>` lẫn `videoEl.src`, đặt `videoEl.currentTime = 0`, gọi `videoEl.load()`.
-     - Đợi `loadeddata` (hoặc `readyState >= 2`) rồi gọi `videoEl.play()` để **chuyển kênh là tự phát ngay lập tức có cả hình lẫn tiếng**.
-     - Tự động gọi `window.BgmController.pauseForVideo()` khi video `play`, và `resumeAfterVideo()` khi `pause`, `ended`, hoặc chuyển trang (`stopAllVideosOnPageLeave()`).
+   - Chuyển kênh `switchChannel(index, autoPlayNow = true)` tự động phát ngay có cả hình và tiếng, tự tắt nhạc nền Lofi khi phát và bật lại khi dừng/rời trang.
 
-4. **Trang 3 (`data-page-index="2"`) — Góc Bảng Đen 12A2 (`#chalkboard-section`)**
+5. **Trang 04 / 12 (`data-page-index="3"`) — 3. Góc Bảng Đen 12A2 (`#chalkboard-section`)**
    - Hàm: `initInteraction4_Chalkboard()`
-   - Lớp nội dung phấn viết sẵn (`.chalk-content-layer`):
-     - Bên trái: Sĩ số `41 / 41`, trực nhật, Hạng Nhất Thi Đua Tuần, 100% Đỗ Tốt Nghiệp & NV1.
-     - Bên phải:
-       - **Bài toán nỗ lực 1% mỗi ngày:** $1.01^{365} \approx 37.78 \mid 0.99^{365} \approx 0.03$.
-       - **Định luật Vật Lý 12 & Quỹ Đạo Thanh Xuân:** $S = v \cdot t \mid f_{\text{cộng hưởng}} = f_{12A2} \mid \Delta U = Q + A$.
-   - Lớp Canvas vẽ phấn (`#chalkboard-canvas`): Hỗ trợ chuột & cảm ứng với 4 màu phấn (`.chalk-piece`: trắng `#f2f0e6`, vàng `#f7d969`, hồng `#f4978e`, xanh `#8ecae6`) và nút khăn lau `#btn-clear-chalk`.
-   - *Lưu ý:* Không đặt danh sách 41 tên lên bảng đen để bảng luôn thoáng, gọn, không bị che khuất chữ.
+   - Góc trái: Sĩ số `41 / 41`, trực nhật, Hạng Nhất Thi Đua Tuần, 100% Đỗ Tốt Nghiệp & NV1.
+   - Góc phải: Bài toán nỗ lực 1% mỗi ngày ($1.01^{365} \approx 37.78$) & Định luật Vật Lý 12 ($S = v \cdot t$, cộng hưởng 41 tần số, $\Delta U = Q + A$).
+   - Canvas `#chalkboard-canvas`: Vẽ phấn 4 màu + khăn lau bảng `#btn-clear-chalk`.
 
-5. **Trang 4 (`data-page-index="3"`) — Thẻ Cào Ký Ức (`#scratch-card-section`)**
+6. **Trang 05 / 12 (`data-page-index="4"`) — 4. Thẻ Cào Ký Ức (`#scratch-card-section`)**
    - Hàm: `initInteraction6_ScratchCard()`
    - Ảnh nền bí mật: `assets/images/12a2/img_08.jpg`.
-   - Canvas `#scratch-canvas` phủ lớp sương mù bạc, cào bằng `globalCompositeOperation = 'destination-out'`.
-   - Khi cào vượt **60%**, tự động mở toàn bộ lớp sương mù. Có nút `#btn-scratch-reveal` và `#btn-scratch-reset`.
+   - **Đã khắc phục lỗi khó cào:** Không khởi tạo canvas khi trang đang ẩn (`rect.width === 0`), tự động lấy đúng kích thước thật khi lật tới trang, dùng nét cọ liền mạch (`lineTo` + `arc` với bán kính lớn `12%` chiều rộng thẻ) và **chỉ cần cào 26% diện tích thực tế (hiển thị 100%) là tự động mở bung hoàn toàn bức ảnh**.
 
-6. **Trang 5 (`data-page-index="4"`) — Giấy Gấp Pop-up 3D (`#popup-card-section`)**
+7. **Trang 06 / 12 (`data-page-index="5"`) — 5. Giấy Gấp Pop-up 3D (`#popup-card-section`)**
    - Hàm: `initInteraction7_PopupCard()`
-   - **Trạng thái mặc định:** Thiệp **gấp kín** (`#popup-book` KHÔNG có class `.is-open`), hiển thị bìa `#popup-closed-cover`.
-   - Khi người dùng chạm vào thiệp hoặc bấm `#btn-toggle-popup`: Mở bung mô hình 3D gồm 4 lớp ảnh: Cổng trại Nguyễn Sinh Sắc (`img_11.jpg`), Tập thể 12A2 (`img_01.jpg`), Linh vật nai vàng (`img_12.jpg`), Đêm lửa trại (`img_10.jpg`).
+   - **Trạng thái mặc định:** Thiệp **gấp kín** (`#popup-book` KHÔNG có class `.is-open`), hiển thị bìa `#popup-closed-cover`. Chạm vào để mở bung mô hình 3D (`img_11.jpg`, `img_01.jpg`, `img_12.jpg`, `img_10.jpg`).
 
-7. **Trang 6 (`data-page-index="5"`) — Ổ Khóa Mật Mã 12A2 (`#padlock-section`)**
+8. **Trang 07 / 12 (`data-page-index="6"`) — 6. Ổ Khóa Mật Mã 12A2 (`#padlock-section`)**
    - Hàm: `initInteraction8_CipherPadlock()`
-   - Có 2 tab câu đố (`.riddle-tab`):
-     - **Toán 12:** Bài toán Xác Suất trên TV lớp (`img_07.jpg`, đáp án 88%) ghép với sĩ số 41 $\rightarrow$ **`4188`**.
-     - **Vật Lý 12:** Tần số cộng hưởng 88 Hz ghép sĩ số 41 $\rightarrow$ **`4188`**.
-   - Nhập đúng `4188` (hoặc bấm nút gợi ý tự điền `#btn-show-hint`) sẽ mở khóa `#secret-vault`, hiển thị 4 ảnh hậu trường (`img_07.jpg`, `img_09.jpg`, `img_04.jpg`, `img_06.jpg`).
+   - Câu đố Toán Xác Suất (88%) và Vật Lý 12 (88 Hz) ghép sĩ số 41 $\rightarrow$ mã **`4188`**, mở khóa `#secret-vault` (`img_07.jpg`, `img_09.jpg`, `img_04.jpg`, `img_06.jpg`).
 
-8. **Trang 7 (`data-page-index="6"`) — Hòm Thư "Lời Chưa Nói" (`#unsaid-mailbox-section`)**
+9. **Trang 08 / 12 (`data-page-index="7"`) — 7. Hòm Thư "Lời Chưa Nói" (`#unsaid-mailbox-section`)**
    - Hàm: `initInteraction5_UnsaidMailbox()`
-   - Form `#confession-form` (`#confession-from`, `#confession-to`, `#confession-text`) lưu danh sách thư vào `localStorage` với key **`baotuong_12a2_letters`** và render ra `#confession-wall`.
-   - *Lưu ý:* **Đã xóa bỏ phần nhúng GitHub Giscus** theo yêu cầu của chủ dự án (tránh lỗi chưa cài Giscus app trên repo). Không thêm lại Giscus trừ khi người dùng yêu cầu.
+   - Lưu thư vào `localStorage` (`baotuong_12a2_letters`). Không dùng Giscus.
 
-9. **Trang 8 (`data-page-index="7"`) — Góc Kéo - Thả Sticker & Giấy Note (`#drag-drop-section`)**
-   - Hàm: `initInteraction9_DragDropStickers()` (dùng thư viện **Interact.js** CDN).
-   - Bảng gỗ `#corkboard-stage` chứa các `.sticky-note` kích thước gọn (`148px` width trên desktop, tối ưu cho mobile để không đè nhau), các `.vintage-sticker`, và ảnh mini `.mini-polaroid-drag` (`img_12.jpg`).
-   - Hỗ trợ tạo thêm Note mới (`#new-sticky-input` + `#btn-add-sticky`) và nút đặt lại vị trí (`#btn-reset-stickers`).
+10. **Trang 09 / 12 (`data-page-index="8"`) — 8. Góc Kéo - Thả Sticker & Giấy Note (`#drag-drop-section`)**
+    - Hàm: `initInteraction9_DragDropStickers()` (Interact.js).
 
-10. **Trang 9 (`data-page-index="8"`) — Đèn Pin Rọi Chữ Dạ Quang Ẩn (`#flashlight-section`)**
-    - Hàm: `initInteraction10_FlashlightDarkroom()`
-    - Cập nhật biến CSS `--spot-x`, `--spot-y` trên `#darkroom-container` theo vị trí chuột/ngón tay để xuyên qua lớp mặt nạ tối `#darkroom-shadow-mask`.
-    - Hiển thị toàn bộ **41 tên học sinh 12A2** phát sáng dạ quang và có nút `#btn-toggle-room-light` bật/tắt đèn cả phòng.
+11. **Trang 10 / 12 (`data-page-index="9"`) — 9. Đèn Pin Rọi Chữ Dạ Quang Ẩn (`#flashlight-section`)**
+    - Hàm: `initInteraction10_FlashlightDarkroom()` — Rọi sáng 41 tên thành viên 12A2.
 
-11. **Trang 10 (`data-page-index="9"`) — Cuộn Phim Ngang 35mm (`#film-reel-section`)**
+12. **Trang 11 / 12 (`data-page-index="10"`) — 10. Cuộn Phim Ngang 35mm (`#film-reel-section`)**
     - Hàm: `initInteraction11_HorizontalFilmReel()`
-    - Render trọn bộ **12 ảnh** (`img_01.jpg` đến `img_12.jpg`) thành dải phim Kodak 35mm ngang (`#film-strip-track`).
-    - Bấm vào khung phim phát tiếng máy ảnh cơ (`playShutterClick()`), chớp flash trắng (`.flash-active`) và mở Lightbox phóng to (`#film-lightbox`).
+    - **Đã khắc phục lỗi nhảy cóc bỏ qua Ảnh 2:** Thay vì `scrollBy(300)` cố định, quản lý chính xác biến `currentFrameIndex (0..11)` và hàm `scrollToFrame(index)` căn giữa đúng từng khung hình (`01A` $\rightarrow$ `02A` $\rightarrow$ `03A` ... $\rightarrow$ `12A`), đồng thời cập nhật huy hiệu `KHUNG 01 / 12` và viền sáng `.is-focused-frame`.
+
+13. **Trang 12 / 12 (`data-page-index="11"`) — Trang Kết Thúc (`#closing-page-section`)**
+    - Trang khép lại cuốn sổ lưu bút với con dấu sáp `12A2`, tiêu đề `HẸN NGÀY HỘI NGỘ!`, bức ảnh đêm lửa trại `img_10.jpg`, lời chúc 41 thành viên đỗ Tốt nghiệp 100% & đậu Nguyện vọng 1, kèm 2 nút điều hướng nhanh về Hòm Thư (`data-target-page="7"`) hoặc Trang Mở Đầu (`data-target-page="0"`).
 
 ---
 

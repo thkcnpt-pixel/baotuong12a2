@@ -187,11 +187,11 @@ window.BgmController = {
         }
         if (span) {
             if (!this.userWantsMusic) {
-                span.textContent = 'Lofi Thanh Xuân: Tắt';
+                span.textContent = 'Lofi: Tắt';
             } else if (this.pausedByVideo) {
-                span.textContent = 'Lofi: Tạm dừng (Đang xem Video)';
+                span.textContent = 'Lofi: Tạm dừng';
             } else {
-                span.textContent = 'Lofi Thanh Xuân: Bật';
+                span.textContent = 'Lofi: Bật';
             }
         }
     }

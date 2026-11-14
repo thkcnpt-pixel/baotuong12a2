@@ -209,12 +209,12 @@ Website **không dùng kiểu cuộn dọc dài ngoằng**, mà thiết kế th�
      ffmpeg -y -i input.mp4 -c copy -avoid_negative_ts make_zero -movflags +faststart output.mp4
      ```
    - *Quy tắc cho AI sau:* Nếu người dùng gửi thêm video `.mp4` mới, **bắt buộc chạy lệnh `ffmpeg` trên** trước khi đưa vào `assets/video/`.
-2. **Không dùng `position: fixed` cho thanh công cụ nổi:**
-   - `.floating-controls` sử dụng `position: sticky; top: 0;` để không bao giờ che khuất nội dung đầu trang trên điện thoại.
-3. **Tối ưu không gian hiển thị trên màn hình nhỏ (Mobile-first):**
-   - Chủ dự án yêu cầu **không lãng phí lề**, giảm padding/khoảng trống thừa, đảm bảo các trang dài (như Bảng Đen, Bàn Sticker) hiển thị trọn vẹn từ đầu đến cuối không bị cắt/che khuất.
-   - Đã loại bỏ các huy hiệu `TƯƠNG TÁC 0X` màu đỏ gây rối mắt.
-4. **Trạng thái gập kín ban đầu:**
+2. **Tối ưu hiển thị trọn vẹn trong 1 màn hình điện thoại (Không cần cuộn 2–3 lần):**
+   - **Đầu trang siêu gọn (`.floating-controls`):** Gộp tên `TRẠM KÝ ỨC 12A2`, huy hiệu `THPT PHÚ ĐIỀN • 2026 - 2027` và nút bật/tắt nhạc `Lofi: Bật` trên **1 thanh mảnh duy nhất (~34px)** dùng `position: sticky; top: 0;` (đã bỏ khối `.scrapbook-header` cồng kềnh chiếm chỗ ở đầu trang).
+   - **Thanh điều hướng & mục lục 1 dòng (`.compact-book-nav`):** Tích hợp nút `<` (`#btn-prev-page`), thanh 10 nút `.bookmark-tab` trượt ngang 1 dòng (`flex-wrap: nowrap; overflow-x: auto;`) tự động căn giữa tab đang mở (`scrollIntoView`), và nút `>` (`#btn-next-page`).
+   - **Cuối trang siêu mảnh (`.scrapbook-footer-mini`):** Đã bỏ khối footer lớn + thanh chuyển trang lặp lại ở đáy, thay bằng 1 dòng chữ ký mảnh duy nhất (~20px).
+   - **Bên trong cả 10 trang:** Đã tinh chỉnh kích thước, khoảng đệm và lưới hiển thị trên mobile (`@media (max-width: 768px)`) để toàn bộ nội dung từ đầu đến cuối trang (đặc biệt là Bảng Đen, TV Kỷ Niệm, Polaroid 2x2, Bàn Sticker, Đèn Pin 41 tên) hiển thị trọn vẹn ngay trên 1 màn hình.
+3. **Trạng thái gập kín ban đầu:**
    - Phong bì Intro và Thiệp Pop-up 3D (Trang 5) phải luôn ở trạng thái **gấp kín** khi tải trang để người xem tự tương tác mở.
 
 ---

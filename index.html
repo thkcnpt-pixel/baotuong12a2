@@ -26,13 +26,16 @@
     <!-- Lớp phủ hạt nhiễu (Film Grain) & Viền tối (Vignette) tạo cảm giác giấy thật -->
     <div class="vintage-overlay" aria-hidden="true"></div>
 
-    <!-- Thanh công cụ nổi: Bật/Tắt nhạc nền Lofi & Con dấu Niên khóa 2026 - 2027 -->
+    <!-- Thanh tiêu đề & điều khiển siêu gọn (Gộp tên Trạm Ký Ức 12A2 + Niên khóa + Nút Nhạc Lofi trên 1 dòng) -->
     <nav class="floating-controls" aria-label="Điều khiển sổ lưu bút">
+        <div class="top-brand-group">
+            <span class="top-brand-title">TRẠM KÝ ỨC 12A2</span>
+            <span class="stamp-badge">THPT PHÚ ĐIỀN • 2026 - 2027</span>
+        </div>
         <button id="btn-audio-toggle" class="vintage-btn is-playing" title="Bật/Tắt nhạc Lofi Thanh Xuân">
             <i class="fa-solid fa-compact-disc fa-spin"></i>
-            <span>Lofi Thanh Xuân: Bật</span>
+            <span>Lofi: Bật</span>
         </button>
-        <div class="stamp-badge">NIÊN KHÓA 2026 - 2027</div>
     </nav>
 
     <!-- ==========================================
@@ -78,42 +81,27 @@
          ========================================== -->
     <main class="scrapbook-wrapper" id="main-scrapbook">
 
-        <!-- HEADER BÁO TƯỜNG NHỎ GỌN -->
-        <header class="scrapbook-header">
-            <div class="washi-tape tape-top-left"></div>
-            <div class="washi-tape tape-top-right"></div>
-            <p class="header-sub">TRƯỜNG THCS & THPT PHÚ ĐIỀN • NIÊN KHÓA 2026 - 2027</p>
-            <h1 class="header-title">TRẠM KÝ ỨC 12A2</h1>
-            <div class="header-divider">
-                <span>✦</span> <span>Cuốn sổ lưu bút tương tác của 41 trái tim</span> <span>✦</span>
-            </div>
-            <p class="header-quote">"Có một mùa hoa phượng nở rồi tàn, nhưng tuổi 18 cùng 12A2 sẽ mãi nằm lại nơi trang giấy này..."</p>
-        </header>
-
-        <!-- THANH MỤC LỤC ĐÁNH DẤU TRANG (BOOKMARK TABS) -->
-        <nav class="book-bookmarks-bar" id="book-bookmarks-bar" aria-label="Mục lục các trang sổ lưu bút">
-            <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-camera-retro"></i> 1. Ảnh Polaroid</button>
-            <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
-            <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-chalkboard"></i> 3. Góc Bảng Đen</button>
-            <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
-            <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
-            <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa 12A2</button>
-            <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
-            <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-note-sticky"></i> 8. Bàn Sticker</button>
-            <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
-            <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
-        </nav>
-
-        <!-- THANH ĐIỀU KHIỂN LẬT TRANG TRÊN -->
-        <div class="book-nav-controls">
-            <button type="button" id="btn-prev-page" class="book-turn-btn" disabled>
-                <i class="fa-solid fa-chevron-left"></i> Trang trước
+        <!-- THANH ĐIỀU HƯỚNG TÍCH HỢP 1 DÒNG: NÚT TRƯỚC + MỤC LỤC CUỘN NGANG + NÚT TIẾP -->
+        <div class="compact-book-nav">
+            <button type="button" id="btn-prev-page" class="book-turn-btn icon-only" title="Trang trước" disabled>
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <div class="book-page-indicator" id="book-page-indicator">
-                Trang <strong>1 / 10</strong> • Góc Ảnh Polaroid
-            </div>
-            <button type="button" id="btn-next-page" class="book-turn-btn">
-                Trang tiếp theo <i class="fa-solid fa-chevron-right"></i>
+
+            <nav class="book-bookmarks-bar" id="book-bookmarks-bar" aria-label="Mục lục các trang sổ lưu bút">
+                <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-camera-retro"></i> 1. Polaroid</button>
+                <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
+                <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-chalkboard"></i> 3. Bảng Đen</button>
+                <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
+                <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
+                <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa</button>
+                <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
+                <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-note-sticky"></i> 8. Sticker</button>
+                <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
+                <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
+            </nav>
+
+            <button type="button" id="btn-next-page" class="book-turn-btn icon-only" title="Trang tiếp theo">
+                <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
 
@@ -130,7 +118,7 @@
             <article class="section-card book-page is-active" data-page-index="0" data-page-title="Góc Ảnh Polaroid Lật 3D" id="polaroid-section">
                 <div class="page-corner-num">Trang 01 / 10</div>
                 <h2 class="section-heading">Góc Ảnh Polaroid Lật 3D</h2>
-                <p class="section-desc">Chạm vào từng tấm ảnh Polaroid để lật xem dòng lưu bút viết tay ở mặt sau nhé!</p>
+                <p class="section-desc">Chạm vào từng tấm ảnh Polaroid để lật xem lưu bút viết tay ở mặt sau!</p>
 
                 <div class="polaroid-grid">
                     <!-- Polaroid 1 -->
@@ -223,7 +211,7 @@
             <article class="section-card book-page" data-page-index="1" data-page-title="Thước Phim Tua Ngược" id="retro-tv-section">
                 <div class="page-corner-num">Trang 02 / 10</div>
                 <h2 class="section-heading">Thước Phim Tua Ngược</h2>
-                <p class="section-desc">Bấm nút chuyển kênh trên chiếc TV cổ điển để tua lại 11 thước phim sống động nhất của 12A2 (Nhạc nền Lofi sẽ tự động tắt khi video phát và bật lại khi bạn dừng video!).</p>
+                <p class="section-desc">Bấm chọn kênh để tua lại 11 thước phim sống động nhất của 12A2 (Nhạc Lofi tự tắt khi xem video).</p>
 
                 <div class="retro-tv-wrapper">
                     <div class="tv-antenna">
@@ -300,7 +288,7 @@
             <article class="section-card book-page" data-page-index="2" data-page-title="Góc Bảng Đen 12A2" id="chalkboard-section">
                 <div class="page-corner-num">Trang 03 / 10</div>
                 <h2 class="section-heading">Góc Bảng Đen 12A2</h2>
-                <p class="section-desc">Mặt bảng phấn xanh quen thuộc với góc ghi sĩ số 41/41, các hình vẽ Toán học - Hóa học lớp 12 và khoảng trống rộng rãi để bạn cầm phấn viết lưu bút trực tiếp lên bảng!</p>
+                <p class="section-desc">Bảng phấn xanh ghi sĩ số 41/41, câu chuyện Toán - Vật Lý 12 và khoảng trống để bạn cầm phấn ký tên!</p>
 
                 <div class="chalkboard-frame">
                     <div class="chalkboard-surface" id="chalkboard-surface">
@@ -312,8 +300,7 @@
                             <!-- Góc trái: Sĩ số & Trực nhật -->
                             <div class="chalk-box chalk-duty">
                                 <div class="chalk-title-underline">NIÊN KHÓA 2026 - 2027 • 12A2</div>
-                                <p>Sĩ số: <strong>41 / 41</strong> (Vắng: 0)</p>
-                                <p>Trực nhật: Tổ 1 & Tổ 3</p>
+                                <p>Sĩ số: <strong>41 / 41</strong> (Vắng: 0) • Trực: Tổ 1 & Tổ 3</p>
                                 <p class="chalk-yellow-text">★ Đạt Hạng Nhất Thi Đua Tuần ★</p>
                                 <p class="chalk-doodle-note">✦ 100% Đỗ Tốt Nghiệp & NV1!</p>
                             </div>
@@ -324,22 +311,22 @@
                                     <span class="chalk-pink-text">📐 Bài Toán Nỗ Lực 1% Mỗi Ngày Của 12A2:</span>
                                     <div class="chalk-math-story">
                                         <span class="math-highlight">1.01<sup>365</sup> ≈ 37.78 &nbsp;|&nbsp; 0.99<sup>365</sup> ≈ 0.03</span>
-                                        <p>"Mỗi ngày cố gắng thêm <strong>1%</strong> cùng nhau dưới mái trường Phú Điền, sau 1 năm 41 thành viên 12A2 đã mạnh mẽ hơn gấp <strong>37.8 lần</strong>!"</p>
+                                        <p>"Mỗi ngày cố gắng thêm <strong>1%</strong> dưới mái trường Phú Điền, sau 1 năm 41 thành viên 12A2 mạnh mẽ hơn gấp <strong>37.8 lần</strong>!"</p>
                                     </div>
                                 </div>
 
                                 <div class="chalk-formula-item">
                                     <span class="chalk-yellow-text">⚡ Định Luật Vật Lý 12 & Quỹ Đạo Thanh Xuân:</span>
                                     <div class="chalk-physics-story">
-                                        <span class="physics-highlight">S = v · t &nbsp;|&nbsp; f<sub>cộng hưởng</sub> = f<sub>12A2</sub> (Biên độ A<sub>max</sub>) &nbsp;|&nbsp; ΔU = Q + A</span>
-                                        <p>"Thời gian <strong>(t)</strong> trôi đi không thể đảo chiều, khoảng cách <strong>(S)</strong> sau ngày ra trường có thể xa nhau, nhưng khi <strong>41 tần số</strong> cùng chung một nhịp đập, nhiệt lượng thanh xuân <strong>12A2</strong> sẽ bảo toàn mãi mãi!"</p>
+                                        <span class="physics-highlight">S = v · t &nbsp;|&nbsp; f<sub>cộng hưởng</sub> = f<sub>12A2</sub> (A<sub>max</sub>) &nbsp;|&nbsp; ΔU = Q + A</span>
+                                        <p>"Thời gian <strong>(t)</strong> trôi và khoảng cách <strong>(S)</strong> có thể xa, nhưng khi <strong>41 tần số</strong> cùng chung nhịp đập, nhiệt lượng thanh xuân <strong>12A2</strong> bảo toàn mãi mãi!"</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Khoảng bảng trống lớn ở dưới có gợi ý mờ để người xem vẽ phấn -->
                             <div class="chalk-free-draw-zone">
-                                <span>✎ Khoảng bảng trống dành cho bạn: Hãy chọn màu phấn bên dưới và ký tên / vẽ hình kỷ niệm lên bảng nhé!</span>
+                                <span>✎ Khoảng bảng trống: Chọn màu phấn bên dưới và ký tên / vẽ kỷ niệm lên bảng nhé!</span>
                             </div>
                         </div>
                     </div>
@@ -347,14 +334,14 @@
                     <!-- Khay đựng phấn & Khăn lau bảng -->
                     <div class="chalk-tray">
                         <div class="chalk-tools">
-                            <span class="tray-label"><i class="fa-solid fa-pencil"></i> Chọn màu phấn:</span>
+                            <span class="tray-label"><i class="fa-solid fa-pencil"></i> Màu phấn:</span>
                             <button type="button" class="chalk-piece white active" data-color="#f2f0e6" title="Phấn trắng"></button>
                             <button type="button" class="chalk-piece yellow" data-color="#f7d969" title="Phấn vàng"></button>
                             <button type="button" class="chalk-piece pink" data-color="#f4978e" title="Phấn hồng"></button>
                             <button type="button" class="chalk-piece blue" data-color="#8ecae6" title="Phấn xanh"></button>
                         </div>
                         <button type="button" id="btn-clear-chalk" class="chalk-eraser-btn" title="Lau nét vẽ thêm">
-                            <i class="fa-solid fa-eraser"></i> Khăn lau bảng
+                            <i class="fa-solid fa-eraser"></i> Lau bảng
                         </button>
                     </div>
                 </div>
@@ -364,7 +351,7 @@
             <article class="section-card book-page" data-page-index="3" data-page-title="Thẻ Cào Ký Ức" id="scratch-card-section">
                 <div class="page-corner-num">Trang 04 / 10</div>
                 <h2 class="section-heading">Thẻ Cào Ký Ức</h2>
-                <p class="section-desc">Dùng ngón tay (hoặc giữ chuột) chà lên lớp sương mù màu bạc để đánh thức bức ảnh kỷ niệm ẩn giấu phía dưới!</p>
+                <p class="section-desc">Chà ngón tay lên lớp bạc để đánh thức bức ảnh kỷ niệm ẩn giấu phía dưới!</p>
 
                 <div class="scratch-stage">
                     <div class="scratch-toolbar">
@@ -395,7 +382,7 @@
             <article class="section-card book-page" data-page-index="4" data-page-title="Giấy Gấp Pop-up 3D" id="popup-card-section">
                 <div class="page-corner-num">Trang 05 / 10</div>
                 <h2 class="section-heading">Giấy Gấp Pop-up 3D: Hội Trại 12A2</h2>
-                <p class="section-desc">Tấm thiệp Pop-up đang được gấp kín! Hãy chạm vào bìa thiệp (hoặc bấm nút bên dưới) để tự tay mở bung mô hình nổi 3D Cổng trại Nguyễn Sinh Sắc và tập thể 12A2.</p>
+                <p class="section-desc">Chạm vào bìa thiệp (hoặc bấm nút) để tự tay mở mô hình 3D Cổng trại Nguyễn Sinh Sắc!</p>
 
                 <div class="popup-controls">
                     <button type="button" id="btn-toggle-popup" class="letter-open-btn">
@@ -459,7 +446,7 @@
             <article class="section-card book-page" data-page-index="5" data-page-title="Ổ Khóa Mật Mã 12A2" id="padlock-section">
                 <div class="page-corner-num">Trang 06 / 10</div>
                 <h2 class="section-heading">Ổ Khóa Mật Mã 12A2</h2>
-                <p class="section-desc">Giải đúng câu đố Toán Xác Suất (xuất hiện ngay trên màn hình TV lớp mình!) hoặc câu đố Vật Lý 12 để mở khóa kho ảnh bí mật!</p>
+                <p class="section-desc">Giải đố Toán Xác Suất (trên TV lớp mình) hoặc Vật Lý 12 để mở kho ảnh bí mật!</p>
 
                 <div class="padlock-layout">
                     <div class="padlock-box" id="padlock-box">
@@ -532,7 +519,7 @@
             <article class="section-card book-page" data-page-index="6" data-page-title="Hòm Thư Lời Chưa Nói" id="unsaid-mailbox-section">
                 <div class="page-corner-num">Trang 07 / 10</div>
                 <h2 class="section-heading">Hòm Thư "Lời Chưa Nói"</h2>
-                <p class="section-desc">Nơi gửi gắm những tâm sự ẩn danh hoặc ký tên gửi đến các bạn và thầy cô 12A2 (Niên khóa 2026 - 2027).</p>
+                <p class="section-desc">Gửi gắm những tâm sự ẩn danh hoặc ký tên đến các bạn và thầy cô 12A2 (2026 - 2027).</p>
 
                 <div class="mailbox-layout">
                     <div class="quick-confession-box">
@@ -540,7 +527,7 @@
                         <form id="confession-form" class="confession-form">
                             <input type="text" id="confession-from" class="vintage-input" placeholder="Bút danh (Để trống nếu muốn Ẩn danh...)" maxlength="40">
                             <input type="text" id="confession-to" class="vintage-input" placeholder="Gửi đến ai? (VD: Cả lớp 12A2, Tổ 1, Crush bàn bên...)" maxlength="50">
-                            <textarea id="confession-text" class="vintage-textarea" rows="3" placeholder="Viết điều bạn chưa kịp nói trước ngày ra trường..." required></textarea>
+                            <textarea id="confession-text" class="vintage-textarea" rows="2" placeholder="Viết điều bạn chưa kịp nói trước ngày ra trường..." required></textarea>
                             <button type="submit" class="letter-open-btn">
                                 <i class="fa-solid fa-paper-plane"></i> Bỏ vào Hòm Thư 12A2
                             </button>
@@ -557,8 +544,8 @@
             <!-- TRANG 8: BẢNG KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS) -->
             <article class="section-card book-page" data-page-index="7" data-page-title="Bàn Kéo Thả Sticker & Note" id="drag-drop-section">
                 <div class="page-corner-num">Trang 08 / 10</div>
-                <h2 class="section-heading">Góc Kéo - Thả Sticker & Giấy Note Lưu Bút</h2>
-                <p class="section-desc">Dùng ngón tay hoặc chuột tự do kéo thả các tờ giấy Note, hình dán Sticker kỷ niệm và ảnh mini xung quanh bàn gỗ của lớp 12A2!</p>
+                <h2 class="section-heading">Góc Kéo - Thả Sticker & Giấy Note</h2>
+                <p class="section-desc">Chạm kéo thả các tờ giấy Note, hình dán Sticker kỷ niệm và ảnh mini quanh bàn gỗ 12A2!</p>
 
                 <div class="sticker-board-toolbar">
                     <div class="new-note-creator">
@@ -617,7 +604,7 @@
             <article class="section-card book-page" data-page-index="8" data-page-title="Đèn Pin Rọi Chữ Dạ Quang" id="flashlight-section">
                 <div class="page-corner-num">Trang 09 / 10</div>
                 <h2 class="section-heading">Đèn Pin Rọi Chữ Dạ Quang Ẩn</h2>
-                <p class="section-desc">Phòng học 12A2 khi tắt đèn! Hãy di chuyển ngón tay (hoặc chuột) như chiếc đèn pin để soi sáng những dòng tâm sự viết bằng mực dạ quang và đầy đủ 41 cái tên ẩn trong bóng tối.</p>
+                <p class="section-desc">Di chuyển ngón tay như chiếc đèn pin để soi sáng 41 cái tên 12A2 ẩn trong bóng tối!</p>
 
                 <div class="flashlight-toolbar">
                     <button type="button" id="btn-toggle-room-light" class="vintage-btn">
@@ -664,18 +651,18 @@
             <!-- TRANG 10: CUỘN PHIM NGANG KỶ NIỆM (HORIZONTAL 35MM FILM REEL) -->
             <article class="section-card book-page" data-page-index="9" data-page-title="Cuộn Phim Ngang 35mm" id="film-reel-section">
                 <div class="page-corner-num">Trang 10 / 10</div>
-                <h2 class="section-heading">Cuộn Phim Ngang 35mm • Trọn Bộ 12 Ảnh Kỷ Niệm</h2>
-                <p class="section-desc">Vuốt ngang dải phim Kodak 35mm hoặc bấm nút Tua Phim để ngắm trọn vẹn 12 khung hình thanh xuân của 12A2. Chạm vào từng khung phim để nghe tiếng "tách" máy ảnh cơ và phóng to ảnh!</p>
+                <h2 class="section-heading">Cuộn Phim Ngang 35mm • 12 Ảnh Kỷ Niệm</h2>
+                <p class="section-desc">Vuốt ngang dải phim Kodak 35mm và chạm vào khung hình để nghe tiếng chụp ảnh & phóng to!</p>
 
                 <div class="film-controls-bar">
                     <button type="button" id="btn-film-left" class="vintage-btn">
-                        <i class="fa-solid fa-chevron-left"></i> Tua sang trái
+                        <i class="fa-solid fa-chevron-left"></i> Tua trái
                     </button>
                     <span class="film-counter-badge" id="film-counter-badge">
-                        <i class="fa-solid fa-camera"></i> KODAK GOLD 200 • 12 EXP (2026 - 2027)
+                        <i class="fa-solid fa-camera"></i> KODAK 200 • 12 EXP
                     </span>
                     <button type="button" id="btn-film-right" class="vintage-btn">
-                        Tua sang phải <i class="fa-solid fa-chevron-right"></i>
+                        Tua phải <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
 
@@ -695,22 +682,9 @@
             </article>
         </div>
 
-        <!-- THANH ĐIỀU KHIỂN LẬT TRANG DƯỚI CÙNG -->
-        <div class="book-nav-controls bottom-nav">
-            <button type="button" id="btn-prev-page-bottom" class="book-turn-btn" disabled>
-                <i class="fa-solid fa-arrow-left"></i> Lật lại trang trước
-            </button>
-            <span class="book-swipe-tip"><i class="fa-solid fa-book"></i> Cuốn sổ lưu bút gồm 10 trang tương tác</span>
-            <button type="button" id="btn-next-page-bottom" class="book-turn-btn">
-                Lật sang trang tiếp <i class="fa-solid fa-arrow-right"></i>
-            </button>
-        </div>
-
-        <!-- FOOTER LƯU BÚT -->
-        <footer class="scrapbook-footer">
-            <div class="wax-seal">12A2</div>
-            <p class="footer-handwriting">Gửi trọn yêu thương đến tập thể 12A2 (Niên khóa 2026 - 2027)!</p>
-            <p class="footer-meta">Trường THCS & THPT Phú Điền • Quét mã QR từ tờ báo tường lớp 12A2</p>
+        <!-- CHÂN TRANG 1 DÒNG SIÊU GỌN (KHÔNG CHIẾM CHỖ CUỐI TRANG) -->
+        <footer class="scrapbook-footer-mini">
+            <span>✦ Tập thể 12A2 • Trường THCS & THPT Phú Điền (Niên khóa 2026 - 2027) ✦</span>
         </footer>
 
     </main>

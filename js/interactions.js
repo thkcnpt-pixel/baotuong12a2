@@ -87,9 +87,13 @@ function initBookPageFlipSystem() {
 
         currentPage = targetIndex;
 
-        // 4. Cập nhật thanh Mục lục Bookmark
+        // 4. Cập nhật thanh Mục lục Bookmark & tự động trượt ngang tới tab đang mở
         bookmarks.forEach((tab, idx) => {
-            tab.classList.toggle('active', idx === currentPage);
+            const isActive = idx === currentPage;
+            tab.classList.toggle('active', isActive);
+            if (isActive && typeof tab.scrollIntoView === 'function') {
+                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         });
 
         // 5. Cập nhật tiêu đề số trang và trạng thái nút Trước / Sau

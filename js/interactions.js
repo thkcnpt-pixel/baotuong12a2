@@ -240,7 +240,7 @@ function initInteraction3_RetroTV() {
         if (window.BgmController) window.BgmController.resumeAfterVideo();
     });
 
-    function switchChannel(index) {
+    function switchChannel(index, autoPlayNow = true) {
         currentIndex = (index + channels.length) % channels.length;
         const ch = channels[currentIndex];
 
@@ -248,7 +248,7 @@ function initInteraction3_RetroTV() {
 
         if (noiseEl) {
             noiseEl.classList.add('is-active');
-            setTimeout(() => noiseEl.classList.remove('is-active'), 240);
+            setTimeout(() => noiseEl.classList.remove('is-active'), 220);
         }
 
         if (osdEl) osdEl.textContent = ch.label;
@@ -264,26 +264,45 @@ function initInteraction3_RetroTV() {
             youtubeEl.classList.add('hidden');
             videoEl.classList.remove('hidden');
             videoEl.pause();
+
+            // Cập nhật trực tiếp cả thẻ <source> lẫn thuộc tính src để trình duyệt nạp đúng khung hình đầu tiên
+            const sourceTag = videoEl.querySelector('source');
+            if (sourceTag) sourceTag.src = ch.src;
             videoEl.src = ch.src;
+            videoEl.currentTime = 0;
             videoEl.load();
-            if (window.BgmController) window.BgmController.resumeAfterVideo();
+
+            if (autoPlayNow) {
+                const startPlayback = () => {
+                    const p = videoEl.play();
+                    if (p !== undefined) {
+                        p.then(() => {
+                            if (window.BgmController) window.BgmController.pauseForVideo();
+                        }).catch(() => {});
+                    }
+                };
+                if (videoEl.readyState >= 2) {
+                    startPlayback();
+                } else {
+                    videoEl.addEventListener('loadeddata', startPlayback, { once: true });
+                }
+            }
         } else {
             videoEl.pause();
             videoEl.classList.add('hidden');
             youtubeEl.classList.remove('hidden');
             youtubeEl.src = ch.src;
-            // Khi mở kênh YouTube, tạm dừng nhạc nền Lofi để người xem nghe YouTube
             if (window.BgmController) window.BgmController.pauseForVideo();
         }
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', () => switchChannel(currentIndex - 1));
-    if (nextBtn) nextBtn.addEventListener('click', () => switchChannel(currentIndex + 1));
+    if (prevBtn) prevBtn.addEventListener('click', () => switchChannel(currentIndex - 1, true));
+    if (nextBtn) nextBtn.addEventListener('click', () => switchChannel(currentIndex + 1, true));
 
     pills.forEach((pill) => {
         pill.addEventListener('click', () => {
             const idx = parseInt(pill.getAttribute('data-index'), 10);
-            switchChannel(idx);
+            switchChannel(idx, true);
         });
     });
 }

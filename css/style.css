@@ -73,15 +73,19 @@ body.kraft-theme {
 }
 
 /* ==========================================================================
-   THANH ĐIỀU KHIỂN NỔI (FLOATING CONTROLS)
+   THANH ĐIỀU KHIỂN TRÊN CÙNG (KHÔNG ĐÈ LÊN CHỮ KHI CUỘN TRANG)
    ========================================================================== */
 .floating-controls {
-    position: fixed;
-    top: 8px;
-    right: 10px;
+    position: sticky;
+    top: 0;
     z-index: 950;
+    background: rgba(216, 190, 152, 0.94);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px dashed rgba(94, 68, 48, 0.35);
+    padding: 6px 12px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
 }
 
@@ -89,12 +93,12 @@ body.kraft-theme {
     background: var(--kraft-paper-light);
     color: var(--ink-sepia-dark);
     border: 1.5px dashed var(--ink-brown-muted);
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 5px 10px;
+    border-radius: 5px;
     font-family: var(--font-typewriter);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     cursor: pointer;
-    box-shadow: var(--shadow-paper);
+    box-shadow: 0 2px 5px rgba(44, 30, 20, 0.14);
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -113,18 +117,16 @@ body.kraft-theme {
 }
 
 .stamp-badge {
-    background: rgba(244, 234, 213, 0.92);
+    background: rgba(244, 234, 213, 0.95);
     color: var(--stamp-red);
-    border: 2px solid var(--stamp-red);
-    padding: 4px 10px;
+    border: 1.5px solid var(--stamp-red);
+    padding: 3px 9px;
     font-family: var(--font-typewriter);
     font-weight: 700;
-    font-size: 0.74rem;
-    letter-spacing: 0.8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    transform: rotate(1.5deg);
     border-radius: 3px;
-    box-shadow: 0 2px 5px rgba(140, 45, 25, 0.18);
 }
 
 /* ==========================================================================
@@ -133,8 +135,8 @@ body.kraft-theme {
 .scrapbook-wrapper {
     max-width: 1260px;
     width: 98%;
-    margin: 44px auto 24px;
-    padding: 6px 4px;
+    margin: 6px auto 18px;
+    padding: 4px;
     position: relative;
 }
 

@@ -253,10 +253,75 @@ body.kraft-theme {
     filter: grayscale(0.4);
 }
 
-/* Sân khấu 3D chứa các trang sổ */
+/* Sân khấu 3D chứa các trang sổ - Hỗ trợ chuyển cảnh thuyết trình 3D đa chiều */
 .book-stage-3d {
     position: relative;
-    perspective: 1800px;
+    perspective: 1050px;
+}
+
+/* Luồng sáng lấp lánh quét ngang sân khấu khi chuyển trang 3D */
+.book-stage-3d::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 10px;
+    pointer-events: none;
+    z-index: 45;
+    opacity: 0;
+    background: linear-gradient(
+        115deg,
+        transparent 15%,
+        rgba(255, 232, 163, 0.16) 38%,
+        rgba(255, 248, 220, 0.82) 50%,
+        rgba(255, 196, 77, 0.22) 62%,
+        transparent 85%
+    );
+    background-size: 240% 100%;
+}
+
+.book-stage-3d.stage-light-sweep::after {
+    animation: stageGoldenSweep 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes stageGoldenSweep {
+    0% {
+        opacity: 0;
+        background-position: 180% 0;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        background-position: -60% 0;
+    }
+}
+
+/* Nhãn hiển thị tên hiệu ứng 3D góc trên sân khấu */
+.fx-transition-toast {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px) scale(0.9);
+    z-index: 60;
+    background: linear-gradient(135deg, rgba(44, 29, 17, 0.94), rgba(140, 45, 25, 0.94));
+    color: #ffe8a3;
+    border: 1.5px solid rgba(255, 215, 110, 0.85);
+    box-shadow: 0 6px 18px rgba(44, 29, 17, 0.35), 0 0 14px rgba(255, 209, 102, 0.55);
+    padding: 3px 13px;
+    border-radius: 999px;
+    font-family: var(--font-typewriter);
+    font-size: 0.68rem;
+    letter-spacing: 0.4px;
+    pointer-events: none;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fx-transition-toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .book-spiral-spine {
@@ -295,50 +360,307 @@ body.kraft-theme {
         3px 3px 0px #dfccb0;
     border: 1px solid rgba(94, 68, 48, 0.3);
     position: relative;
-    transform-origin: left center;
-    backface-visibility: hidden;
+    transform-origin: center center;
+    backface-visibility: visible;
+    will-change: transform, opacity, filter;
 }
 
 .section-card.book-page.is-active {
     display: block;
+    position: relative;
+    z-index: 12;
 }
 
-.section-card.book-page.flip-next-in {
-    animation: pageFlipNextIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* Trang cũ đang thoát ra trong không gian 3D (chạy song song với trang mới đang bay vào) */
+.section-card.book-page.is-exiting {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10;
+    pointer-events: none;
 }
 
-.section-card.book-page.flip-prev-in {
-    animation: pageFlipPrevIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* ==========================================================================
+   8 HIỆU ỨNG CHUYỂN CẢNH THUYẾT TRÌNH 3D (POWERPOINT / KEYNOTE 3D TRANSITIONS)
+   ========================================================================== */
+
+/* 1. KHỐI LẬP PHƯƠNG 3D (3D CUBE ROTATION) */
+.section-card.book-page.fx-cube-next-in {
+    transform-origin: left center;
+    animation: fxCubeNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cube-next-out {
+    transform-origin: right center;
+    animation: fxCubeNextOut 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cube-prev-in {
+    transform-origin: right center;
+    animation: fxCubePrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cube-prev-out {
+    transform-origin: left center;
+    animation: fxCubePrevOut 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes pageFlipNextIn {
-    0% {
-        opacity: 0;
-        transform: rotateY(-58deg) translateX(20px) scale(0.98);
-    }
-    60% {
-        opacity: 1;
-        transform: rotateY(4deg) translateX(0) scale(1.002);
-    }
-    100% {
-        opacity: 1;
-        transform: rotateY(0deg) translateX(0) scale(1);
-    }
+@keyframes fxCubeNextIn {
+    0% { opacity: 0.15; transform: perspective(1050px) translateX(85%) rotateY(78deg) scale(0.84); filter: brightness(0.75); }
+    65% { opacity: 1; transform: perspective(1050px) translateX(-2%) rotateY(-5deg) scale(1.01); filter: brightness(1.06); }
+    100% { opacity: 1; transform: perspective(1050px) translateX(0) rotateY(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxCubeNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translateX(0) rotateY(0deg) scale(1); filter: brightness(1); }
+    100% { opacity: 0; transform: perspective(1050px) translateX(-85%) rotateY(-78deg) scale(0.82); filter: brightness(0.55); }
+}
+@keyframes fxCubePrevIn {
+    0% { opacity: 0.15; transform: perspective(1050px) translateX(-85%) rotateY(-78deg) scale(0.84); filter: brightness(0.75); }
+    65% { opacity: 1; transform: perspective(1050px) translateX(2%) rotateY(5deg) scale(1.01); filter: brightness(1.06); }
+    100% { opacity: 1; transform: perspective(1050px) translateX(0) rotateY(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxCubePrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translateX(0) rotateY(0deg) scale(1); filter: brightness(1); }
+    100% { opacity: 0; transform: perspective(1050px) translateX(85%) rotateY(78deg) scale(0.82); filter: brightness(0.55); }
 }
 
-@keyframes pageFlipPrevIn {
-    0% {
-        opacity: 0;
-        transform: rotateY(55deg) translateX(-20px) scale(0.98);
-    }
-    60% {
-        opacity: 1;
-        transform: rotateY(-3deg) translateX(0) scale(1.002);
-    }
-    100% {
-        opacity: 1;
-        transform: rotateY(0deg) translateX(0) scale(1);
-    }
+/* 2. BĂNG CHUYỀN COVERFLOW 3D (3D CAROUSEL SWING) */
+.section-card.book-page.fx-carousel-next-in {
+    animation: fxCarouselNextIn 0.82s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
+}
+.section-card.book-page.fx-carousel-next-out {
+    animation: fxCarouselNextOut 0.82s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-carousel-prev-in {
+    animation: fxCarouselPrevIn 0.82s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
+}
+.section-card.book-page.fx-carousel-prev-out {
+    animation: fxCarouselPrevOut 0.82s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes fxCarouselNextIn {
+    0% { opacity: 0.1; transform: perspective(1050px) translate3d(78%, 0, -280px) rotateY(-58deg) scale(0.78); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(-1.5%, 0, 25px) rotateY(5deg) scale(1.01); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateY(0deg) scale(1); }
+}
+@keyframes fxCarouselNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(-78%, 0, -280px) rotateY(58deg) scale(0.76); }
+}
+@keyframes fxCarouselPrevIn {
+    0% { opacity: 0.1; transform: perspective(1050px) translate3d(-78%, 0, -280px) rotateY(58deg) scale(0.78); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(1.5%, 0, 25px) rotateY(-5deg) scale(1.01); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateY(0deg) scale(1); }
+}
+@keyframes fxCarouselPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(78%, 0, -280px) rotateY(-58deg) scale(0.76); }
+}
+
+/* 3. CỔNG KHÔNG GIAN 3D (3D PORTAL ZOOM & TILT) */
+.section-card.book-page.fx-portal-next-in {
+    animation: fxPortalNextIn 0.82s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-portal-next-out {
+    animation: fxPortalNextOut 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-portal-prev-in {
+    animation: fxPortalPrevIn 0.82s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-portal-prev-out {
+    animation: fxPortalPrevOut 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fxPortalNextIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(0, 32px, -360px) rotateX(30deg) scale(0.58); filter: brightness(1.3); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(0, -3px, 28px) rotateX(-4deg) scale(1.02); filter: brightness(1.04); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateX(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxPortalNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateX(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(0, -34px, 220px) rotateX(-24deg) scale(1.22); filter: brightness(1.25); }
+}
+@keyframes fxPortalPrevIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(0, -32px, 220px) rotateX(-26deg) scale(1.22); filter: brightness(1.25); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(0, 3px, -15px) rotateX(3deg) scale(0.99); filter: brightness(1.02); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateX(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxPortalPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateX(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(0, 32px, -360px) rotateX(28deg) scale(0.58); filter: brightness(0.7); }
+}
+
+/* 4. GẤP GIẤY ORIGAMI 3D (3D ORIGAMI UNFOLD) */
+.section-card.book-page.fx-origami-next-in {
+    transform-origin: top center;
+    animation: fxOrigamiNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-origami-next-out {
+    transform-origin: bottom center;
+    animation: fxOrigamiNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-origami-prev-in {
+    transform-origin: bottom center;
+    animation: fxOrigamiPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-origami-prev-out {
+    transform-origin: top center;
+    animation: fxOrigamiPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fxOrigamiNextIn {
+    0% { opacity: 0.1; transform: perspective(1050px) rotateX(-78deg) translateY(-20px) scale(0.86); }
+    65% { opacity: 1; transform: perspective(1050px) rotateX(6deg) translateY(0) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) rotateX(0deg) translateY(0) scale(1); }
+}
+@keyframes fxOrigamiNextOut {
+    0% { opacity: 1; transform: perspective(1050px) rotateX(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) rotateX(78deg) translateY(20px) scale(0.86); }
+}
+@keyframes fxOrigamiPrevIn {
+    0% { opacity: 0.1; transform: perspective(1050px) rotateX(78deg) translateY(20px) scale(0.86); }
+    65% { opacity: 1; transform: perspective(1050px) rotateX(-6deg) translateY(0) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) rotateX(0deg) translateY(0) scale(1); }
+}
+@keyframes fxOrigamiPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) rotateX(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) rotateX(-78deg) translateY(-20px) scale(0.86); }
+}
+
+/* 5. XOÁY LỐC NGÂN HÀ 3D (3D VORTEX SPIRAL) */
+.section-card.book-page.fx-vortex-next-in {
+    animation: fxVortexNextIn 0.84s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
+}
+.section-card.book-page.fx-vortex-next-out {
+    animation: fxVortexNextOut 0.78s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-vortex-prev-in {
+    animation: fxVortexPrevIn 0.84s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
+}
+.section-card.book-page.fx-vortex-prev-out {
+    animation: fxVortexPrevOut 0.78s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
+}
+
+@keyframes fxVortexNextIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(48%, -16%, -260px) rotate3d(1, 1, -0.35, 76deg) scale(0.65); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(-1%, 1%, 18px) rotate3d(1, 1, -0.35, -5deg) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotate3d(1, 1, 0, 0deg) scale(1); }
+}
+@keyframes fxVortexNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotate3d(1, 1, 0, 0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(-48%, 16%, -260px) rotate3d(1, 1, -0.35, -76deg) scale(0.65); }
+}
+@keyframes fxVortexPrevIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(-48%, 16%, -260px) rotate3d(1, 1, -0.35, -76deg) scale(0.65); }
+    70% { opacity: 1; transform: perspective(1050px) translate3d(1%, -1%, 18px) rotate3d(1, 1, -0.35, 5deg) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotate3d(1, 1, 0, 0deg) scale(1); }
+}
+@keyframes fxVortexPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotate3d(1, 1, 0, 0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(48%, -16%, -260px) rotate3d(1, 1, -0.35, 76deg) scale(0.65); }
+}
+
+/* 6. CÁNH CỬA THỜI GIAN 3D (3D GRAND DOOR SWING) */
+.section-card.book-page.fx-door-next-in {
+    transform-origin: left center;
+    animation: fxDoorNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-door-next-out {
+    transform-origin: left center;
+    animation: fxDoorNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-door-prev-in {
+    transform-origin: left center;
+    animation: fxDoorPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-door-prev-out {
+    transform-origin: left center;
+    animation: fxDoorPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fxDoorNextIn {
+    0% { opacity: 0.1; transform: perspective(1050px) rotateY(-76deg) rotateZ(2.5deg) translateZ(-70px) scale(0.92); }
+    65% { opacity: 1; transform: perspective(1050px) rotateY(5deg) rotateZ(-0.5deg) translateZ(12px) scale(1.01); }
+    100% { opacity: 1; transform: perspective(1050px) rotateY(0deg) rotateZ(0deg) translateZ(0) scale(1); }
+}
+@keyframes fxDoorNextOut {
+    0% { opacity: 1; transform: perspective(1050px) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) rotateY(76deg) rotateZ(-2.5deg) translateZ(-60px) scale(0.9); }
+}
+@keyframes fxDoorPrevIn {
+    0% { opacity: 0.1; transform: perspective(1050px) rotateY(76deg) rotateZ(-2.5deg) translateZ(-70px) scale(0.92); }
+    65% { opacity: 1; transform: perspective(1050px) rotateY(-5deg) rotateZ(0.5deg) translateZ(12px) scale(1.01); }
+    100% { opacity: 1; transform: perspective(1050px) rotateY(0deg) rotateZ(0deg) translateZ(0) scale(1); }
+}
+@keyframes fxDoorPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) rotateY(-76deg) rotateZ(2.5deg) translateZ(-60px) scale(0.9); }
+}
+
+/* 7. TRÁO BÀI MA THUẬT 3D (3D DECK SHUFFLE TOSS) */
+.section-card.book-page.fx-cards-next-in {
+    animation: fxCardsNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cards-next-out {
+    animation: fxCardsNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cards-prev-in {
+    animation: fxCardsPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.section-card.book-page.fx-cards-prev-out {
+    animation: fxCardsPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes fxCardsNextIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(66%, -18%, -200px) rotateZ(14deg) rotateY(-46deg) scale(0.78); }
+    68% { opacity: 1; transform: perspective(1050px) translate3d(-1.5%, 1%, 15px) rotateZ(-1.5deg) rotateY(4deg) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateZ(0deg) rotateY(0deg) scale(1); }
+}
+@keyframes fxCardsNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateZ(0deg) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(-66%, 16%, -180px) rotateZ(-14deg) rotateY(46deg) scale(0.78); }
+}
+@keyframes fxCardsPrevIn {
+    0% { opacity: 0; transform: perspective(1050px) translate3d(-66%, -18%, -200px) rotateZ(-14deg) rotateY(46deg) scale(0.78); }
+    68% { opacity: 1; transform: perspective(1050px) translate3d(1.5%, 1%, 15px) rotateZ(1.5deg) rotateY(-4deg) scale(1.015); }
+    100% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateZ(0deg) rotateY(0deg) scale(1); }
+}
+@keyframes fxCardsPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translate3d(0, 0, 0) rotateZ(0deg) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translate3d(66%, 16%, -180px) rotateZ(14deg) rotateY(-46deg) scale(0.78); }
+}
+
+/* 8. LĂNG KÍNH ÁNH SÁNG 3D (3D PRISM FLIP) */
+.section-card.book-page.fx-prism-next-in {
+    animation: fxPrismNextIn 0.84s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
+}
+.section-card.book-page.fx-prism-next-out {
+    animation: fxPrismNextOut 0.78s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
+}
+.section-card.book-page.fx-prism-prev-in {
+    animation: fxPrismPrevIn 0.84s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
+}
+.section-card.book-page.fx-prism-prev-out {
+    animation: fxPrismPrevOut 0.78s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
+}
+
+@keyframes fxPrismNextIn {
+    0% { opacity: 0; transform: perspective(1050px) translateZ(-260px) rotateX(34deg) rotateY(-68deg) scale(0.7); filter: brightness(1.3); }
+    68% { opacity: 1; transform: perspective(1050px) translateZ(20px) rotateX(-4deg) rotateY(5deg) scale(1.015); filter: brightness(1.05); }
+    100% { opacity: 1; transform: perspective(1050px) translateZ(0) rotateX(0deg) rotateY(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxPrismNextOut {
+    0% { opacity: 1; transform: perspective(1050px) translateZ(0) rotateX(0deg) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translateZ(-260px) rotateX(-34deg) rotateY(68deg) scale(0.7); filter: brightness(0.65); }
+}
+@keyframes fxPrismPrevIn {
+    0% { opacity: 0; transform: perspective(1050px) translateZ(-260px) rotateX(-34deg) rotateY(68deg) scale(0.7); filter: brightness(1.3); }
+    68% { opacity: 1; transform: perspective(1050px) translateZ(20px) rotateX(4deg) rotateY(-5deg) scale(1.015); filter: brightness(1.05); }
+    100% { opacity: 1; transform: perspective(1050px) translateZ(0) rotateX(0deg) rotateY(0deg) scale(1); filter: brightness(1); }
+}
+@keyframes fxPrismPrevOut {
+    0% { opacity: 1; transform: perspective(1050px) translateZ(0) rotateX(0deg) rotateY(0deg) scale(1); }
+    100% { opacity: 0; transform: perspective(1050px) translateZ(-260px) rotateX(34deg) rotateY(-68deg) scale(0.7); filter: brightness(0.65); }
 }
 
 .page-corner-num {

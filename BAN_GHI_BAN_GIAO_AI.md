@@ -108,14 +108,25 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 - **Trang 02 → 11 / 12 (`data-page-index="1..10"`):** 10 Trang tương tác vật lý.
 - **Trang 12 / 12 (`data-page-index="11"`):** Trang Kết Thúc (Lời Chào Tạm Biệt & Hẹn Ngày Hội Ngộ — `#closing-page-section`).
 
-### A. Hệ thống Lật Trang 3D (`initBookPageFlipSystem` trong `js/interactions.js`)
-- Container: `#book-stage-3d` (có gáy sách lò xo `.book-spiral-spine`).
-- Các trang dùng class `.book-page` và thuộc tính `data-page-index="0..11"`, `data-page-title="..."`.
-- Các nút `.js-goto-page` (như nút *"Bắt Đầu Lật Sổ Lưu Bút"* ở Trang Mở Đầu hoặc *"Viết Lưu Bút Hòm Thư"* / *"Lật Lại Trang Mở Đầu"* ở Trang Kết Thúc) chuyển nhanh tới `data-target-page`.
+### A. Hệ thống Chuyển Cảnh Thuyết Trình 3D & Hiệu Ứng Lấp Lánh (`initBookPageFlipSystem` + `initSparkleAndActionFX`)
+- Container: `#book-stage-3d` (`perspective: 1050px`, có gáy sách lò xo `.book-spiral-spine`, nhãn toast `.fx-transition-toast` và luồng sáng quét `.stage-light-sweep`).
+- **8 hiệu ứng chuyển cảnh thuyết trình 3D** (chạy đồng thời trang cũ `.is-exiting` bay ra và trang mới `.is-active` bay vào trong 0.82s):
+  1. `fx-cube`: Khối Lập Phương 3D (Cube Spin)
+  2. `fx-carousel`: Băng Chuyền 3D (Coverflow)
+  3. `fx-portal`: Cổng Không Gian 3D (Portal Zoom)
+  4. `fx-origami`: Gấp Giấy Origami 3D (Unfold)
+  5. `fx-vortex`: Xoáy Lốc Ngân Hà 3D (Vortex)
+  6. `fx-door`: Cánh Cửa Thời Gian 3D (Grand Door)
+  7. `fx-cards`: Tráo Bài Ma Thuật 3D (Deck Toss)
+  8. `fx-prism`: Lăng Kính Ánh Sáng 3D (Prism Flip)
+- **Hệ thống lấp lánh & tương tác (`window.VisualFX`):**
+  - Tự động gắn `.page-sparkle-field` (10 ngôi sao nhấp nháy + 8 đom đóm vàng) và viền ánh kim cho tất cả 12 trang.
+  - Hiệu ứng xuất hiện 3D so le (`.fx-stagger-item`) cho các thành phần bên trong mỗi trang.
+  - Pháo hoa/hạt 3D (`burstAt`, `burstElement`) cho mọi cú chạm nút và từng tương tác riêng (lật Polaroid bung tim, đổi kênh TV tia neon, vẽ phấn/cào thẻ/rọi đèn pin có vệt sao bay theo ngón tay, mở khóa `4188` nổ kho báu, gửi thư hòm thư bay tim).
 - Khi gọi `goToPage(targetIndex)`:
   1. Gọi `stopAllVideosOnPageLeave()` để **dừng triệt để mọi video MP4/YouTube** và bật lại nhạc nền Lofi nếu trước đó bị tạm dừng vì xem video.
-  2. Phát âm thanh lật trang `window.SoundFX.playPaperFlip()`.
-  3. Gắn class `.is-active` cùng animation `.flip-next-in` hoặc `.flip-prev-in`.
+  2. Phát âm thanh lật trang `window.SoundFX.playPaperFlip()`, quét luồng sáng & bắn hạt sao hai bên sân khấu.
+  3. Ép trình duyệt flush layout (`void offsetWidth`) rồi chạy đồng thời class 3D thoát ra & bay vào (`.fx-<key>-<dir>-out` / `-in`).
   4. Cập nhật `.bookmark-tab.active` (tự động trượt ngang căn giữa tab bằng `scrollIntoView`) và trạng thái `disabled` của nút Trước/Sau.
   5. Dùng `requestAnimationFrame` kiểm tra `activePageId` (`chalkboard-section` hoặc `scratch-card-section`) để gọi `window.refreshChalkboardCanvas()` hoặc `window.refreshScratchCanvas()` lấy đúng kích thước thật sau khi trang đã `display: block`.
 

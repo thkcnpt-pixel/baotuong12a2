@@ -1,9 +1,10 @@
 /**
  * TRẠM KÝ ỨC 12A2 (NIÊN KHÓA 2026 - 2027)
- * LOGIC LẬT TRANG SỔ LƯU BÚT 3D & 11 TÍNH NĂNG TƯƠNG TÁC VẬT LÝ
+ * LOGIC CHUYỂN CẢNH THUYẾT TRÌNH 3D, LẤP LÁNH MỖI TRANG & HIỆU ỨNG HÀNH ĐỘNG
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    initSparkleAndActionFX();
     initBookPageFlipSystem();
     initInteraction1_MagicEnvelope();
     initInteraction2_PolaroidFlip();
@@ -17,6 +18,222 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteraction10_FlashlightDarkroom();
     initInteraction11_HorizontalFilmReel();
 });
+
+/* ==========================================================================
+   HỆ THỐNG HIỆU ỨNG LẤP LÁNH MỖI TRANG & PHÁO HOA TƯƠNG TÁC 3D (VISUAL FX ENGINE)
+   ========================================================================== */
+function initSparkleAndActionFX() {
+    // 1. Tạo tầng hạt 3D toàn cục cho mọi thao tác bấm / vuốt / tương tác
+    let particleLayer = document.querySelector('.fx-global-particle-layer');
+    if (!particleLayer) {
+        particleLayer = document.createElement('div');
+        particleLayer.className = 'fx-global-particle-layer';
+        document.body.appendChild(particleLayer);
+    }
+
+    // 2. Bơm bầu trời sao lấp lánh & đom đóm vàng (.page-sparkle-field) vào TẤT CẢ 12 TRANG
+    const starSymbols = ['✦', '✧', '★', '✶', '✨'];
+    document.querySelectorAll('.book-page').forEach((page) => {
+        if (page.querySelector('.page-sparkle-field')) return;
+        const field = document.createElement('div');
+        field.className = 'page-sparkle-field';
+
+        // 10 ngôi sao lấp lánh rải đều mỗi trang
+        for (let i = 0; i < 10; i++) {
+            const star = document.createElement('span');
+            star.className = 'ambient-star';
+            star.textContent = starSymbols[i % starSymbols.length];
+            star.style.left = `${4 + Math.random() * 92}%`;
+            star.style.top = `${6 + Math.random() * 88}%`;
+            star.style.setProperty('--star-size', `${10 + Math.round(Math.random() * 9)}px`);
+            star.style.setProperty('--twinkle-dur', `${2.4 + Math.random() * 2.8}s`);
+            star.style.setProperty('--twinkle-delay', `${(Math.random() * 3).toFixed(2)}s`);
+            field.appendChild(star);
+        }
+
+        // 8 đom đóm vàng bay lượn ấm áp trên mỗi trang
+        for (let j = 0; j < 8; j++) {
+            const fly = document.createElement('span');
+            fly.className = 'ambient-firefly';
+            fly.style.left = `${8 + Math.random() * 84}%`;
+            fly.style.top = `${10 + Math.random() * 80}%`;
+            fly.style.setProperty('--fly-size', `${5 + Math.round(Math.random() * 5)}px`);
+            fly.style.setProperty('--fly-dur', `${4 + Math.random() * 3.5}s`);
+            fly.style.setProperty('--fly-delay', `${(Math.random() * 3.5).toFixed(2)}s`);
+            field.appendChild(fly);
+        }
+
+        page.insertBefore(field, page.firstChild);
+    });
+
+    const palettes = {
+        gold: {
+            symbols: ['✦', '★', '✨', '✧', '⭐', '💛'],
+            colors: ['#ffd166', '#ffb703', '#fff3b0', '#f4a261', '#ffe8a3']
+        },
+        love: {
+            symbols: ['💖', '✨', '💝', '✦', '🌸', '⭐'],
+            colors: ['#ff758f', '#ffb3c1', '#ffd166', '#ff8fa3', '#ffe5ec']
+        },
+        neon: {
+            symbols: ['⚡', '✦', '✨', '★', '◈', '✧'],
+            colors: ['#00f5d4', '#ffd166', '#00bbf9', '#f15bb5', '#fee440']
+        },
+        celebrate: {
+            symbols: ['🎉', '✨', '🏆', '★', '🎊', '🌟', '💖'],
+            colors: ['#ffd166', '#06d6a0', '#ef476f', '#118ab2', '#ffbe0b']
+        },
+        chalk: {
+            symbols: ['✦', '•', '✧', '⋆', '✨'],
+            colors: ['#ffffff', '#ffd166', '#ff9ebb', '#7bdff2', '#b2f7ef']
+        }
+    };
+
+    function spawnHalo(x, y) {
+        const halo = document.createElement('div');
+        halo.className = 'fx-click-halo';
+        halo.style.setProperty('--hx', `${x}px`);
+        halo.style.setProperty('--hy', `${y}px`);
+        particleLayer.appendChild(halo);
+        setTimeout(() => halo.remove(), 540);
+    }
+
+    function burstAt(x, y, options = {}) {
+        const count = options.count || 12;
+        const preset = palettes[options.theme || 'gold'] || palettes.gold;
+        const symbols = options.symbols || preset.symbols;
+        const colors = options.colors || preset.colors;
+        const spread = options.spread || 85;
+        const showHalo = options.halo !== false;
+
+        if (showHalo) spawnHalo(x, y);
+
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('span');
+            p.className = 'fx-action-particle';
+            p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+
+            const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.55;
+            const dist = spread * (0.45 + Math.random() * 0.75);
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist - (options.lift || 18);
+            const dz = Math.round((Math.random() - 0.3) * 140);
+            const rot = Math.round((Math.random() - 0.5) * 380);
+            const dur = Math.round(520 + Math.random() * 340);
+            const size = Math.round((options.minSize || 12) + Math.random() * (options.maxSize || 10));
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            p.style.setProperty('--x0', `${x}px`);
+            p.style.setProperty('--y0', `${y}px`);
+            p.style.setProperty('--x1', `${x + dx}px`);
+            p.style.setProperty('--y1', `${y + dy}px`);
+            p.style.setProperty('--z1', `${dz}px`);
+            p.style.setProperty('--r1', `${rot}deg`);
+            p.style.setProperty('--s1', (0.85 + Math.random() * 0.75).toFixed(2));
+            p.style.setProperty('--p-dur', `${dur}ms`);
+            p.style.setProperty('--p-size', `${size}px`);
+            p.style.setProperty('--p-color', color);
+
+            particleLayer.appendChild(p);
+            setTimeout(() => p.remove(), dur + 40);
+        }
+    }
+
+    function burstElement(el, options = {}) {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        burstAt(cx, cy, options);
+
+        if (options.pop !== false) {
+            el.classList.remove('fx-action-pop');
+            void el.offsetWidth;
+            el.classList.add('fx-action-pop');
+        }
+    }
+
+    function animatePageEntrance(pageEl) {
+        if (!pageEl) return;
+        const selectors = [
+            '.section-heading',
+            '.section-desc',
+            '.cover-ornament-border > *',
+            '.polaroid-card',
+            '.retro-tv-cabinet',
+            '.chalk-subject-card',
+            '.chalkboard-frame',
+            '.scratch-toolbar',
+            '.scratch-card-container',
+            '.popup-controls',
+            '.popup-scene-wrapper',
+            '.padlock-unit',
+            '.secret-vault',
+            '.confession-form',
+            '.confession-note',
+            '.sticker-board-toolbar',
+            '.corkboard-stage',
+            '.flashlight-toolbar',
+            '.darkroom-container',
+            '.film-controls-bar',
+            '.film-strip-viewport'
+        ];
+        const items = pageEl.querySelectorAll(selectors.join(','));
+        items.forEach((item, idx) => {
+            item.classList.remove('fx-stagger-item');
+            void item.offsetWidth;
+            item.style.setProperty('--stagger-delay', `${Math.min(idx * 0.045, 0.36).toFixed(3)}s`);
+            item.classList.add('fx-stagger-item');
+        });
+    }
+
+    function burstStageTransition(stageEl) {
+        if (!stageEl) return;
+        const rect = stageEl.getBoundingClientRect();
+        if (rect.width === 0) return;
+        // Bắn 2 chùm sao lấp lánh hai bên mép trang sách khi chuyển cảnh 3D
+        burstAt(rect.left + rect.width * 0.25, rect.top + rect.height * 0.35, {
+            count: 9,
+            spread: 95,
+            theme: 'gold',
+            halo: false
+        });
+        burstAt(rect.left + rect.width * 0.75, rect.top + rect.height * 0.35, {
+            count: 9,
+            spread: 95,
+            theme: 'gold',
+            halo: false
+        });
+    }
+
+    window.VisualFX = {
+        burstAt,
+        burstElement,
+        animatePageEntrance,
+        burstStageTransition
+    };
+
+    // 3. Tự động gắn hiệu ứng lấp lánh + nảy 3D cho MỌI nút bấm & thao tác chạm trên toàn trang
+    document.addEventListener('pointerdown', (e) => {
+        const interactive = e.target.closest(
+            'button, .vintage-btn, .bookmark-tab, .tv-ch-pill, .chalk-piece, .riddle-tab, .polaroid-card, .film-frame-card'
+        );
+        if (interactive) {
+            burstAt(e.clientX, e.clientY, {
+                count: 10,
+                spread: 64,
+                theme: 'gold',
+                minSize: 11,
+                maxSize: 8
+            });
+            if (interactive.matches('button, .vintage-btn, .bookmark-tab, .tv-ch-pill, .chalk-piece, .riddle-tab')) {
+                interactive.classList.remove('fx-action-pop');
+                void interactive.offsetWidth;
+                interactive.classList.add('fx-action-pop');
+            }
+        }
+    }, { passive: true });
+}
 
 /* ==========================================================================
    HÀM DỪNG TRIỆT ĐỂ MỌI VIDEO KHI CHUYỂN TRANG (CHỐNG LỖI VỌNG TIẾNG VIDEO)
@@ -49,9 +266,10 @@ function stopAllVideosOnPageLeave() {
 }
 
 /* ==========================================================================
-   HỆ THỐNG CHUYỂN TRANG SỔ LƯU BÚT 3D (INTERACTIVE PAGE FLIP)
+   HỆ THỐNG CHUYỂN TRANG THUYẾT TRÌNH 3D ĐA HIỆU ỨNG (8 3D PRESENTATION TRANSITIONS)
    ========================================================================== */
 function initBookPageFlipSystem() {
+    const stage3D = document.querySelector('.book-stage-3d');
     const pages = Array.from(document.querySelectorAll('.book-page'));
     const bookmarks = Array.from(document.querySelectorAll('.bookmark-tab'));
     const indicatorEl = document.getElementById('book-page-indicator');
@@ -62,13 +280,67 @@ function initBookPageFlipSystem() {
 
     if (!pages.length) return;
 
+    // Danh sách 8 kiểu chuyển cảnh thuyết trình 3D sống động
+    const transitionStyles = [
+        { key: 'cube', label: '🎲 Khối Lập Phương 3D (Cube Spin)' },
+        { key: 'carousel', label: '🎠 Băng Chuyền 3D (Coverflow)' },
+        { key: 'portal', label: '🌌 Cổng Không Gian 3D (Portal Zoom)' },
+        { key: 'origami', label: '🦢 Gấp Giấy Origami 3D (Unfold)' },
+        { key: 'vortex', label: '🌀 Xoáy Lốc Ngân Hà 3D (Vortex)' },
+        { key: 'door', label: '🚪 Cánh Cửa Thời Gian 3D (Grand Door)' },
+        { key: 'cards', label: '🃏 Tráo Bài Ma Thuật 3D (Deck Toss)' },
+        { key: 'prism', label: '💎 Lăng Kính Ánh Sáng 3D (Prism Flip)' }
+    ];
+
+    const allFxClasses = [];
+    transitionStyles.forEach((t) => {
+        allFxClasses.push(
+            `fx-${t.key}-next-in`,
+            `fx-${t.key}-next-out`,
+            `fx-${t.key}-prev-in`,
+            `fx-${t.key}-prev-out`
+        );
+    });
+
+    // Tạo nhãn thông báo hiệu ứng 3D trên sân khấu
+    let toastEl = stage3D ? stage3D.querySelector('.fx-transition-toast') : null;
+    if (stage3D && !toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.className = 'fx-transition-toast';
+        stage3D.appendChild(toastEl);
+    }
+    let toastTimer = null;
+    let cleanupTimer = null;
+    let transitionCounter = 0;
+
     let currentPage = 0;
     const totalPages = pages.length;
+
+    // Khởi chạy hiệu ứng xuất hiện 3D cho trang đầu tiên
+    if (window.VisualFX) {
+        window.VisualFX.animatePageEntrance(pages[0]);
+    }
+
+    function showTransitionToast(text) {
+        if (!toastEl) return;
+        toastEl.innerHTML = `✨ Chuyển cảnh: <strong>${text}</strong>`;
+        toastEl.classList.add('is-visible');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toastEl.classList.remove('is-visible');
+        }, 1350);
+    }
 
     function goToPage(targetIndex) {
         if (targetIndex < 0 || targetIndex >= totalPages || targetIndex === currentPage) return;
 
         const direction = targetIndex > currentPage ? 'next' : 'prev';
+        const oldPage = pages[currentPage];
+        const newPage = pages[targetIndex];
+
+        // Chọn kiểu chuyển cảnh 3D đa dạng (kết hợp chỉ số trang và bộ đếm để mỗi lần chuyển trang đều mới mẻ)
+        const styleObj = transitionStyles[(targetIndex + transitionCounter) % transitionStyles.length];
+        transitionCounter++;
 
         // 1. Dừng ngay mọi video nếu đang phát ở trang cũ
         stopAllVideosOnPageLeave();
@@ -76,18 +348,51 @@ function initBookPageFlipSystem() {
         // 2. Phát âm thanh lật trang êm dịu
         if (window.SoundFX) window.SoundFX.playPaperFlip();
 
-        // 3. Ẩn trang hiện tại và hiện trang mới với hiệu ứng 3D Flip
+        // 3. Quét luồng sáng vàng & bắn hạt sao lấp lánh ngang sân khấu 3D
+        if (stage3D) {
+            stage3D.classList.remove('stage-light-sweep');
+            void stage3D.offsetWidth;
+            stage3D.classList.add('stage-light-sweep');
+            if (window.VisualFX) window.VisualFX.burstStageTransition(stage3D);
+        }
+        showTransitionToast(styleObj.label);
+
+        if (cleanupTimer) clearTimeout(cleanupTimer);
+
+        // 4. Chạy đồng thời hiệu ứng 3D Thoát ra (trang cũ) và 3D Bay vào (trang mới)
         pages.forEach((page, idx) => {
-            page.classList.remove('is-active', 'flip-next-in', 'flip-prev-in');
-            if (idx === targetIndex) {
+            page.classList.remove('is-active', 'is-exiting', 'flip-next-in', 'flip-prev-in', ...allFxClasses);
+            if (idx === currentPage) {
+                page.classList.add('is-exiting');
+            } else if (idx === targetIndex) {
                 page.classList.add('is-active');
-                page.classList.add(direction === 'next' ? 'flip-next-in' : 'flip-prev-in');
             }
         });
 
+        // Ép trình duyệt cập nhật layout display:block trước khi gắn class animation 3D để không bị bỏ qua khung hình đầu
+        if (oldPage) void oldPage.offsetWidth;
+        if (newPage) void newPage.offsetWidth;
+
+        if (oldPage) oldPage.classList.add(`fx-${styleObj.key}-${direction}-out`);
+        if (newPage) newPage.classList.add(`fx-${styleObj.key}-${direction}-in`);
+
+        cleanupTimer = setTimeout(() => {
+            if (oldPage) {
+                oldPage.classList.remove('is-exiting', ...allFxClasses);
+            }
+            if (newPage) {
+                newPage.classList.remove(...allFxClasses);
+            }
+        }, 840);
+
         currentPage = targetIndex;
 
-        // 4. Cập nhật thanh Mục lục Bookmark & tự động trượt ngang tới tab đang mở
+        // 5. Kích hoạt hiệu ứng xuất hiện 3D so le cho các vật thể bên trong trang mới
+        if (window.VisualFX) {
+            window.VisualFX.animatePageEntrance(newPage);
+        }
+
+        // 6. Cập nhật thanh Mục lục Bookmark & tự động trượt ngang tới tab đang mở
         bookmarks.forEach((tab, idx) => {
             const isActive = idx === currentPage;
             tab.classList.toggle('active', isActive);
@@ -96,7 +401,7 @@ function initBookPageFlipSystem() {
             }
         });
 
-        // 5. Cập nhật tiêu đề số trang và trạng thái nút Trước / Sau
+        // 7. Cập nhật tiêu đề số trang và trạng thái nút Trước / Sau
         const pageTitle = pages[currentPage].getAttribute('data-page-title') || '';
         if (indicatorEl) {
             indicatorEl.innerHTML = `Trang <strong>${currentPage + 1} / ${totalPages}</strong> • ${pageTitle}`;
@@ -109,7 +414,7 @@ function initBookPageFlipSystem() {
         if (nextBtnTop) nextBtnTop.disabled = isLast;
         if (nextBtnBottom) nextBtnBottom.disabled = isLast;
 
-        // 6. Khởi tạo lại kích thước Canvas nếu người dùng lật tới trang Bảng Đen hoặc Thẻ Cào
+        // 8. Khởi tạo lại kích thước Canvas nếu người dùng lật tới trang Bảng Đen hoặc Thẻ Cào
         const activePageId = pages[currentPage].id;
         requestAnimationFrame(() => {
             if (typeof window.refreshChalkboardCanvas === 'function' && activePageId === 'chalkboard-section') {
@@ -163,6 +468,14 @@ function initInteraction1_MagicEnvelope() {
             envelope.classList.add('is-open');
             if (window.SoundFX) window.SoundFX.playPaperFlip();
             if (window.BgmController) window.BgmController.tryPlay();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(envelope, {
+                    count: 26,
+                    spread: 145,
+                    theme: 'celebrate',
+                    pop: false
+                });
+            }
         }
     }
 
@@ -170,6 +483,13 @@ function initInteraction1_MagicEnvelope() {
         if (e) e.stopPropagation();
         if (window.SoundFX) window.SoundFX.playPaperFlip();
         if (window.BgmController) window.BgmController.tryPlay();
+        if (window.VisualFX && enterBtn) {
+            window.VisualFX.burstElement(enterBtn, {
+                count: 24,
+                spread: 130,
+                theme: 'gold'
+            });
+        }
         overlay.classList.add('is-dismissed');
     }
 
@@ -187,7 +507,7 @@ function initInteraction1_MagicEnvelope() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 2: GÓC ẢNH POLAROID LẬT 3D
+   TƯƠNG TÁC 2: GÓC ẢNH POLAROID LẬT 3D (BUNG TIM & SAO LẤP LÁNH KHI LẬT)
    ========================================================================== */
 function initInteraction2_PolaroidFlip() {
     const cards = document.querySelectorAll('.polaroid-card');
@@ -195,6 +515,14 @@ function initInteraction2_PolaroidFlip() {
         card.addEventListener('click', () => {
             card.classList.toggle('is-flipped');
             if (window.SoundFX) window.SoundFX.playPaperFlip();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(card, {
+                    count: 16,
+                    spread: 95,
+                    theme: 'love',
+                    pop: false
+                });
+            }
         });
 
         card.addEventListener('keydown', (e) => {
@@ -202,10 +530,19 @@ function initInteraction2_PolaroidFlip() {
                 e.preventDefault();
                 card.classList.toggle('is-flipped');
                 if (window.SoundFX) window.SoundFX.playPaperFlip();
+                if (window.VisualFX) {
+                    window.VisualFX.burstElement(card, {
+                        count: 16,
+                        spread: 95,
+                        theme: 'love',
+                        pop: false
+                    });
+                }
             }
         });
     });
 }
+
 
 /* ==========================================================================
    TƯƠNG TÁC 3: THƯỚC PHIM TUA NGƯỢC (TỰ ĐỘNG TẮT/BẬT NHẠC NỀN KHI PHÁT VIDEO)
@@ -262,6 +599,15 @@ function initInteraction3_RetroTV() {
         if (noiseEl) {
             noiseEl.classList.add('is-active');
             setTimeout(() => noiseEl.classList.remove('is-active'), 220);
+        }
+
+        if (window.VisualFX && ledEl) {
+            window.VisualFX.burstElement(ledEl, {
+                count: 14,
+                spread: 85,
+                theme: 'neon',
+                pop: false
+            });
         }
 
         if (osdEl) osdEl.textContent = ch.label;
@@ -321,7 +667,7 @@ function initInteraction3_RetroTV() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 4: GÓC BẢNG ĐEN LỚP HỌC (VẼ PHẤN TRỰC TIẾP LÊN BẢNG)
+   TƯƠNG TÁC 4: GÓC BẢNG ĐEN LỚP HỌC (VẼ PHẤN TRỰC TIẾP LÊN BẢNG + BỤI PHẤN LẤP LÁNH)
    ========================================================================== */
 function initInteraction4_Chalkboard() {
     const canvas = document.getElementById('chalkboard-canvas');
@@ -335,6 +681,7 @@ function initInteraction4_Chalkboard() {
     let chalkColor = '#f2f0e6';
     let lastX = 0;
     let lastY = 0;
+    let chalkSparkleTick = 0;
 
     function resizeCanvas() {
         const rect = surface.getBoundingClientRect();
@@ -354,7 +701,9 @@ function initInteraction4_Chalkboard() {
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         return {
             x: clientX - rect.left,
-            y: clientY - rect.top
+            y: clientY - rect.top,
+            clientX,
+            clientY
         };
     }
 
@@ -376,6 +725,19 @@ function initInteraction4_Chalkboard() {
         ctx.moveTo(lastX, lastY);
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
+
+        chalkSparkleTick++;
+        if (chalkSparkleTick % 4 === 0 && window.VisualFX && pos.clientX) {
+            window.VisualFX.burstAt(pos.clientX, pos.clientY, {
+                count: 3,
+                spread: 32,
+                theme: 'chalk',
+                colors: [chalkColor, '#ffd166', '#ffffff'],
+                minSize: 8,
+                maxSize: 6,
+                halo: false
+            });
+        }
 
         lastX = pos.x;
         lastY = pos.y;
@@ -406,12 +768,20 @@ function initInteraction4_Chalkboard() {
         clearBtn.addEventListener('click', () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (window.SoundFX) window.SoundFX.playPaperFlip();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(surface, {
+                    count: 18,
+                    spread: 120,
+                    theme: 'chalk',
+                    pop: false
+                });
+            }
         });
     }
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 6: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD - CÀO MƯỢT & DỄ DÀNG)
+   TƯƠNG TÁC 6: THẺ CÀO KÝ ỨC (HTML5 CANVAS SCRATCH CARD - CÀO MƯỢT & BẮN SAO VÀNG)
    ========================================================================== */
 function initInteraction6_ScratchCard() {
     const canvas = document.getElementById('scratch-canvas');
@@ -425,6 +795,7 @@ function initInteraction6_ScratchCard() {
     let isScratching = false;
     let isInitialized = false;
     let lastPos = null;
+    let scratchSparkleTick = 0;
 
     function fillFogLayer() {
         const rect = container.getBoundingClientRect();
@@ -481,7 +852,9 @@ function initInteraction6_ScratchCard() {
         const scaleY = rect.height ? canvas.height / rect.height : 1;
         return {
             x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY
+            y: (clientY - rect.top) * scaleY,
+            clientX,
+            clientY
         };
     }
 
@@ -502,6 +875,18 @@ function initInteraction6_ScratchCard() {
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, brushRadius, 0, Math.PI * 2);
         ctx.fill();
+
+        scratchSparkleTick++;
+        if (scratchSparkleTick % 3 === 0 && window.VisualFX && pos.clientX) {
+            window.VisualFX.burstAt(pos.clientX, pos.clientY, {
+                count: 4,
+                spread: 42,
+                theme: 'gold',
+                minSize: 10,
+                maxSize: 8,
+                halo: false
+            });
+        }
 
         lastPos = pos;
         updateProgress();
@@ -528,6 +913,14 @@ function initInteraction6_ScratchCard() {
                 canvas.classList.add('is-cleared');
                 if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>100% (Hoàn tất!) ✨</strong>';
                 if (window.SoundFX) window.SoundFX.playPaperFlip();
+                if (window.VisualFX) {
+                    window.VisualFX.burstElement(container, {
+                        count: 28,
+                        spread: 150,
+                        theme: 'celebrate',
+                        pop: false
+                    });
+                }
             }
         } catch (e) {}
     }
@@ -573,6 +966,14 @@ function initInteraction6_ScratchCard() {
             canvas.classList.add('is-cleared');
             if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>100% ✨</strong>';
             if (window.SoundFX) window.SoundFX.playPaperFlip();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(container, {
+                    count: 26,
+                    spread: 145,
+                    theme: 'celebrate',
+                    pop: false
+                });
+            }
         });
     }
 
@@ -585,7 +986,7 @@ function initInteraction6_ScratchCard() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 7: GIẤY GẤP POP-UP 3D (MẶC ĐỊNH GẤP KÍN ĐỂ NGƯỜI XEM TỰ MỞ)
+   TƯƠNG TÁC 7: GIẤY GẤP POP-UP 3D (MẶC ĐỊNH GẤP KÍN ĐỂ NGƯỜI XEM TỰ MỞ + PHÁO HOA 3D)
    ========================================================================== */
 function initInteraction7_PopupCard() {
     const book = document.getElementById('popup-book');
@@ -596,6 +997,14 @@ function initInteraction7_PopupCard() {
     function togglePopup() {
         const isOpen = book.classList.toggle('is-open');
         if (window.SoundFX) window.SoundFX.playPaperFlip();
+        if (window.VisualFX) {
+            window.VisualFX.burstElement(book, {
+                count: isOpen ? 28 : 14,
+                spread: isOpen ? 155 : 90,
+                theme: isOpen ? 'celebrate' : 'gold',
+                pop: false
+            });
+        }
         if (toggleBtn) {
             const span = toggleBtn.querySelector('span');
             if (span) {
@@ -610,7 +1019,7 @@ function initInteraction7_PopupCard() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 8: Ổ KHÓA MẬT MÃ HỌC SINH 12 (CIPHER PADLOCK)
+   TƯƠNG TÁC 8: Ổ KHÓA MẬT MÃ HỌC SINH 12 (CIPHER PADLOCK + NỔ KHO BÁU 3D)
    ========================================================================== */
 function initInteraction8_CipherPadlock() {
     const riddles = {
@@ -663,6 +1072,14 @@ function initInteraction8_CipherPadlock() {
                 feedbackEl.style.color = '#1b4332';
             }
             if (window.SoundFX) window.SoundFX.playPaperFlip();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(secretVault || padlockBox, {
+                    count: 30,
+                    spread: 160,
+                    theme: 'celebrate',
+                    symbols: ['🔓', '🏆', '✨', '🎉', '★', '💛']
+                });
+            }
         } else {
             if (feedbackEl) {
                 feedbackEl.textContent = '❌ Mã chưa đúng! Hãy thử mã 4188 nhé!';
@@ -687,7 +1104,7 @@ function initInteraction8_CipherPadlock() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 5: HÒM THƯ LỜI CHƯA NÓI (CONFESSION WALL + GISCUS)
+   TƯƠNG TÁC 5: HÒM THƯ LỜI CHƯA NÓI (CONFESSION WALL + BUNG TIM & THƯ BAY)
    ========================================================================== */
 function initInteraction5_UnsaidMailbox() {
     const form = document.getElementById('confession-form');
@@ -753,11 +1170,19 @@ function initInteraction5_UnsaidMailbox() {
         renderLetters();
         textInput.value = '';
         if (window.SoundFX) window.SoundFX.playPaperFlip();
+        if (window.VisualFX) {
+            window.VisualFX.burstElement(wall, {
+                count: 24,
+                spread: 135,
+                theme: 'love',
+                symbols: ['💌', '✈️', '💖', '✨', '🌸', '⭐']
+            });
+        }
     });
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 9: KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS)
+   TƯƠNG TÁC 9: KÉO - THẢ STICKER & GIẤY NOTE (INTERACT.JS + BUNG SAO KHI GHIM)
    ========================================================================== */
 function initInteraction9_DragDropStickers() {
     const stage = document.getElementById('corkboard-stage');
@@ -801,6 +1226,16 @@ function initInteraction9_DragDropStickers() {
                     target.style.transform = `translate(${x}px, ${y}px) rotate(-1deg)`;
                     target.setAttribute('data-x', x);
                     target.setAttribute('data-y', y);
+                },
+                end(event) {
+                    if (window.VisualFX) {
+                        window.VisualFX.burstElement(event.target, {
+                            count: 10,
+                            spread: 65,
+                            theme: 'gold',
+                            pop: false
+                        });
+                    }
                 }
             }
         });
@@ -829,6 +1264,14 @@ function initInteraction9_DragDropStickers() {
             stage.appendChild(note);
             noteInput.value = '';
             if (window.SoundFX) window.SoundFX.playPaperFlip();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(note, {
+                    count: 18,
+                    spread: 95,
+                    theme: 'celebrate',
+                    pop: false
+                });
+            }
         });
     }
 
@@ -845,13 +1288,14 @@ function initInteraction9_DragDropStickers() {
 }
 
 /* ==========================================================================
-   TƯƠNG TÁC 10: ĐÈN PIN RỌI CHỮ ẨN (FLASHLIGHT DARK ROOM)
+   TƯƠNG TÁC 10: ĐÈN PIN RỌI CHỮ ẨN (FLASHLIGHT DARK ROOM + ĐOM ĐÓM BAY THEO ĐÈN)
    ========================================================================== */
 function initInteraction10_FlashlightDarkroom() {
     const container = document.getElementById('darkroom-container');
     const toggleBtn = document.getElementById('btn-toggle-room-light');
 
     if (!container) return;
+    let spotSparkleTick = 0;
 
     function updateSpot(clientX, clientY) {
         const rect = container.getBoundingClientRect();
@@ -859,6 +1303,18 @@ function initInteraction10_FlashlightDarkroom() {
         const y = clientY - rect.top;
         container.style.setProperty('--spot-x', `${x}px`);
         container.style.setProperty('--spot-y', `${y}px`);
+
+        spotSparkleTick++;
+        if (spotSparkleTick % 5 === 0 && window.VisualFX) {
+            window.VisualFX.burstAt(clientX, clientY, {
+                count: 3,
+                spread: 38,
+                theme: 'gold',
+                minSize: 9,
+                maxSize: 7,
+                halo: false
+            });
+        }
     }
 
     container.addEventListener('mousemove', (e) => {
@@ -885,6 +1341,14 @@ function initInteraction10_FlashlightDarkroom() {
                 span.textContent = lightsOn ? 'Tắt đèn phòng (Dùng đèn pin)' : 'Bật công tắc đèn cả phòng';
             }
             if (window.SoundFX) window.SoundFX.playTvClick();
+            if (window.VisualFX) {
+                window.VisualFX.burstElement(container, {
+                    count: 22,
+                    spread: 140,
+                    theme: lightsOn ? 'celebrate' : 'neon',
+                    pop: false
+                });
+            }
         });
     }
 }
@@ -946,6 +1410,14 @@ function initInteraction11_HorizontalFilmReel() {
             left: Math.max(0, targetLeft),
             behavior: 'smooth'
         });
+        if (window.VisualFX) {
+            window.VisualFX.burstElement(card, {
+                count: 12,
+                spread: 80,
+                theme: 'gold',
+                pop: false
+            });
+        }
     }
 
     filmPhotos.forEach((item, idx) => {
@@ -1026,3 +1498,4 @@ function initInteraction11_HorizontalFilmReel() {
         });
     }
 }
+

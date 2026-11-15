@@ -154,25 +154,32 @@ body.kraft-theme {
 .scrapbook-wrapper {
     max-width: 1240px;
     width: 99%;
-    margin: 2px auto 4px;
-    padding: 2px 4px;
+    min-height: calc(100dvh - 36px);
+    margin: 2px auto 0;
+    padding: 4px 4px 2px;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ==========================================================================
-   THANH CHUYỂN TRANG ĐẶT Ở PHÍA DƯỚI (NÚT TRƯỚC + 12 TAB MỤC LỤC + NÚT TIẾP)
+   THANH CHUYỂN TRANG ĐẶT Ở PHÍA DƯỚI CÙNG MÀN HÌNH (DỄ NHẤN BẰNG NGÓN CÁI)
    ========================================================================== */
 .compact-book-nav {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 8px;
-    margin-bottom: 4px;
-    background: rgba(244, 234, 213, 0.88);
-    border: 1.5px dashed rgba(138, 100, 67, 0.65);
+    margin-top: auto;
+    margin-bottom: 2px;
+    position: sticky;
+    bottom: 4px;
+    z-index: 900;
+    background: rgba(244, 234, 213, 0.95);
+    backdrop-filter: blur(6px);
+    border: 1.5px dashed rgba(138, 100, 67, 0.75);
     padding: 6px 8px;
     border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(44, 30, 20, 0.14);
+    box-shadow: 0 -2px 12px rgba(44, 30, 20, 0.16), 0 3px 10px rgba(44, 30, 20, 0.14);
 }
 
 .book-bookmarks-bar {
@@ -711,14 +718,15 @@ body.kraft-theme {
 
     .scrapbook-wrapper {
         width: 100%;
-        margin: 0 auto 2px;
-        padding: 2px 3px;
+        min-height: calc(100dvh - 32px);
+        margin: 0 auto;
+        padding: 3px 3px 2px;
     }
 
     .compact-book-nav {
-        margin-top: 6px;
-        margin-bottom: 4px;
-        padding: 5px 6px;
+        margin-top: auto;
+        margin-bottom: 2px;
+        padding: 6px 6px;
     }
 
     .bookmark-tab {

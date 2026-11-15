@@ -394,7 +394,7 @@ function initBookPageFlipSystem() {
         if (nextBtnTop) nextBtnTop.disabled = isLast;
         if (nextBtnBottom) nextBtnBottom.disabled = isLast;
 
-        // 8. Khởi tạo lại kích thước Canvas nếu người dùng lật tới trang Bảng Đen hoặc Thẻ Cào
+        // 8. Khởi tạo lại kích thước Canvas / Bàn Kéo Thả nếu người dùng lật tới trang tương ứng
         const activePageId = pages[currentPage].id;
         requestAnimationFrame(() => {
             if (typeof window.refreshChalkboardCanvas === 'function' && activePageId === 'chalkboard-section') {
@@ -402,6 +402,9 @@ function initBookPageFlipSystem() {
             }
             if (typeof window.refreshScratchCanvas === 'function' && activePageId === 'scratch-card-section') {
                 window.refreshScratchCanvas();
+            }
+            if (typeof window.refreshCorkboardLayout === 'function' && activePageId === 'drag-drop-section') {
+                window.refreshCorkboardLayout();
             }
         });
     }
@@ -840,8 +843,8 @@ function initInteraction6_ScratchCard() {
 
     function scratchStroke(pos) {
         ctx.globalCompositeOperation = 'destination-out';
-        // Giảm bán kính nét cào xuống còn một nửa so với trước (6% chiều rộng thẻ) để cào lâu và thú vị hơn
-        const brushRadius = Math.max(24, Math.round(canvas.width * 0.06));
+        // Giảm nét cào nhỏ như đồng xu thật (~3.2% chiều rộng thẻ, tối thiểu 11px trên điện thoại) để cào lâu hơn
+        const brushRadius = Math.max(11, Math.round(canvas.width * 0.032));
 
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -886,11 +889,12 @@ function initInteraction6_ScratchCard() {
             }
 
             const rawPercent = Math.round((transparentPixels / totalSampled) * 100);
-            // Quy đổi: Cần cào thật 50% diện tích mặt thẻ mới đạt 100% và bung sáng toàn bộ bức ảnh
-            const displayPercent = Math.min(100, Math.round((rawPercent / 50) * 100));
+            // Quy đổi: Cần cào thật 78% diện tích mặt thẻ mới đạt 100% và bung sáng toàn bộ bức ảnh
+            const targetRawPercent = 78;
+            const displayPercent = Math.min(100, Math.round((rawPercent / targetRawPercent) * 100));
             if (badgeEl) badgeEl.innerHTML = `Đã cào mở: <strong>${displayPercent}%</strong>`;
 
-            if (rawPercent >= 50) {
+            if (rawPercent >= targetRawPercent) {
                 canvas.classList.add('is-cleared');
                 if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>100% (Hoàn tất!) ✨</strong>';
                 if (window.SoundFX) window.SoundFX.playPaperFlip();
@@ -1174,16 +1178,56 @@ function initInteraction9_DragDropStickers() {
     if (!stage) return;
 
     let highestZ = 10;
+    let hasUserDragged = false;
 
-    const initialPositions = [];
-    stage.querySelectorAll('.draggable-item').forEach((el) => {
-        initialPositions.push({
-            el,
-            x: parseFloat(el.getAttribute('data-x')) || 0,
-            y: parseFloat(el.getAttribute('data-y')) || 0,
-            styleTransform: el.style.transform
-        });
-    });
+    function arrangeCorkboardItems(forceReset = false) {
+        if (!forceReset && hasUserDragged) return;
+        const stageW = stage.clientWidth;
+        if (!stageW) return;
+
+        const yellowNote = stage.querySelector('.sticky-note.note-yellow');
+        const pinkNote = stage.querySelector('.sticky-note.note-pink');
+        const blueNote = stage.querySelector('.sticky-note.note-blue');
+        const miniPolaroid = stage.querySelector('.mini-polaroid-drag');
+        const stickers = stage.querySelectorAll('.vintage-sticker');
+
+        function placeItem(el, x, y, deg) {
+            if (!el) return;
+            const maxW = Math.max(8, stageW - (el.offsetWidth || 126) - 8);
+            const safeX = Math.max(6, Math.min(Math.round(x), maxW));
+            const safeY = Math.round(y);
+            el.setAttribute('data-x', safeX);
+            el.setAttribute('data-y', safeY);
+            el.style.transform = `translate(${safeX}px, ${safeY}px) rotate(${deg}deg)`;
+        }
+
+        if (stageW < 540) {
+            // Điện thoại: Chia 2 cột gọn gàng để tờ note màu xanh (note-blue) và ảnh mini hiển thị trọn vẹn 100%
+            const rightColX = Math.max(140, stageW - 134);
+            const polaroidX = Math.max(152, stageW - 104);
+            placeItem(yellowNote, 8, 8, -2);
+            placeItem(pinkNote, rightColX, 8, 2);
+            placeItem(blueNote, 8, 108, -1.5);
+            placeItem(miniPolaroid, polaroidX, 106, 3);
+            if (stickers[0]) placeItem(stickers[0], 8, 214, -3);
+            if (stickers[1]) placeItem(stickers[1], Math.max(128, stageW - 178), 214, 3);
+            if (stickers[2]) placeItem(stickers[2], Math.max(24, Math.round((stageW - 180) / 2)), 248, -2);
+        } else {
+            // Máy tính / Tablet: Trải đều trên mặt bàn rộng
+            const colStep = Math.floor((stageW - 150) / 3);
+            placeItem(yellowNote, 14, 14, -3);
+            placeItem(pinkNote, Math.min(185, colStep + 10), 12, 2);
+            placeItem(blueNote, Math.min(355, colStep * 2 + 6), 16, -2);
+            placeItem(miniPolaroid, stageW - 130, 18, 4);
+            if (stickers[0]) placeItem(stickers[0], 16, 195, -4);
+            if (stickers[1]) placeItem(stickers[1], 190, 202, 3);
+            if (stickers[2]) placeItem(stickers[2], 390, 198, -2);
+        }
+    }
+
+    window.refreshCorkboardLayout = () => arrangeCorkboardItems(false);
+    window.addEventListener('resize', () => arrangeCorkboardItems(false));
+    arrangeCorkboardItems(true);
 
     if (window.interact) {
         window.interact('.draggable-item').draggable({
@@ -1196,6 +1240,7 @@ function initInteraction9_DragDropStickers() {
             ],
             listeners: {
                 start(event) {
+                    hasUserDragged = true;
                     highestZ++;
                     event.target.style.zIndex = highestZ;
                 },
@@ -1228,8 +1273,9 @@ function initInteraction9_DragDropStickers() {
             const text = noteInput.value.trim() || '12A2 THPT Phú Điền mãi đỉnh! ❤️';
             const note = document.createElement('div');
             const colorClass = colors[Math.floor(Math.random() * colors.length)];
-            const randX = Math.floor(40 + Math.random() * 240);
-            const randY = Math.floor(40 + Math.random() * 140);
+            const maxRandX = Math.max(20, (stage.clientWidth || 300) - 140);
+            const randX = Math.floor(12 + Math.random() * (maxRandX - 12));
+            const randY = Math.floor(24 + Math.random() * 120);
 
             highestZ++;
             note.className = `draggable-item sticky-note ${colorClass}`;
@@ -1258,11 +1304,8 @@ function initInteraction9_DragDropStickers() {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            initialPositions.forEach((item) => {
-                item.el.setAttribute('data-x', item.x);
-                item.el.setAttribute('data-y', item.y);
-                item.el.style.transform = item.styleTransform;
-            });
+            hasUserDragged = false;
+            arrangeCorkboardItems(true);
             if (window.SoundFX) window.SoundFX.playPaperFlip();
         });
     }
@@ -1352,9 +1395,9 @@ function initInteraction11_HorizontalFilmReel() {
 
     const filmPhotos = [
         { code: '01A', src: 'assets/images/12a2/img_01.jpg', caption: 'Tập thể 12A2 áo xanh trong lều trại Nguyễn Sinh Sắc' },
-        { code: '02A', src: 'assets/images/12a2/img_02.jpg', caption: 'Thầy trò 12A2 rạng rỡ dưới nắng sân trường Khu B' },
+        { code: '02A', src: 'assets/images/12a2/img_02.jpg', caption: 'Thầy Nguyễn Phú Quý và học trò 12A2 rạng rỡ dưới nắng sân trường Khu B' },
         { code: '03A', src: 'assets/images/12a2/img_03.jpg', caption: 'Lễ Khai Giảng năm học 2026 - 2027 trường THCS & THPT Phú Điền' },
-        { code: '04A', src: 'assets/images/12a2/img_04.jpg', caption: 'Kỷ niệm bên thầy giáo kính yêu ngay trước bảng lớp' },
+        { code: '04A', src: 'assets/images/12a2/img_04.jpg', caption: 'Kỷ niệm bên Thầy Phú Hữu kính yêu ngay trước bảng lớp' },
         { code: '05A', src: 'assets/images/12a2/img_05.jpg', caption: 'Giây phút tự hào nhận Cờ Thi Đua Hạng Nhất Tuần!' },
         { code: '06A', src: 'assets/images/12a2/img_06.jpg', caption: 'Bữa tiệc bánh kem mừng tuổi mới ngay tại phòng học 12A2' },
         { code: '07A', src: 'assets/images/12a2/img_07.jpg', caption: 'Tiết học Toán Xác Suất vui nhộn và đầy ắp tiếng cười' },

@@ -162,7 +162,7 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 6. **Trang 05 / 12 (`data-page-index="4"`) — 4. Thẻ Cào Ký Ức (`#scratch-card-section`)**
    - Hàm: `initInteraction6_ScratchCard()`
    - Ảnh nền bí mật: `assets/images/12a2/img_08.jpg`.
-   - **Tối ưu tốc độ cào vừa phải:** Không khởi tạo canvas khi trang đang ẩn (`rect.width === 0`), tự động lấy đúng kích thước thật khi lật tới trang, dùng nét cọ liền mạch (`lineTo` + `arc` với bán kính vừa phải **`6%`** chiều rộng thẻ — bằng một nửa so với trước) và **cần cào 50% diện tích thực tế (một nửa mặt thẻ) mới đạt 100% và tự động mở bung bức ảnh**.
+   - **Tối ưu tốc độ cào lâu và chân thực như đồng xu thật:** Dùng bán kính cọ nhỏ gọn **`3.2%`** chiều rộng thẻ (`Math.max(11, Math.round(canvas.width * 0.032))`) và **cần cào thật 78% diện tích mặt thẻ mới đạt 100% và tự động mở bung bức ảnh**.
 
 7. **Trang 06 / 12 (`data-page-index="5"`) — 5. Giấy Gấp Pop-up 3D (`#popup-card-section`)**
    - Hàm: `initInteraction7_PopupCard()`
@@ -178,13 +178,14 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 
 10. **Trang 09 / 12 (`data-page-index="8"`) — 8. Góc Kéo - Thả Sticker & Giấy Note (`#drag-drop-section`)**
     - Hàm: `initInteraction9_DragDropStickers()` (Interact.js).
+    - Tự động sắp xếp tọa độ 2 cột trên điện thoại (`window.refreshCorkboardLayout`) để cả 3 tờ giấy Note (vàng, hồng, xanh lá `.note-blue`), ảnh mini và 3 sticker hiển thị trọn vẹn 100%, không bị khuất mép phải.
 
 11. **Trang 10 / 12 (`data-page-index="9"`) — 9. Đèn Pin Rọi Chữ Dạ Quang Ẩn (`#flashlight-section`)**
     - Hàm: `initInteraction10_FlashlightDarkroom()` — Rọi sáng 41 tên thành viên 12A2.
 
 12. **Trang 11 / 12 (`data-page-index="10"`) — 10. Cuộn Phim Ngang 35mm (`#film-reel-section`)**
     - Hàm: `initInteraction11_HorizontalFilmReel()`
-    - **Đã khắc phục lỗi nhảy cóc bỏ qua Ảnh 2:** Thay vì `scrollBy(300)` cố định, quản lý chính xác biến `currentFrameIndex (0..11)` và hàm `scrollToFrame(index)` căn giữa đúng từng khung hình (`01A` $\rightarrow$ `02A` $\rightarrow$ `03A` ... $\rightarrow$ `12A`), đồng thời cập nhật huy hiệu `KHUNG 01 / 12` và viền sáng `.is-focused-frame`.
+    - **Đã khắc phục lỗi nhảy cóc bỏ qua Ảnh 2:** Thay vì `scrollBy(300)` cố định, quản lý chính xác biến `currentFrameIndex (0..11)` và hàm `scrollToFrame(index)` căn giữa đúng từng khung hình (`01A` $\rightarrow$ `02A` $\rightarrow$ `03A` ... $\rightarrow$ `12A`), đồng thời cập nhật huy hiệu `KHUNG 01 / 12`, viền sáng `.is-focused-frame` và tên thầy giáo (**thầy Nguyễn Phú Quý** ở ảnh 02A & Polaroid 3, **Thầy Phú Hữu kính yêu** ở ảnh 04A).
 
 13. **Trang 12 / 12 (`data-page-index="11"`) — Trang Kết Thúc (`#closing-page-section`)**
     - Trang khép lại cuốn sổ lưu bút với con dấu sáp `12A2`, tiêu đề `HẸN NGÀY HỘI NGỘ!`, bức ảnh đêm lửa trại `img_10.jpg`, lời chúc 41 thành viên đỗ Tốt nghiệp 100% & đậu Nguyện vọng 1, kèm 2 nút điều hướng nhanh về Hòm Thư (`data-target-page="7"`) hoặc Trang Mở Đầu (`data-target-page="0"`).

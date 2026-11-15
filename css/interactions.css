@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    transition: opacity 0.7s ease, visibility 0.7s ease;
+    transition: opacity 0.95s ease, visibility 0.95s ease;
 }
 
 .envelope-overlay.is-dismissed {
@@ -35,7 +35,7 @@
     font-family: var(--font-handwriting-body);
     font-size: 1.15rem;
     margin-bottom: 28px;
-    animation: pulseHint 2s infinite ease-in-out;
+    animation: pulseHint 2.25s infinite ease-in-out;
 }
 
 @keyframes pulseHint {
@@ -53,6 +53,8 @@
     box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65);
     cursor: pointer;
     perspective: 1200px;
+    transform: perspective(1200px) rotateX(var(--motion-rx, 0deg)) rotateY(var(--motion-ry, 0deg)) translate3d(var(--motion-tx, 0px), var(--motion-ty, 0px), 0);
+    will-change: transform;
 }
 
 /* Nắp phong bì tam giác phía trên */
@@ -65,7 +67,7 @@
     background: #b58952;
     clip-path: polygon(0 0, 50% 100%, 100% 0);
     transform-origin: top center;
-    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.35s;
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.45s;
     z-index: 4;
     border-top: 2px solid rgba(255, 245, 225, 0.35);
 }
@@ -94,7 +96,7 @@
     padding: 20px 18px;
     z-index: 2;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
-    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.35s, height 0.6s ease 0.35s;
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s, height 0.85s ease 0.35s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -164,7 +166,7 @@
     justify-content: center;
     z-index: 5;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
-    transition: transform 0.45s ease, opacity 0.45s ease;
+    transition: transform 0.7s ease, opacity 0.7s ease;
 }
 
 /* Trạng thái khi mở phong bì */
@@ -216,7 +218,7 @@
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .polaroid-card.is-flipped .polaroid-inner {
@@ -1074,7 +1076,7 @@
     height: 100%;
     cursor: grab;
     touch-action: none;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.85s ease;
 }
 
 .scratch-canvas.is-cleared {
@@ -1104,7 +1106,7 @@
     height: 430px;
     transform-style: preserve-3d;
     transform: rotateX(8deg);
-    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
     cursor: pointer;
 }
 
@@ -1122,7 +1124,7 @@
     justify-content: center;
     padding: 20px;
     transform-origin: top center;
-    transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
+    transition: transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.7s ease;
 }
 
 .closed-cover-border {
@@ -1170,7 +1172,7 @@
     font-family: var(--font-handwriting-body);
     font-size: 0.95rem;
     border: 1px solid rgba(255, 249, 235, 0.5);
-    animation: pulseHint 2s infinite ease-in-out;
+    animation: pulseHint 2.25s infinite ease-in-out;
 }
 
 /* Mặt đáy tấm thiệp */
@@ -1186,7 +1188,7 @@
     transform-origin: top center;
     transform: rotateX(70deg);
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.75s ease;
     box-shadow: 0 24px 38px rgba(44, 30, 20, 0.4);
     display: flex;
     align-items: flex-end;
@@ -1219,7 +1221,7 @@
     transform-origin: bottom center;
     transform: rotateX(-88deg);
     opacity: 0;
-    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease;
+    transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
     box-shadow: var(--shadow-paper);
 }
 
@@ -1251,7 +1253,7 @@
     transform-origin: bottom center;
     transform: rotateX(-90deg) scale(0.85);
     opacity: 0;
-    transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+    transition: transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.75s ease;
     pointer-events: none;
 }
 
@@ -1381,7 +1383,7 @@
     border-radius: 60px 60px 0 0;
     margin-bottom: -8px;
     box-shadow: inset 0 3px 6px rgba(255, 235, 180, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     transform-origin: bottom right;
 }
 
@@ -1527,7 +1529,7 @@
 
 .secret-vault.is-unlocked .vault-unlocked-content {
     display: block;
-    animation: fadeInVault 0.65s ease;
+    animation: fadeInVault 0.9s ease;
 }
 
 @keyframes fadeInVault {
@@ -1896,7 +1898,7 @@
         rgba(5, 8, 10, 0.65) 58%,
         rgba(4, 6, 8, 0.97) 100%
     );
-    transition: opacity 0.45s ease;
+    transition: opacity 0.7s ease;
 }
 
 .darkroom-container.lights-on {
@@ -2012,7 +2014,7 @@
     padding: 8px 8px 10px;
     cursor: pointer;
     position: relative;
-    transition: transform 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.5s ease, border-color 0.5s ease;
 }
 
 .film-frame-card:hover {
@@ -2042,7 +2044,7 @@
     height: 100%;
     object-fit: cover;
     filter: sepia(0.22) contrast(1.06);
-    transition: filter 0.3s ease, transform 0.35s ease;
+    transition: filter 0.55s ease, transform 0.6s ease;
 }
 
 .film-frame-card:hover .film-frame-img-box img {
@@ -2056,7 +2058,7 @@
     position: absolute;
     inset: 0;
     background: #fff;
-    animation: cameraFlash 0.35s ease-out forwards;
+    animation: cameraFlash 0.6s ease-out forwards;
     pointer-events: none;
 }
 
@@ -2688,6 +2690,7 @@
     overflow: hidden;
     z-index: 16;
     border-radius: 8px;
+    transform: translate3d(calc(var(--motion-tx, 0px) * -1.35), calc(var(--motion-ty, 0px) * -1.35), 0);
 }
 
 /* Viền ánh kim nhẹ nhàng dùng opacity compositing (không gây repaint liên tục) */
@@ -2698,7 +2701,7 @@
     border-radius: inherit;
     border: 1.5px solid rgba(255, 214, 102, 0.55);
     box-shadow: inset 0 0 14px rgba(255, 214, 102, 0.25);
-    animation: pageBorderShimmer 4.5s ease-in-out infinite;
+    animation: pageBorderShimmer 4.75s ease-in-out infinite;
     pointer-events: none;
     z-index: 25;
 }
@@ -2715,7 +2718,7 @@
     user-select: none;
     pointer-events: none;
     will-change: transform, opacity;
-    animation: ambientStarTwinkle var(--twinkle-dur, 3.6s) ease-in-out infinite;
+    animation: ambientStarTwinkle calc(var(--twinkle-dur, 3.6s) + 0.25s) ease-in-out infinite;
     animation-delay: var(--twinkle-delay, 0s);
     font-size: var(--star-size, 12px);
     opacity: 0;
@@ -2731,7 +2734,7 @@
     pointer-events: none;
     will-change: transform, opacity;
     opacity: 0;
-    animation: ambientFireflyFloat var(--fly-dur, 5.5s) ease-in-out infinite;
+    animation: ambientFireflyFloat calc(var(--fly-dur, 5.5s) + 0.25s) ease-in-out infinite;
     animation-delay: var(--fly-delay, 0s);
 }
 
@@ -2763,7 +2766,7 @@
 
 /* 2. Hiệu ứng xuất hiện 3D so le (Staggered 3D Entrance) cho các phần tử bên trong MỖI TRANG */
 .fx-stagger-item {
-    animation: pageItem3DPopIn 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: pageItem3DPopIn 0.87s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--stagger-delay, 0.04s);
 }
 
@@ -2791,7 +2794,7 @@
 .cover-school-badge,
 .closing-wax-seal,
 .page-corner-num {
-    animation: badgeFloat3D 3.4s ease-in-out infinite;
+    animation: badgeFloat3D 3.65s ease-in-out infinite;
 }
 
 @keyframes badgeFloat3D {
@@ -2819,7 +2822,7 @@
     font-size: var(--p-size, 16px);
     color: var(--p-color, #ffd166);
     text-shadow: 0 0 10px var(--p-glow, rgba(255, 209, 102, 0.9));
-    animation: fxActionParticleBurst var(--p-dur, 720ms) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxActionParticleBurst var(--p-dur, 970ms) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fxActionParticleBurst {
@@ -2850,7 +2853,7 @@
     box-shadow: 0 0 16px rgba(255, 183, 3, 0.75), inset 0 0 10px rgba(255, 232, 163, 0.65);
     pointer-events: none;
     z-index: 99998;
-    animation: fxClickHaloExpand 0.52s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxClickHaloExpand 0.77s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fxClickHaloExpand {
@@ -2866,7 +2869,7 @@
 
 /* Hiệu ứng nảy 3D (Jelly Bounce) cho mọi nút bấm hoặc vật thể khi được kích hoạt */
 .fx-action-pop {
-    animation: fxElementPop3D 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: fxElementPop3D 0.67s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes fxElementPop3D {

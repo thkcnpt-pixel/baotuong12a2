@@ -31,6 +31,11 @@
     --shadow-paper: 0 4px 10px rgba(44, 30, 20, 0.16), 0 1px 3px rgba(44, 30, 20, 0.1);
     --shadow-lifted: 0 8px 20px rgba(44, 30, 20, 0.24), 0 3px 8px rgba(44, 30, 20, 0.15);
     --shadow-inset: inset 0 0 22px rgba(44, 30, 20, 0.15);
+
+    --motion-rx: 0deg;
+    --motion-ry: 0deg;
+    --motion-tx: 0px;
+    --motion-ty: 0px;
 }
 
 *, *::before, *::after {
@@ -42,6 +47,7 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    overflow-x: clip;
 }
 
 body.kraft-theme {
@@ -60,7 +66,7 @@ body.kraft-theme {
     font-family: var(--font-handwriting-body);
     line-height: 1.42;
     min-height: 100dvh;
-    overflow-x: hidden;
+    overflow-x: clip;
     position: relative;
 }
 
@@ -160,6 +166,7 @@ body.kraft-theme {
     position: relative;
     display: flex;
     flex-direction: column;
+    overflow-x: clip;
 }
 
 /* ==========================================================================
@@ -283,10 +290,12 @@ body.kraft-theme {
     filter: grayscale(0.4);
 }
 
-/* Sân khấu 3D chứa các trang sổ - Hỗ trợ chuyển cảnh thuyết trình 3D đa chiều */
+/* Sân khấu 3D chứa các trang sổ - Hỗ trợ chuyển cảnh thuyết trình 3D & nghiêng nhẹ theo chuyển động */
 .book-stage-3d {
     position: relative;
     perspective: 1050px;
+    transform: perspective(1350px) rotateX(var(--motion-rx, 0deg)) rotateY(var(--motion-ry, 0deg)) translate3d(var(--motion-tx, 0px), var(--motion-ty, 0px), 0);
+    will-change: transform;
 }
 
 /* Luồng sáng lấp lánh quét ngang sân khấu khi chuyển trang 3D */
@@ -310,7 +319,7 @@ body.kraft-theme {
 }
 
 .book-stage-3d.stage-light-sweep::after {
-    animation: stageGoldenSweep 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: stageGoldenSweep 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes stageGoldenSweep {
@@ -338,6 +347,7 @@ body.kraft-theme {
     flex-direction: column;
     justify-content: space-around;
     pointer-events: none;
+    transform: translate3d(calc(var(--motion-tx, 0px) * 0.25), calc(var(--motion-ty, 0px) * 0.25), 0);
 }
 
 .book-spiral-spine span {
@@ -393,19 +403,19 @@ body.kraft-theme {
 /* 1. KHỐI LẬP PHƯƠNG 3D (3D CUBE ROTATION) */
 .section-card.book-page.fx-cube-next-in {
     transform-origin: left center;
-    animation: fxCubeNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCubeNextIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cube-next-out {
     transform-origin: right center;
-    animation: fxCubeNextOut 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCubeNextOut 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cube-prev-in {
     transform-origin: right center;
-    animation: fxCubePrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCubePrevIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cube-prev-out {
     transform-origin: left center;
-    animation: fxCubePrevOut 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCubePrevOut 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fxCubeNextIn {
@@ -429,16 +439,16 @@ body.kraft-theme {
 
 /* 2. BĂNG CHUYỀN COVERFLOW 3D (3D CAROUSEL SWING) */
 .section-card.book-page.fx-carousel-next-in {
-    animation: fxCarouselNextIn 0.82s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
+    animation: fxCarouselNextIn 1.07s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
 }
 .section-card.book-page.fx-carousel-next-out {
-    animation: fxCarouselNextOut 0.82s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    animation: fxCarouselNextOut 1.07s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-carousel-prev-in {
-    animation: fxCarouselPrevIn 0.82s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
+    animation: fxCarouselPrevIn 1.07s cubic-bezier(0.2, 0.9, 0.3, 1.05) forwards;
 }
 .section-card.book-page.fx-carousel-prev-out {
-    animation: fxCarouselPrevOut 0.82s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+    animation: fxCarouselPrevOut 1.07s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
 }
 
 @keyframes fxCarouselNextIn {
@@ -462,16 +472,16 @@ body.kraft-theme {
 
 /* 3. CỔNG KHÔNG GIAN 3D (3D PORTAL ZOOM & TILT) */
 .section-card.book-page.fx-portal-next-in {
-    animation: fxPortalNextIn 0.82s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxPortalNextIn 1.07s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-portal-next-out {
-    animation: fxPortalNextOut 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxPortalNextOut 1.03s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-portal-prev-in {
-    animation: fxPortalPrevIn 0.82s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxPortalPrevIn 1.07s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-portal-prev-out {
-    animation: fxPortalPrevOut 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fxPortalPrevOut 1.03s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fxPortalNextIn {
@@ -496,19 +506,19 @@ body.kraft-theme {
 /* 4. GẤP GIẤY ORIGAMI 3D (3D ORIGAMI UNFOLD) */
 .section-card.book-page.fx-origami-next-in {
     transform-origin: top center;
-    animation: fxOrigamiNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxOrigamiNextIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-origami-next-out {
     transform-origin: bottom center;
-    animation: fxOrigamiNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxOrigamiNextOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-origami-prev-in {
     transform-origin: bottom center;
-    animation: fxOrigamiPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxOrigamiPrevIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-origami-prev-out {
     transform-origin: top center;
-    animation: fxOrigamiPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxOrigamiPrevOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fxOrigamiNextIn {
@@ -532,16 +542,16 @@ body.kraft-theme {
 
 /* 5. XOÁY LỐC NGÂN HÀ 3D (3D VORTEX SPIRAL) */
 .section-card.book-page.fx-vortex-next-in {
-    animation: fxVortexNextIn 0.84s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
+    animation: fxVortexNextIn 1.09s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
 }
 .section-card.book-page.fx-vortex-next-out {
-    animation: fxVortexNextOut 0.78s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
+    animation: fxVortexNextOut 1.03s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-vortex-prev-in {
-    animation: fxVortexPrevIn 0.84s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
+    animation: fxVortexPrevIn 1.09s cubic-bezier(0.2, 0.95, 0.3, 1.04) forwards;
 }
 .section-card.book-page.fx-vortex-prev-out {
-    animation: fxVortexPrevOut 0.78s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
+    animation: fxVortexPrevOut 1.03s cubic-bezier(0.2, 0.95, 0.3, 1) forwards;
 }
 
 @keyframes fxVortexNextIn {
@@ -566,19 +576,19 @@ body.kraft-theme {
 /* 6. CÁNH CỬA THỜI GIAN 3D (3D GRAND DOOR SWING) */
 .section-card.book-page.fx-door-next-in {
     transform-origin: left center;
-    animation: fxDoorNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxDoorNextIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-door-next-out {
     transform-origin: left center;
-    animation: fxDoorNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxDoorNextOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-door-prev-in {
     transform-origin: left center;
-    animation: fxDoorPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxDoorPrevIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-door-prev-out {
     transform-origin: left center;
-    animation: fxDoorPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxDoorPrevOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fxDoorNextIn {
@@ -602,16 +612,16 @@ body.kraft-theme {
 
 /* 7. TRÁO BÀI MA THUẬT 3D (3D DECK SHUFFLE TOSS) */
 .section-card.book-page.fx-cards-next-in {
-    animation: fxCardsNextIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCardsNextIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cards-next-out {
-    animation: fxCardsNextOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCardsNextOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cards-prev-in {
-    animation: fxCardsPrevIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCardsPrevIn 1.07s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .section-card.book-page.fx-cards-prev-out {
-    animation: fxCardsPrevOut 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fxCardsPrevOut 1.03s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes fxCardsNextIn {
@@ -635,16 +645,16 @@ body.kraft-theme {
 
 /* 8. LĂNG KÍNH ÁNH SÁNG 3D (3D PRISM FLIP) */
 .section-card.book-page.fx-prism-next-in {
-    animation: fxPrismNextIn 0.84s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
+    animation: fxPrismNextIn 1.09s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
 }
 .section-card.book-page.fx-prism-next-out {
-    animation: fxPrismNextOut 0.78s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
+    animation: fxPrismNextOut 1.03s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
 }
 .section-card.book-page.fx-prism-prev-in {
-    animation: fxPrismPrevIn 0.84s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
+    animation: fxPrismPrevIn 1.09s cubic-bezier(0.2, 0.92, 0.3, 1.05) forwards;
 }
 .section-card.book-page.fx-prism-prev-out {
-    animation: fxPrismPrevOut 0.78s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
+    animation: fxPrismPrevOut 1.03s cubic-bezier(0.2, 0.92, 0.3, 1) forwards;
 }
 
 @keyframes fxPrismNextIn {
@@ -780,5 +790,14 @@ body.kraft-theme {
     .section-desc {
         font-size: 0.74rem;
         margin-bottom: 6px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .book-stage-3d,
+    .book-spiral-spine,
+    .magic-envelope,
+    .page-sparkle-field {
+        transform: none !important;
     }
 }

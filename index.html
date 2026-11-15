@@ -16,8 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- CSS Theme & Interactions -->
-    <link rel="stylesheet" href="css/style.css?v=20261115_3d7">
-    <link rel="stylesheet" href="css/interactions.css?v=20261115_3d7">
+    <link rel="stylesheet" href="css/style.css?v=20261115_3d8">
+    <link rel="stylesheet" href="css/interactions.css?v=20261115_3d8">
 </head>
 <body class="kraft-theme">
 
@@ -700,16 +700,6 @@
                 <div class="film-strip-viewport" id="film-strip-viewport">
                     <div class="film-strip-track" id="film-strip-track"></div>
                 </div>
-
-                <div class="film-lightbox hidden" id="film-lightbox" role="dialog" aria-modal="true">
-                    <div class="film-lightbox-card">
-                        <button type="button" id="btn-close-lightbox" class="lightbox-close-btn" title="Đóng khung ảnh">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                        <img id="lightbox-img" src="assets/images/12a2/img_01.jpg" alt="Ảnh phóng to 12A2" loading="lazy" decoding="async">
-                        <p id="lightbox-caption" class="lightbox-caption"></p>
-                    </div>
-                </div>
             </article>
 
             <!-- TRANG KẾT THÚC (TRANG 12 / 12): LỜI CHÀO TẠM BIỆT & HẸN NGÀY HỘI NGỘ -->
@@ -764,11 +754,22 @@
 
     </main>
 
+    <!-- Lightbox phóng to ảnh Cuộn Phim 35mm (đặt ngoài sân khấu 3D để luôn phủ kín toàn màn hình) -->
+    <div class="film-lightbox hidden" id="film-lightbox" role="dialog" aria-modal="true">
+        <div class="film-lightbox-card">
+            <button type="button" id="btn-close-lightbox" class="lightbox-close-btn" title="Đóng khung ảnh">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightbox-img" src="assets/images/12a2/img_01.jpg" alt="Ảnh phóng to 12A2" loading="lazy" decoding="async">
+            <p id="lightbox-caption" class="lightbox-caption"></p>
+        </div>
+    </div>
+
     <!-- Thư viện Interact.js -->
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
     <!-- File JS chính -->
-    <script src="js/main.js?v=20261115_3d7"></script>
-    <script src="js/interactions.js?v=20261115_3d7"></script>
+    <script src="js/main.js?v=20261115_3d8"></script>
+    <script src="js/interactions.js?v=20261115_3d8"></script>
 </body>
 </html>

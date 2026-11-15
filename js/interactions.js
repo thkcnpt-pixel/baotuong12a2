@@ -6,6 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initSparkleAndActionFX();
     initBookPageFlipSystem();
+    initPhoneMotionParallax();
     initInteraction1_MagicEnvelope();
     initInteraction2_PolaroidFlip();
     initInteraction3_RetroTV();
@@ -103,7 +104,7 @@ function initSparkleAndActionFX() {
         halo.style.setProperty('--hx', `${x}px`);
         halo.style.setProperty('--hy', `${y}px`);
         particleLayer.appendChild(halo);
-        setTimeout(() => halo.remove(), 540);
+        setTimeout(() => halo.remove(), 790);
     }
 
     function burstAt(x, y, options = {}) {
@@ -132,7 +133,7 @@ function initSparkleAndActionFX() {
             const dy = Math.sin(angle) * dist - (options.lift || 18);
             const dz = Math.round((Math.random() - 0.3) * 140);
             const rot = Math.round((Math.random() - 0.5) * 380);
-            const dur = Math.round(520 + Math.random() * 340);
+            const dur = Math.round(770 + Math.random() * 340);
             const size = Math.round((options.minSize || 12) + Math.random() * (options.maxSize || 10));
             const color = colors[Math.floor(Math.random() * colors.length)];
 
@@ -212,7 +213,7 @@ function initSparkleAndActionFX() {
         if (staggerCleanupTimer) clearTimeout(staggerCleanupTimer);
         staggerCleanupTimer = setTimeout(() => {
             items.forEach((item) => item.classList.remove('fx-stagger-item'));
-        }, 1050);
+        }, 1300);
     }
 
     function burstStageTransition(stageEl) {
@@ -372,7 +373,7 @@ function initBookPageFlipSystem() {
         cleanupTimer = setTimeout(() => {
             if (oldPage) oldPage.classList.remove('is-exiting', ...allFxClasses);
             if (newPage) newPage.classList.remove(...allFxClasses);
-        }, 840);
+        }, 1110);
 
         currentPage = targetIndex;
 
@@ -585,7 +586,7 @@ function initInteraction3_RetroTV() {
 
         if (noiseEl) {
             noiseEl.classList.add('is-active');
-            setTimeout(() => noiseEl.classList.remove('is-active'), 220);
+            setTimeout(() => noiseEl.classList.remove('is-active'), 470);
         }
 
         if (window.VisualFX && ledEl) {
@@ -1674,4 +1675,266 @@ function initInteraction11_HorizontalFilmReel() {
         });
     }
 }
+
+/* ==========================================================================
+   CHUYỂN ĐỘNG NHẸ THEO ĐIỆN THOẠI (GYRO TILT, LẮC NHẸ & ĐỔI HƯỚNG MÀN HÌNH)
+   ========================================================================== */
+function initPhoneMotionParallax() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
+    const rootStyle = document.documentElement.style;
+    const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    // Lò xo quán tính khi người dùng lắc nhẹ hoặc đổi hướng điện thoại
+    let impulseX = 0;
+    let impulseY = 0;
+    let velX = 0;
+    let velY = 0;
+
+    let baseTiltX = null;
+    let baseTiltY = null;
+    let hasGyroData = false;
+    let isSurfaceLocked = false;
+    let rafId = null;
+    let lastAccel = null;
+    let lastShakeSparkleAt = 0;
+    let listenersBound = false;
+
+    const MAX_ROT_Y = 3.6;
+    const MAX_ROT_X = 3.0;
+    const MAX_SHIFT_X = 7.5;
+    const MAX_SHIFT_Y = 6.5;
+
+    function getScreenAngle() {
+        if (window.screen && window.screen.orientation && typeof window.screen.orientation.angle === 'number') {
+            return window.screen.orientation.angle;
+        }
+        return typeof window.orientation === 'number' ? window.orientation : 0;
+    }
+
+    function scheduleTick() {
+        if (rafId !== null) return;
+        rafId = requestAnimationFrame(tick);
+    }
+
+    function tick() {
+        rafId = null;
+
+        const goalX = isSurfaceLocked ? 0 : targetX;
+        const goalY = isSurfaceLocked ? 0 : targetY;
+
+        currentX += (goalX - currentX) * 0.11;
+        currentY += (goalY - currentY) * 0.11;
+
+        // Lò xo giảm chấn tạo cảm giác giấy nổi bồng bềnh khi lắc/xoay máy
+        velX = (velX - impulseX * 0.15) * 0.80;
+        velY = (velY - impulseY * 0.15) * 0.80;
+        impulseX += velX;
+        impulseY += velY;
+
+        const outX = clamp(currentX + impulseX, -1.35, 1.35);
+        const outY = clamp(currentY + impulseY, -1.35, 1.35);
+
+        rootStyle.setProperty('--motion-ry', `${(outX * MAX_ROT_Y).toFixed(2)}deg`);
+        rootStyle.setProperty('--motion-rx', `${(-outY * MAX_ROT_X).toFixed(2)}deg`);
+        rootStyle.setProperty('--motion-tx', `${(outX * MAX_SHIFT_X).toFixed(2)}px`);
+        rootStyle.setProperty('--motion-ty', `${(outY * MAX_SHIFT_Y).toFixed(2)}px`);
+
+        const stillMoving =
+            Math.abs(goalX - currentX) > 0.002 ||
+            Math.abs(goalY - currentY) > 0.002 ||
+            Math.abs(impulseX) > 0.002 ||
+            Math.abs(impulseY) > 0.002 ||
+            Math.abs(velX) > 0.002 ||
+            Math.abs(velY) > 0.002;
+
+        if (stillMoving) {
+            scheduleTick();
+        }
+    }
+
+    function mapOrientationToScreenAxes(gamma, beta) {
+        const angle = ((getScreenAngle() % 360) + 360) % 360;
+        if (angle === 90) {
+            return { x: beta, y: -gamma };
+        }
+        if (angle === 270) {
+            return { x: -beta, y: gamma };
+        }
+        if (angle === 180) {
+            return { x: -gamma, y: -beta };
+        }
+        return { x: gamma, y: beta };
+    }
+
+    function applyTiltSample(tiltX, tiltY) {
+        if (!Number.isFinite(tiltX) || !Number.isFinite(tiltY)) return;
+        hasGyroData = true;
+
+        if (baseTiltX === null || baseTiltY === null) {
+            baseTiltX = tiltX;
+            baseTiltY = tiltY;
+        } else {
+            // Tự cân chỉnh chậm theo tư thế cầm điện thoại mới của người xem
+            baseTiltX += (tiltX - baseTiltX) * 0.008;
+            baseTiltY += (tiltY - baseTiltY) * 0.008;
+        }
+
+        const dx = clamp((tiltX - baseTiltX) / 24, -1, 1);
+        const dy = clamp((tiltY - baseTiltY) / 24, -1, 1);
+
+        targetX = dx;
+        targetY = dy;
+        scheduleTick();
+    }
+
+    function handleDeviceOrientation(e) {
+        if (typeof e.beta !== 'number' || typeof e.gamma !== 'number') return;
+        const mapped = mapOrientationToScreenAxes(e.gamma, e.beta);
+        applyTiltSample(mapped.x, mapped.y);
+    }
+
+    function applyMotionImpulse(ax, ay) {
+        if (!Number.isFinite(ax) || !Number.isFinite(ay)) return;
+        const mag = Math.hypot(ax, ay);
+        if (mag < 1.8) return;
+
+        velX = clamp(velX + clamp(ax * 0.018, -0.22, 0.22), -0.42, 0.42);
+        velY = clamp(velY + clamp(-ay * 0.018, -0.22, 0.22), -0.42, 0.42);
+        scheduleTick();
+
+        // Lắc rõ sẽ tung nhẹ vài hạt sao vàng trên sân khấu 3D
+        const now = Date.now();
+        if (mag > 14 && now - lastShakeSparkleAt > 1800 && window.VisualFX) {
+            const stage = document.getElementById('book-stage-3d');
+            const overlay = document.getElementById('envelope-intro-container');
+            if (stage && (!overlay || overlay.classList.contains('is-dismissed'))) {
+                const r = stage.getBoundingClientRect();
+                if (r.width > 0 && r.height > 0) {
+                    lastShakeSparkleAt = now;
+                    window.VisualFX.burstAt(r.left + r.width * 0.5, r.top + r.height * 0.38, {
+                        count: 6,
+                        spread: 95,
+                        theme: 'gold',
+                        halo: false
+                    });
+                }
+            }
+        }
+    }
+
+    function handleDeviceMotion(e) {
+        const accel = e.acceleration;
+        if (accel && typeof accel.x === 'number' && typeof accel.y === 'number') {
+            applyMotionImpulse(accel.x, accel.y);
+            return;
+        }
+        const raw = e.accelerationIncludingGravity;
+        if (!raw || typeof raw.x !== 'number' || typeof raw.y !== 'number') return;
+        if (lastAccel) {
+            applyMotionImpulse(raw.x - lastAccel.x, raw.y - lastAccel.y);
+        }
+        lastAccel = { x: raw.x, y: raw.y };
+    }
+
+    function bindSensorListeners() {
+        if (listenersBound) return;
+        listenersBound = true;
+        window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+        window.addEventListener('devicemotion', handleDeviceMotion, { passive: true });
+    }
+
+    function resetCalibrationWithSway() {
+        baseTiltX = null;
+        baseTiltY = null;
+        lastAccel = null;
+        velX = clamp(velX + 0.14, -0.35, 0.35);
+        velY = clamp(velY - 0.10, -0.35, 0.35);
+        scheduleTick();
+    }
+
+    window.addEventListener('orientationchange', resetCalibrationWithSway, { passive: true });
+    if (window.screen && window.screen.orientation && typeof window.screen.orientation.addEventListener === 'function') {
+        window.screen.orientation.addEventListener('change', resetCalibrationWithSway);
+    }
+
+    // Tạm cân bằng khi người dùng đang vẽ Bảng đen / cào thẻ / kéo sticker để nét vẽ chuẩn tuyệt đối
+    document.addEventListener('pointerdown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('#chalkboard-canvas, #scratch-canvas, #corkboard-stage')) {
+            isSurfaceLocked = true;
+            scheduleTick();
+        }
+    }, { passive: true });
+
+    const unlockSurfaceMotion = () => {
+        if (!isSurfaceLocked) return;
+        isSurfaceLocked = false;
+        scheduleTick();
+    };
+    window.addEventListener('pointerup', unlockSurfaceMotion, { passive: true });
+    window.addEventListener('pointercancel', unlockSurfaceMotion, { passive: true });
+
+    // Dự phòng nhẹ cho chuột trên máy tính khi chưa có cảm biến nghiêng của điện thoại
+    window.addEventListener('pointermove', (e) => {
+        if (hasGyroData || e.pointerType !== 'mouse') return;
+        const w = window.innerWidth || 1;
+        const h = window.innerHeight || 1;
+        targetX = clamp(((e.clientX / w) - 0.5) * 0.9, -0.45, 0.45);
+        targetY = clamp(((e.clientY / h) - 0.5) * 0.9, -0.45, 0.45);
+        scheduleTick();
+    }, { passive: true });
+
+    // Hỗ trợ xin quyền cảm biến trên iOS 13+ ngay ở lần chạm đầu tiên (Android tự động chạy ngay)
+    const needsOrientationPerm =
+        typeof window.DeviceOrientationEvent !== 'undefined' &&
+        typeof window.DeviceOrientationEvent.requestPermission === 'function';
+    const needsMotionPerm =
+        typeof window.DeviceMotionEvent !== 'undefined' &&
+        typeof window.DeviceMotionEvent.requestPermission === 'function';
+
+    if (needsOrientationPerm || needsMotionPerm) {
+        const requestIosSensors = () => {
+            if (needsOrientationPerm) {
+                window.DeviceOrientationEvent.requestPermission()
+                    .then((state) => {
+                        if (state === 'granted') bindSensorListeners();
+                    })
+                    .catch(() => {});
+            }
+            if (needsMotionPerm) {
+                window.DeviceMotionEvent.requestPermission()
+                    .then((state) => {
+                        if (state === 'granted') bindSensorListeners();
+                    })
+                    .catch(() => {});
+            }
+            document.removeEventListener('click', requestIosSensors);
+        };
+        document.addEventListener('click', requestIosSensors, { once: true });
+    } else {
+        bindSensorListeners();
+    }
+
+    window.PhoneMotionController = {
+        applyTiltSample,
+        applyMotionImpulse,
+        resetCalibration: resetCalibrationWithSway,
+        getState: () => ({
+            rx: rootStyle.getPropertyValue('--motion-rx') || '0deg',
+            ry: rootStyle.getPropertyValue('--motion-ry') || '0deg',
+            tx: rootStyle.getPropertyValue('--motion-tx') || '0px',
+            ty: rootStyle.getPropertyValue('--motion-ty') || '0px',
+            isSurfaceLocked,
+            hasGyroData
+        })
+    };
+}
+
 

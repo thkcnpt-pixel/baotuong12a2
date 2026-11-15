@@ -113,7 +113,7 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 - **Bố cục điều hướng tách đôi tối ưu thao tác:**
   - **Phía trên (`#book-stage-3d`):** Thanh mục lục 12 tab (`.compact-book-nav.top-bookmarks-only` gồm `Mở Đầu`, `1. Polaroid` $\rightarrow$ `10. Cuộn Phim`, `Kết Thúc`) trượt ngang gọn 1 dòng ở trên cùng.
   - **Phía dưới (`#book-stage-3d`):** Thanh chuyển trang (`.bottom-page-turn-bar`) gồm 2 nút `< Trang trước` (`#btn-prev-page`), chỉ báo `Trang X / 12` (`#book-page-indicator`) và `Trang tiếp >` (`#btn-next-page`) cố định gọn ở dưới để ngón cái dễ nhấn.
-- **8 hiệu ứng chuyển cảnh thuyết trình 3D** (chạy đồng thời trang cũ `.is-exiting` bay ra và trang mới `.is-active` bay vào trong 0.82s):
+- **8 hiệu ứng chuyển cảnh thuyết trình 3D** (chạy đồng thời trang cũ `.is-exiting` bay ra và trang mới `.is-active` bay vào trong `1.07s`–`1.09s`, đã cộng thêm `+0.25s` ở toàn bộ animation):
   1. `fx-cube`: Khối Lập Phương 3D (Cube Spin)
   2. `fx-carousel`: Băng Chuyền 3D (Coverflow)
   3. `fx-portal`: Cổng Không Gian 3D (Portal Zoom)
@@ -124,8 +124,11 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
   8. `fx-prism`: Lăng Kính Ánh Sáng 3D (Prism Flip)
 - **Hệ thống lấp lánh & tương tác (`window.VisualFX`):**
   - Gắn **1 lớp `.page-sparkle-field` dùng chung** (10 ngôi sao nhấp nháy + 8 đom đóm vàng với `translate3d` GPU) trực tiếp trên `#book-stage-3d` (thay vì nhân bản 216 node cho 12 trang) và viền ánh kim dùng `opacity` compositing.
-  - Hiệu ứng xuất hiện 3D so le (`.fx-stagger-item`) dùng batch DOM read/write (1 lần reflow thay vì reflow theo từng phần tử) rồi tự gỡ sau 1.05s.
+  - Hiệu ứng xuất hiện 3D so le (`.fx-stagger-item`) dùng batch DOM read/write (1 lần reflow thay vì reflow theo từng phần tử) rồi tự gỡ sau `1.3s`.
   - Pháo hoa/hạt 3D (`burstAt`, `burstElement`, giới hạn tối đa 90 hạt đồng thời để giữ 60fps trên điện thoại) cho mọi cú chạm nút và từng tương tác riêng.
+- **Chuyển động nhẹ theo điện thoại (`initPhoneMotionParallax` / `window.PhoneMotionController`):**
+  - Lắng nghe cảm biến nghiêng (`deviceorientation`), gia tốc lắc/đổi hướng (`devicemotion`) và xoay màn hình (`orientationchange`), hỗ trợ xin quyền tự động trên iOS 13+ và dự phòng rê chuột trên máy tính.
+  - Dùng lò xo giảm chấn tạo độ nghiêng 3D nhẹ (`--motion-rx/ry/tx/ty`) cho `.book-stage-3d`, `.magic-envelope` và lớp bụi sao `.page-sparkle-field` theo chiều sâu, tự động tạm cân bằng khi người dùng đang vẽ Bảng đen / cào thẻ / kéo sticker và tôn trọng `prefers-reduced-motion`.
 - Khi gọi `goToPage(targetIndex)`:
   1. Gọi `stopAllVideosOnPageLeave()` để **dừng triệt để mọi video MP4/YouTube** và bật lại nhạc nền Lofi nếu trước đó bị tạm dừng vì xem video.
   2. Phát âm thanh lật trang `window.SoundFX.playPaperFlip()`, quét luồng sáng & bắn hạt sao hai bên sân khấu.

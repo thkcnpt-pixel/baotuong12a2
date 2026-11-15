@@ -19,6 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteraction11_HorizontalFilmReel();
 });
 
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 /* ==========================================================================
    HỆ THỐNG HIỆU ỨNG LẤP LÁNH MỖI TRANG & PHÁO HOA TƯƠNG TÁC 3D (VISUAL FX ENGINE)
    ========================================================================== */
@@ -31,14 +40,14 @@ function initSparkleAndActionFX() {
         document.body.appendChild(particleLayer);
     }
 
-    // 2. Bơm bầu trời sao lấp lánh & đom đóm vàng (.page-sparkle-field) vào TẤT CẢ 12 TRANG
+    // 2. Bơm 1 lớp bầu trời sao lấp lánh & đom đóm vàng dùng chung cho cả 12 trang (giảm từ 216 xuống 18 DOM node)
     const starSymbols = ['✦', '✧', '★', '✶', '✨'];
-    document.querySelectorAll('.book-page').forEach((page) => {
-        if (page.querySelector('.page-sparkle-field')) return;
+    const stageHost = document.getElementById('book-stage-3d') || document.querySelector('.book-page');
+    if (stageHost && !stageHost.querySelector('.page-sparkle-field')) {
         const field = document.createElement('div');
         field.className = 'page-sparkle-field';
+        field.setAttribute('aria-hidden', 'true');
 
-        // 10 ngôi sao lấp lánh rải đều mỗi trang
         for (let i = 0; i < 10; i++) {
             const star = document.createElement('span');
             star.className = 'ambient-star';
@@ -51,7 +60,6 @@ function initSparkleAndActionFX() {
             field.appendChild(star);
         }
 
-        // 8 đom đóm vàng bay lượn ấm áp trên mỗi trang
         for (let j = 0; j < 8; j++) {
             const fly = document.createElement('span');
             fly.className = 'ambient-firefly';
@@ -63,8 +71,8 @@ function initSparkleAndActionFX() {
             field.appendChild(fly);
         }
 
-        page.insertBefore(field, page.firstChild);
-    });
+        stageHost.appendChild(field);
+    }
 
     const palettes = {
         gold: {
@@ -99,6 +107,9 @@ function initSparkleAndActionFX() {
     }
 
     function burstAt(x, y, options = {}) {
+        // Giới hạn tối đa 90 hạt đồng thời để giữ mượt 60fps trên điện thoại
+        if (particleLayer.childElementCount >= 90) return;
+
         const count = options.count || 12;
         const preset = palettes[options.theme || 'gold'] || palettes.gold;
         const symbols = options.symbols || preset.symbols;
@@ -108,7 +119,9 @@ function initSparkleAndActionFX() {
 
         if (showHalo) spawnHalo(x, y);
 
-        for (let i = 0; i < count; i++) {
+        const frag = document.createDocumentFragment();
+        const maxSpawn = Math.min(count, 90 - particleLayer.childElementCount);
+        for (let i = 0; i < maxSpawn; i++) {
             const p = document.createElement('span');
             p.className = 'fx-action-particle';
             p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -134,9 +147,10 @@ function initSparkleAndActionFX() {
             p.style.setProperty('--p-size', `${size}px`);
             p.style.setProperty('--p-color', color);
 
-            particleLayer.appendChild(p);
+            frag.appendChild(p);
             setTimeout(() => p.remove(), dur + 40);
         }
+        particleLayer.appendChild(frag);
     }
 
     function burstElement(el, options = {}) {
@@ -148,10 +162,11 @@ function initSparkleAndActionFX() {
 
         if (options.pop !== false) {
             el.classList.remove('fx-action-pop');
-            void el.offsetWidth;
-            el.classList.add('fx-action-pop');
+            requestAnimationFrame(() => el.classList.add('fx-action-pop'));
         }
     }
+
+    let staggerCleanupTimer = null;
 
     function animatePageEntrance(pageEl) {
         if (!pageEl) return;
@@ -161,13 +176,13 @@ function initSparkleAndActionFX() {
             '.cover-ornament-border > *',
             '.polaroid-card',
             '.retro-tv-cabinet',
-            '.chalk-subject-card',
+            '.chalk-box',
             '.chalkboard-frame',
             '.scratch-toolbar',
             '.scratch-card-container',
             '.popup-controls',
             '.popup-scene-wrapper',
-            '.padlock-unit',
+            '.padlock-box',
             '.secret-vault',
             '.confession-form',
             '.confession-note',
@@ -176,15 +191,28 @@ function initSparkleAndActionFX() {
             '.flashlight-toolbar',
             '.darkroom-container',
             '.film-controls-bar',
-            '.film-strip-viewport'
+            '.film-strip-viewport',
+            '.closing-actions'
         ];
-        const items = pageEl.querySelectorAll(selectors.join(','));
+        const items = Array.from(pageEl.querySelectorAll(selectors.join(',')));
+        if (!items.length) return;
+
+        // Pass 1: gỡ animation cũ đồng loạt (không đọc layout trong vòng lặp)
+        items.forEach((item) => item.classList.remove('fx-stagger-item'));
+
+        // Chỉ kích hoạt 1 lần reflow cho cả trang
+        void pageEl.offsetWidth;
+
+        // Pass 2: gắn hiệu ứng xuất hiện so le
         items.forEach((item, idx) => {
-            item.classList.remove('fx-stagger-item');
-            void item.offsetWidth;
             item.style.setProperty('--stagger-delay', `${Math.min(idx * 0.045, 0.36).toFixed(3)}s`);
             item.classList.add('fx-stagger-item');
         });
+
+        if (staggerCleanupTimer) clearTimeout(staggerCleanupTimer);
+        staggerCleanupTimer = setTimeout(() => {
+            items.forEach((item) => item.classList.remove('fx-stagger-item'));
+        }, 1050);
     }
 
     function burstStageTransition(stageEl) {
@@ -228,8 +256,7 @@ function initSparkleAndActionFX() {
             });
             if (interactive.matches('button, .vintage-btn, .bookmark-tab, .tv-ch-pill, .chalk-piece, .riddle-tab')) {
                 interactive.classList.remove('fx-action-pop');
-                void interactive.offsetWidth;
-                interactive.classList.add('fx-action-pop');
+                requestAnimationFrame(() => interactive.classList.add('fx-action-pop'));
             }
         }
     }, { passive: true });
@@ -246,17 +273,15 @@ function stopAllVideosOnPageLeave() {
         videoEl.pause();
     }
 
-    if (youtubeEl && youtubeEl.src) {
-        // Gửi lệnh pause qua postMessage và ngắt src nếu đang chạy ẩn
+    const youtubeRawSrc = youtubeEl ? (youtubeEl.getAttribute('src') || '').trim() : '';
+    if (youtubeEl && youtubeRawSrc) {
         try {
             youtubeEl.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
         } catch (e) {}
-        if (!youtubeEl.classList.contains('hidden')) {
-            const savedSrc = youtubeEl.getAttribute('data-src') || youtubeEl.src;
-            youtubeEl.setAttribute('data-src', savedSrc);
-            youtubeEl.src = '';
-            youtubeEl.src = savedSrc;
+        if (!youtubeEl.getAttribute('data-src') && /^https?:\/\//i.test(youtubeRawSrc)) {
+            youtubeEl.setAttribute('data-src', youtubeRawSrc);
         }
+        youtubeEl.removeAttribute('src');
     }
 
     // Khôi phục nhạc nền Lofi Thanh Xuân ngay khi rời trang Video
@@ -273,32 +298,21 @@ function initBookPageFlipSystem() {
     const pages = Array.from(document.querySelectorAll('.book-page'));
     const bookmarks = Array.from(document.querySelectorAll('.bookmark-tab'));
     const indicatorEl = document.getElementById('book-page-indicator');
-    const prevBtnTop = document.getElementById('btn-prev-page');
-    const nextBtnTop = document.getElementById('btn-next-page');
-    const prevBtnBottom = document.getElementById('btn-prev-page-bottom');
-    const nextBtnBottom = document.getElementById('btn-next-page-bottom');
+    const prevBtn = document.getElementById('btn-prev-page');
+    const nextBtn = document.getElementById('btn-next-page');
 
     if (!pages.length) return;
 
-    // Danh sách 8 kiểu chuyển cảnh thuyết trình 3D sống động
-    const transitionStyles = [
-        { key: 'cube', label: '🎲 Khối Lập Phương 3D (Cube Spin)' },
-        { key: 'carousel', label: '🎠 Băng Chuyền 3D (Coverflow)' },
-        { key: 'portal', label: '🌌 Cổng Không Gian 3D (Portal Zoom)' },
-        { key: 'origami', label: '🦢 Gấp Giấy Origami 3D (Unfold)' },
-        { key: 'vortex', label: '🌀 Xoáy Lốc Ngân Hà 3D (Vortex)' },
-        { key: 'door', label: '🚪 Cánh Cửa Thời Gian 3D (Grand Door)' },
-        { key: 'cards', label: '🃏 Tráo Bài Ma Thuật 3D (Deck Toss)' },
-        { key: 'prism', label: '💎 Lăng Kính Ánh Sáng 3D (Prism Flip)' }
-    ];
+    // 8 kiểu chuyển cảnh thuyết trình 3D sống động
+    const transitionKeys = ['cube', 'carousel', 'portal', 'origami', 'vortex', 'door', 'cards', 'prism'];
 
     const allFxClasses = [];
-    transitionStyles.forEach((t) => {
+    transitionKeys.forEach((key) => {
         allFxClasses.push(
-            `fx-${t.key}-next-in`,
-            `fx-${t.key}-next-out`,
-            `fx-${t.key}-prev-in`,
-            `fx-${t.key}-prev-out`
+            `fx-${key}-next-in`,
+            `fx-${key}-next-out`,
+            `fx-${key}-prev-in`,
+            `fx-${key}-prev-out`
         );
     });
 
@@ -308,7 +322,6 @@ function initBookPageFlipSystem() {
     let currentPage = 0;
     const totalPages = pages.length;
 
-    // Khởi chạy hiệu ứng xuất hiện 3D cho trang đầu tiên
     if (window.VisualFX) {
         window.VisualFX.animatePageEntrance(pages[0]);
     }
@@ -320,8 +333,7 @@ function initBookPageFlipSystem() {
         const oldPage = pages[currentPage];
         const newPage = pages[targetIndex];
 
-        // Chọn kiểu chuyển cảnh 3D đa dạng (kết hợp chỉ số trang và bộ đếm để mỗi lần chuyển trang đều mới mẻ)
-        const styleObj = transitionStyles[(targetIndex + transitionCounter) % transitionStyles.length];
+        const fxKey = transitionKeys[(targetIndex + transitionCounter) % transitionKeys.length];
         transitionCounter++;
 
         // 1. Dừng ngay mọi video nếu đang phát ở trang cũ
@@ -342,7 +354,7 @@ function initBookPageFlipSystem() {
 
         // 4. Chạy đồng thời hiệu ứng 3D Thoát ra (trang cũ) và 3D Bay vào (trang mới)
         pages.forEach((page, idx) => {
-            page.classList.remove('is-active', 'is-exiting', 'flip-next-in', 'flip-prev-in', ...allFxClasses);
+            page.classList.remove('is-active', 'is-exiting', ...allFxClasses);
             if (idx === currentPage) {
                 page.classList.add('is-exiting');
             } else if (idx === targetIndex) {
@@ -350,20 +362,16 @@ function initBookPageFlipSystem() {
             }
         });
 
-        // Ép trình duyệt cập nhật layout display:block trước khi gắn class animation 3D để không bị bỏ qua khung hình đầu
+        // Ép trình duyệt cập nhật layout display:block trước khi gắn class animation 3D
         if (oldPage) void oldPage.offsetWidth;
         if (newPage) void newPage.offsetWidth;
 
-        if (oldPage) oldPage.classList.add(`fx-${styleObj.key}-${direction}-out`);
-        if (newPage) newPage.classList.add(`fx-${styleObj.key}-${direction}-in`);
+        if (oldPage) oldPage.classList.add(`fx-${fxKey}-${direction}-out`);
+        if (newPage) newPage.classList.add(`fx-${fxKey}-${direction}-in`);
 
         cleanupTimer = setTimeout(() => {
-            if (oldPage) {
-                oldPage.classList.remove('is-exiting', ...allFxClasses);
-            }
-            if (newPage) {
-                newPage.classList.remove(...allFxClasses);
-            }
+            if (oldPage) oldPage.classList.remove('is-exiting', ...allFxClasses);
+            if (newPage) newPage.classList.remove(...allFxClasses);
         }, 840);
 
         currentPage = targetIndex;
@@ -377,6 +385,7 @@ function initBookPageFlipSystem() {
         bookmarks.forEach((tab, idx) => {
             const isActive = idx === currentPage;
             tab.classList.toggle('active', isActive);
+            tab.setAttribute('aria-current', isActive ? 'page' : 'false');
             if (isActive && typeof tab.scrollIntoView === 'function') {
                 tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
@@ -389,12 +398,14 @@ function initBookPageFlipSystem() {
 
         const isFirst = currentPage === 0;
         const isLast = currentPage === totalPages - 1;
-        if (prevBtnTop) prevBtnTop.disabled = isFirst;
-        if (prevBtnBottom) prevBtnBottom.disabled = isFirst;
-        if (nextBtnTop) nextBtnTop.disabled = isLast;
-        if (nextBtnBottom) nextBtnBottom.disabled = isLast;
+        if (prevBtn) prevBtn.disabled = isFirst;
+        if (nextBtn) nextBtn.disabled = isLast;
 
-        // 8. Khởi tạo lại kích thước Canvas / Bàn Kéo Thả nếu người dùng lật tới trang tương ứng
+        if (window.scrollY > 50) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 8. Khởi tạo kích thước Canvas / Bàn Kéo Thả sau khi trang đã bật display:block
         const activePageId = pages[currentPage].id;
         requestAnimationFrame(() => {
             if (typeof window.refreshChalkboardCanvas === 'function' && activePageId === 'chalkboard-section') {
@@ -409,16 +420,8 @@ function initBookPageFlipSystem() {
         });
     }
 
-    if (prevBtnTop) prevBtnTop.addEventListener('click', () => goToPage(currentPage - 1));
-    if (nextBtnTop) nextBtnTop.addEventListener('click', () => goToPage(currentPage + 1));
-    if (prevBtnBottom) prevBtnBottom.addEventListener('click', () => {
-        goToPage(currentPage - 1);
-        document.getElementById('book-bookmarks-bar')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-    if (nextBtnBottom) nextBtnBottom.addEventListener('click', () => {
-        goToPage(currentPage + 1);
-        document.getElementById('book-bookmarks-bar')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
+    if (prevBtn) prevBtn.addEventListener('click', () => goToPage(currentPage - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goToPage(currentPage + 1));
 
     bookmarks.forEach((tab) => {
         tab.addEventListener('click', () => {
@@ -543,13 +546,14 @@ function initInteraction3_RetroTV() {
         { code: '09', label: 'CH-09 • TUỔI TRẺ CUỒNG NHIỆT', title: 'Không khí náo nhiệt của 12A2 (Băng #9)', type: 'video', src: 'assets/video/video_09.mp4' },
         { code: '10', label: 'CH-10 • NHỮNG NỤ CƯỜI', title: 'Lưu giữ từng giây phút bên nhau (Băng #10)', type: 'video', src: 'assets/video/video_10.mp4' },
         { code: '11', label: 'CH-11 • TẠM BIỆT CẤP 3', title: 'Hành trình khép lại mở ra tương lai (Băng #11)', type: 'video', src: 'assets/video/video_11.mp4' },
-        { code: 'YT', label: 'CH-YT • YOUTUBE KỶ NIỆM', title: 'Khung nhúng YouTube Không Công Khai', type: 'youtube', src: 'https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&rel=0' }
+        { code: 'YT', label: 'CH-YT • YOUTUBE KỶ NIỆM', title: 'Kênh YouTube Kỷ Niệm 12A2', type: 'youtube', src: '' }
     ];
 
     let currentIndex = 0;
 
     const videoEl = document.getElementById('tv-video-player');
     const youtubeEl = document.getElementById('tv-youtube-iframe');
+    const ytPlaceholderEl = document.getElementById('tv-youtube-placeholder');
     const noiseEl = document.getElementById('tv-static-noise');
     const osdEl = document.getElementById('tv-osd-channel');
     const ledEl = document.getElementById('tv-channel-led');
@@ -602,8 +606,9 @@ function initInteraction3_RetroTV() {
         });
 
         if (ch.type === 'video') {
-            youtubeEl.src = '';
+            youtubeEl.removeAttribute('src');
             youtubeEl.classList.add('hidden');
+            if (ytPlaceholderEl) ytPlaceholderEl.classList.add('hidden');
             videoEl.classList.remove('hidden');
             videoEl.pause();
 
@@ -632,9 +637,21 @@ function initInteraction3_RetroTV() {
         } else {
             videoEl.pause();
             videoEl.classList.add('hidden');
-            youtubeEl.classList.remove('hidden');
-            youtubeEl.src = ch.src;
-            if (window.BgmController) window.BgmController.pauseForVideo();
+
+            const customSrc = (youtubeEl.getAttribute('data-src') || ch.src || '').trim();
+            const hasValidYoutube = Boolean(customSrc) && !customSrc.includes('dQw4w9WgXcQ') && /^https?:\/\//i.test(customSrc);
+
+            if (hasValidYoutube) {
+                if (ytPlaceholderEl) ytPlaceholderEl.classList.add('hidden');
+                youtubeEl.classList.remove('hidden');
+                youtubeEl.src = customSrc;
+                if (window.BgmController) window.BgmController.pauseForVideo();
+            } else {
+                youtubeEl.removeAttribute('src');
+                youtubeEl.classList.add('hidden');
+                if (ytPlaceholderEl) ytPlaceholderEl.classList.remove('hidden');
+                if (window.BgmController) window.BgmController.resumeAfterVideo();
+            }
         }
     }
 
@@ -660,17 +677,45 @@ function initInteraction4_Chalkboard() {
 
     if (!canvas || !surface) return;
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
     let isDrawing = false;
+    let activePointerId = null;
+    let hasDrawn = false;
     let chalkColor = '#f2f0e6';
+    let currentDpr = 1;
     let lastX = 0;
     let lastY = 0;
     let chalkSparkleTick = 0;
 
     function resizeCanvas() {
-        const rect = surface.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+        // Dùng clientWidth/clientHeight (không bị bóp méo bởi CSS transform 3D khi lật trang)
+        const cssW = Math.round(canvas.clientWidth || surface.clientWidth);
+        const cssH = Math.round(canvas.clientHeight || surface.clientHeight);
+        if (cssW <= 0 || cssH <= 0) return;
+
+        const targetDpr = Math.min(window.devicePixelRatio || 1, 2);
+        const targetW = Math.round(cssW * targetDpr);
+        const targetH = Math.round(cssH * targetDpr);
+
+        if (canvas.width === targetW && canvas.height === targetH) return;
+
+        // Bảo toàn nét phấn đã vẽ nếu người dùng xoay màn hình / thay đổi kích thước bảng
+        let snapshot = null;
+        if (hasDrawn && canvas.width > 0 && canvas.height > 0) {
+            snapshot = document.createElement('canvas');
+            snapshot.width = canvas.width;
+            snapshot.height = canvas.height;
+            const snapCtx = snapshot.getContext('2d');
+            if (snapCtx) snapCtx.drawImage(canvas, 0, 0);
+        }
+
+        canvas.width = targetW;
+        canvas.height = targetH;
+        currentDpr = targetDpr;
+
+        if (snapshot) {
+            ctx.drawImage(snapshot, 0, 0, targetW, targetH);
         }
     }
 
@@ -678,34 +723,42 @@ function initInteraction4_Chalkboard() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
+    if (typeof ResizeObserver === 'function') {
+        const surfaceObserver = new ResizeObserver(() => resizeCanvas());
+        surfaceObserver.observe(surface);
+    }
+
     function getPos(e) {
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const touch = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]);
+        const clientX = touch ? touch.clientX : e.clientX;
+        const clientY = touch ? touch.clientY : e.clientY;
+        const scaleX = rect.width ? canvas.width / rect.width : currentDpr;
+        const scaleY = rect.height ? canvas.height / rect.height : currentDpr;
         return {
-            x: clientX - rect.left,
-            y: clientY - rect.top,
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY,
             clientX,
             clientY
         };
     }
 
-    function startDraw(e) {
-        if (canvas.width === 0) resizeCanvas();
-        isDrawing = true;
-        const pos = getPos(e);
-        lastX = pos.x;
-        lastY = pos.y;
+    function drawDot(pos) {
+        const strokeW = Math.max(2.5, 3.2 * currentDpr);
+        ctx.fillStyle = chalkColor;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, strokeW / 2, 0, Math.PI * 2);
+        ctx.fill();
     }
 
-    function draw(e) {
-        if (!isDrawing) return;
-        const pos = getPos(e);
+    function drawSegment(fromX, fromY, pos) {
+        const strokeW = Math.max(2.5, 3.2 * currentDpr);
         ctx.strokeStyle = chalkColor;
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = strokeW;
         ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
+        ctx.moveTo(fromX, fromY);
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
 
@@ -721,22 +774,80 @@ function initInteraction4_Chalkboard() {
                 halo: false
             });
         }
-
-        lastX = pos.x;
-        lastY = pos.y;
     }
 
-    function stopDraw() {
-        isDrawing = false;
+    if (window.PointerEvent) {
+        canvas.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            if (activePointerId !== null) return;
+            if (canvas.width === 0) resizeCanvas();
+
+            activePointerId = e.pointerId;
+            isDrawing = true;
+            hasDrawn = true;
+
+            try {
+                canvas.setPointerCapture(e.pointerId);
+            } catch (err) {}
+
+            const pos = getPos(e);
+            drawDot(pos);
+            lastX = pos.x;
+            lastY = pos.y;
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isDrawing || e.pointerId !== activePointerId) return;
+            const coalesced = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : null;
+            const events = coalesced && coalesced.length > 0 ? coalesced : [e];
+            events.forEach((pt) => {
+                const pos = getPos(pt);
+                drawSegment(lastX, lastY, pos);
+                lastX = pos.x;
+                lastY = pos.y;
+            });
+        });
+
+        const endPointerStroke = (e) => {
+            if (e.pointerId !== activePointerId) return;
+            isDrawing = false;
+            activePointerId = null;
+        };
+
+        canvas.addEventListener('pointerup', endPointerStroke);
+        canvas.addEventListener('pointercancel', endPointerStroke);
+        window.addEventListener('pointerup', endPointerStroke);
+    } else {
+        const startDrawLegacy = (e) => {
+            if (canvas.width === 0) resizeCanvas();
+            isDrawing = true;
+            hasDrawn = true;
+            const pos = getPos(e);
+            drawDot(pos);
+            lastX = pos.x;
+            lastY = pos.y;
+        };
+
+        const moveDrawLegacy = (e) => {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            drawSegment(lastX, lastY, pos);
+            lastX = pos.x;
+            lastY = pos.y;
+        };
+
+        const stopDrawLegacy = () => {
+            isDrawing = false;
+        };
+
+        canvas.addEventListener('mousedown', startDrawLegacy);
+        canvas.addEventListener('mousemove', moveDrawLegacy);
+        window.addEventListener('mouseup', stopDrawLegacy);
+
+        canvas.addEventListener('touchstart', startDrawLegacy, { passive: true });
+        canvas.addEventListener('touchmove', moveDrawLegacy, { passive: true });
+        window.addEventListener('touchend', stopDrawLegacy);
     }
-
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    window.addEventListener('mouseup', stopDraw);
-
-    canvas.addEventListener('touchstart', startDraw, { passive: true });
-    canvas.addEventListener('touchmove', draw, { passive: true });
-    window.addEventListener('touchend', stopDraw);
 
     colorBtns.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -749,6 +860,7 @@ function initInteraction4_Chalkboard() {
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
+            hasDrawn = false;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (window.SoundFX) window.SoundFX.playPaperFlip();
             if (window.VisualFX) {
@@ -777,16 +889,17 @@ function initInteraction6_ScratchCard() {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     let isScratching = false;
     let isInitialized = false;
+    let lastLayoutW = 0;
     let lastPos = null;
     let scratchSparkleTick = 0;
 
     function fillFogLayer() {
-        const rect = container.getBoundingClientRect();
-        // Nếu trang đang ẩn (rect.width === 0) thì chưa khởi tạo vội, chờ khi lật tới trang mới lấy đúng kích thước thật
-        if (rect.width === 0 || rect.height === 0) return;
+        // Dùng clientWidth/clientHeight để không bị co méo khi trang đang chạy animation lật 3D
+        const w = Math.round(container.clientWidth);
+        const h = Math.round(container.clientHeight);
+        if (w <= 0 || h <= 0) return;
 
-        const w = Math.round(rect.width);
-        const h = Math.round(rect.height);
+        lastLayoutW = w;
         canvas.width = w;
         canvas.height = h;
         canvas.classList.remove('is-cleared');
@@ -818,13 +931,19 @@ function initInteraction6_ScratchCard() {
     }
 
     window.refreshScratchCanvas = () => {
-        const rect = container.getBoundingClientRect();
-        if (!isInitialized || Math.abs(canvas.width - rect.width) > 10) {
+        const w = Math.round(container.clientWidth);
+        if (w <= 0) return;
+        if (!isInitialized || Math.abs(lastLayoutW - w) > 10) {
             fillFogLayer();
         }
     };
 
     fillFogLayer();
+
+    if (typeof ResizeObserver === 'function') {
+        const scratchObserver = new ResizeObserver(() => window.refreshScratchCanvas());
+        scratchObserver.observe(container);
+    }
 
     function getPointerPos(e) {
         const rect = canvas.getBoundingClientRect();
@@ -981,6 +1100,7 @@ function initInteraction7_PopupCard() {
 
     function togglePopup() {
         const isOpen = book.classList.toggle('is-open');
+        book.setAttribute('aria-expanded', String(isOpen));
         if (window.SoundFX) window.SoundFX.playPaperFlip();
         if (window.VisualFX) {
             window.VisualFX.burstElement(book, {
@@ -999,7 +1119,14 @@ function initInteraction7_PopupCard() {
     }
 
     // Giữ trạng thái GẤP ĐÓNG khi mới vào trang, chỉ mở khi người xem tự bấm
+    book.setAttribute('aria-expanded', 'false');
     book.addEventListener('click', togglePopup);
+    book.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            togglePopup();
+        }
+    });
     if (toggleBtn) toggleBtn.addEventListener('click', togglePopup);
 }
 
@@ -1127,8 +1254,8 @@ function initInteraction5_UnsaidMailbox() {
             const div = document.createElement('div');
             div.className = 'confession-note';
             div.innerHTML = `
-                <div class="confession-meta">💌 Từ: <strong>${item.from}</strong> → Gửi đến: <strong>${item.to}</strong></div>
-                <p class="confession-body">"${item.text}"</p>
+                <div class="confession-meta">💌 Từ: <strong>${escapeHtml(item.from)}</strong> → Gửi đến: <strong>${escapeHtml(item.to)}</strong></div>
+                <p class="confession-body">"${escapeHtml(item.text)}"</p>
             `;
             wall.appendChild(div);
         });
@@ -1190,6 +1317,9 @@ function initInteraction9_DragDropStickers() {
         const blueNote = stage.querySelector('.sticky-note.note-blue');
         const miniPolaroid = stage.querySelector('.mini-polaroid-drag');
         const stickers = stage.querySelectorAll('.vintage-sticker');
+        const extraNotes = Array.from(stage.querySelectorAll('.sticky-note')).filter(
+            (el) => el !== yellowNote && el !== pinkNote && el !== blueNote
+        );
 
         function placeItem(el, x, y, deg) {
             if (!el) return;
@@ -1202,16 +1332,23 @@ function initInteraction9_DragDropStickers() {
         }
 
         if (stageW < 540) {
-            // Điện thoại: Chia 2 cột gọn gàng để tờ note màu xanh (note-blue) và ảnh mini hiển thị trọn vẹn 100%
-            const rightColX = Math.max(140, stageW - 134);
-            const polaroidX = Math.max(152, stageW - 104);
+            // Điện thoại: Chia 2 cột linh hoạt theo kích thước thật để không tràn mép trên mọi màn hình hẹp
+            const yellowW = (yellowNote && yellowNote.offsetWidth) || 126;
+            const pinkW = (pinkNote && pinkNote.offsetWidth) || yellowW;
+            const polaroidW = (miniPolaroid && miniPolaroid.offsetWidth) || 88;
+            const rightColX = Math.max(yellowW + 10, stageW - pinkW - 8);
+            const polaroidX = Math.max(yellowW + 14, stageW - polaroidW - 14);
+            const st0W = (stickers[0] && stickers[0].offsetWidth) || 115;
+            const st1W = (stickers[1] && stickers[1].offsetWidth) || 155;
+            const st2W = (stickers[2] && stickers[2].offsetWidth) || 170;
+
             placeItem(yellowNote, 8, 8, -2);
             placeItem(pinkNote, rightColX, 8, 2);
             placeItem(blueNote, 8, 108, -1.5);
             placeItem(miniPolaroid, polaroidX, 106, 3);
             if (stickers[0]) placeItem(stickers[0], 8, 214, -3);
-            if (stickers[1]) placeItem(stickers[1], Math.max(128, stageW - 178), 214, 3);
-            if (stickers[2]) placeItem(stickers[2], Math.max(24, Math.round((stageW - 180) / 2)), 248, -2);
+            if (stickers[1]) placeItem(stickers[1], Math.max(st0W + 10, stageW - st1W - 8), 214, 3);
+            if (stickers[2]) placeItem(stickers[2], Math.max(8, Math.round((stageW - st2W) / 2)), 248, -2);
         } else {
             // Máy tính / Tablet: Trải đều trên mặt bàn rộng
             const colStep = Math.floor((stageW - 150) / 3);
@@ -1222,6 +1359,14 @@ function initInteraction9_DragDropStickers() {
             if (stickers[0]) placeItem(stickers[0], 16, 195, -4);
             if (stickers[1]) placeItem(stickers[1], 190, 202, 3);
             if (stickers[2]) placeItem(stickers[2], 390, 198, -2);
+        }
+
+        if (forceReset && extraNotes.length) {
+            extraNotes.forEach((note, idx) => {
+                const colX = 16 + ((idx * 134) % Math.max(120, stageW - 140));
+                const rowY = 58 + (idx % 2) * 86;
+                placeItem(note, colX, rowY, idx % 2 === 0 ? -2 : 2);
+            });
         }
     }
 
@@ -1269,7 +1414,7 @@ function initInteraction9_DragDropStickers() {
 
     if (addBtn && noteInput) {
         const colors = ['note-yellow', 'note-pink', 'note-blue'];
-        addBtn.addEventListener('click', () => {
+        const addStickyNote = () => {
             const text = noteInput.value.trim() || '12A2 THPT Phú Điền mãi đỉnh! ❤️';
             const note = document.createElement('div');
             const colorClass = colors[Math.floor(Math.random() * colors.length)];
@@ -1285,7 +1430,7 @@ function initInteraction9_DragDropStickers() {
             note.style.zIndex = highestZ;
             note.innerHTML = `
                 <span class="note-pin"></span>
-                <p>"${text}"</p>
+                <p>"${escapeHtml(text)}"</p>
                 <small>— Bạn vừa dán —</small>
             `;
             stage.appendChild(note);
@@ -1298,6 +1443,14 @@ function initInteraction9_DragDropStickers() {
                     theme: 'celebrate',
                     pop: false
                 });
+            }
+        };
+
+        addBtn.addEventListener('click', addStickyNote);
+        noteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addStickyNote();
             }
         });
     }
@@ -1453,9 +1606,9 @@ function initInteraction11_HorizontalFilmReel() {
                 <span>▶ ${item.code}</span>
             </div>
             <div class="film-frame-img-box">
-                <img src="${item.src}" alt="${item.caption}" loading="lazy">
+                <img src="${item.src}" alt="${escapeHtml(item.caption)}" loading="lazy" decoding="async">
             </div>
-            <p class="film-frame-caption">#${idx + 1}. ${item.caption}</p>
+            <p class="film-frame-caption">#${idx + 1}. ${escapeHtml(item.caption)}</p>
         `;
 
         card.addEventListener('click', () => {
@@ -1463,8 +1616,7 @@ function initInteraction11_HorizontalFilmReel() {
             scrollToFrame(idx);
 
             card.classList.remove('flash-active');
-            void card.offsetWidth;
-            card.classList.add('flash-active');
+            requestAnimationFrame(() => card.classList.add('flash-active'));
 
             setTimeout(() => {
                 if (lightbox && lightboxImg && lightboxCaption) {

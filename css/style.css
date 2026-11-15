@@ -283,11 +283,6 @@ body.kraft-theme {
     filter: grayscale(0.4);
 }
 
-/* Ẩn hoàn toàn dòng thông báo hiệu ứng chuyển cảnh */
-.fx-transition-toast {
-    display: none !important;
-}
-
 /* Sân khấu 3D chứa các trang sổ - Hỗ trợ chuyển cảnh thuyết trình 3D đa chiều */
 .book-stage-3d {
     position: relative;

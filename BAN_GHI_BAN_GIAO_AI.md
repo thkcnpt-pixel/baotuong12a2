@@ -22,7 +22,7 @@
 
 ```text
 baotuong12a2/
-├── index.html                  # Toàn bộ cấu trúc HTML5 (Intro Phong Bì + Sổ Lật Trang 3D gồm 10 trang)
+├── index.html                  # Toàn bộ cấu trúc HTML5 (Intro Phong Bì + Sổ Lật Trang 3D gồm 12 trang)
 ├── README.md                   # Giới thiệu tổng quan repo & link trỏ tới bản ghi bàn giao này
 ├── BAN_GHI_BAN_GIAO_AI.md      # Tài liệu bàn giao chi tiết (file này)
 ├── css/
@@ -33,7 +33,7 @@ baotuong12a2/
 │   └── interactions.js         # Logic lật trang 3D + toàn bộ 11 tính năng tương tác vật lý + chống vọng tiếng video
 └── assets/
     ├── audio/
-    │   └── lofi-thanh-xuan.wav # Nhạc nền Lofi Thanh Xuân (16 giây loop mượt: Rhodes Fmaj7->Em7->Dm7->Cmaj7 + hộp nhạc)
+    │   └── lofi-thanh-xuan.mp3 # Nhạc nền Lofi Thanh Xuân (221 KB, nén MP3 112kbps từ .wav, 16 giây loop mượt)
     ├── images/12a2/
     │   ├── img_01.jpg          # Tập thể 12A2 mặc áo xanh đồng phục ngồi trong lều trại Nguyễn Sinh Sắc
     │   ├── img_02.jpg          # Thầy trò 12A2 chụp ảnh dưới nắng sân trường Khu B
@@ -46,7 +46,7 @@ baotuong12a2/
     │   ├── img_09.jpg          # Vòng tròn đoàn kết 12A2 mặc áo đồng phục Phú Điền vỗ tay trong trại
     │   ├── img_10.jpg          # Đêm lửa trại bùng cháy của lớp 12A2
     │   ├── img_11.jpg          # Cổng trại tre "Nguyễn Sinh Sắc" rực rỡ cờ đỏ sao vàng
-    │   └── img_12.jpg          # Linh vật chú nai vàng thủ công do tập thể 12A2 tự làm
+    │   └── img_12.jpg          # Linh vật chú nai vàng thủ công do tập thể 12A2 tự làm (12 ảnh đã nén tối ưu <=1440px, ~2.8MB tổng)
     └── video/
         ├── video_01.mp4 .. video_11.mp4  # 11 video kỷ niệm lớp 12A2 (đã được remux bằng ffmpeg với +faststart)
 ```
@@ -123,15 +123,15 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
   7. `fx-cards`: Tráo Bài Ma Thuật 3D (Deck Toss)
   8. `fx-prism`: Lăng Kính Ánh Sáng 3D (Prism Flip)
 - **Hệ thống lấp lánh & tương tác (`window.VisualFX`):**
-  - Tự động gắn `.page-sparkle-field` (10 ngôi sao nhấp nháy + 8 đom đóm vàng) và viền ánh kim cho tất cả 12 trang.
-  - Hiệu ứng xuất hiện 3D so le (`.fx-stagger-item`) cho các thành phần bên trong mỗi trang.
-  - Pháo hoa/hạt 3D (`burstAt`, `burstElement`) cho mọi cú chạm nút và từng tương tác riêng (lật Polaroid bung tim, đổi kênh TV tia neon, vẽ phấn/cào thẻ/rọi đèn pin có vệt sao bay theo ngón tay, mở khóa `4188` nổ kho báu, gửi thư hòm thư bay tim).
+  - Gắn **1 lớp `.page-sparkle-field` dùng chung** (10 ngôi sao nhấp nháy + 8 đom đóm vàng với `translate3d` GPU) trực tiếp trên `#book-stage-3d` (thay vì nhân bản 216 node cho 12 trang) và viền ánh kim dùng `opacity` compositing.
+  - Hiệu ứng xuất hiện 3D so le (`.fx-stagger-item`) dùng batch DOM read/write (1 lần reflow thay vì reflow theo từng phần tử) rồi tự gỡ sau 1.05s.
+  - Pháo hoa/hạt 3D (`burstAt`, `burstElement`, giới hạn tối đa 90 hạt đồng thời để giữ 60fps trên điện thoại) cho mọi cú chạm nút và từng tương tác riêng.
 - Khi gọi `goToPage(targetIndex)`:
   1. Gọi `stopAllVideosOnPageLeave()` để **dừng triệt để mọi video MP4/YouTube** và bật lại nhạc nền Lofi nếu trước đó bị tạm dừng vì xem video.
   2. Phát âm thanh lật trang `window.SoundFX.playPaperFlip()`, quét luồng sáng & bắn hạt sao hai bên sân khấu.
   3. Ép trình duyệt flush layout (`void offsetWidth`) rồi chạy đồng thời class 3D thoát ra & bay vào (`.fx-<key>-<dir>-out` / `-in`).
   4. Cập nhật `.bookmark-tab.active` (tự động trượt ngang căn giữa tab bằng `scrollIntoView`) và trạng thái `disabled` của nút Trước/Sau.
-  5. Dùng `requestAnimationFrame` kiểm tra `activePageId` (`chalkboard-section` hoặc `scratch-card-section`) để gọi `window.refreshChalkboardCanvas()` hoặc `window.refreshScratchCanvas()` lấy đúng kích thước thật sau khi trang đã `display: block`.
+  5. Dùng `requestAnimationFrame` kiểm tra `activePageId` (`chalkboard-section`, `scratch-card-section`, `drag-drop-section`) để gọi làm mới kích thước Canvas / layout sau khi trang đã `display: block`.
 
 ### B. Chi tiết từng trang (Intro + 12 Trang Sổ)
 
@@ -150,23 +150,23 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 
 4. **Trang 03 / 12 (`data-page-index="2"`) — 2. Thước Phim Tua Ngược / Retro TV (`#retro-tv-section`)**
    - Hàm: `initInteraction3_RetroTV()`
-   - Gồm 12 kênh: `CH-01` đến `CH-11` phát `assets/video/video_01.mp4` .. `video_11.mp4`, và kênh thứ 12 (`CH-YT`) là iframe YouTube (`#tv-youtube-iframe`).
+   - Gồm 12 kênh: `CH-01` đến `CH-11` phát `assets/video/video_01.mp4` .. `video_11.mp4`, và kênh thứ 12 (`CH-YT`) hiển thị thẻ placeholder sạch đẹp `#tv-youtube-placeholder` khi chưa gắn link YouTube riêng (hoặc tự nhúng `#tv-youtube-iframe` nếu chủ dự án gắn URL thật vào `data-src`).
    - Chuyển kênh `switchChannel(index, autoPlayNow = true)` tự động phát ngay có cả hình và tiếng, tự tắt nhạc nền Lofi khi phát và bật lại khi dừng/rời trang.
 
 5. **Trang 04 / 12 (`data-page-index="3"`) — 3. Góc Bảng Đen 12A2 (`#chalkboard-section`)**
    - Hàm: `initInteraction4_Chalkboard()`
    - Góc trái: Sĩ số `41 / 41`, trực nhật, Hạng Nhất Thi Đua Tuần, 100% Đỗ Tốt Nghiệp & NV1.
    - Góc phải: Bài toán nỗ lực 1% mỗi ngày ($1.01^{365} \approx 37.78$) & Định luật Vật Lý 12 ($S = v \cdot t$, cộng hưởng 41 tần số, $\Delta U = Q + A$).
-   - Canvas `#chalkboard-canvas`: Vẽ phấn 4 màu + khăn lau bảng `#btn-clear-chalk`.
+   - Canvas `#chalkboard-canvas`: Đã khắc phục triệt để lỗi lệch tọa độ / chỉ viết được 1 bên bảng trên mobile do animation lật trang 3D bóp méo `getBoundingClientRect()`. Dùng `surface.clientWidth`/`clientHeight` * `dpr`, theo dõi bằng `ResizeObserver`, nhân tỷ lệ `scaleX = canvas.width / rect.width`, `scaleY = canvas.height / rect.height`, dùng unified Pointer Events (`setPointerCapture` + `getCoalescedEvents`), bảo toàn nét vẽ khi xoay màn hình và đặt canvas `z-index: 4` nằm trên lớp nội dung (`pointer-events: none`).
 
 6. **Trang 05 / 12 (`data-page-index="4"`) — 4. Thẻ Cào Ký Ức (`#scratch-card-section`)**
    - Hàm: `initInteraction6_ScratchCard()`
    - Ảnh nền bí mật: `assets/images/12a2/img_08.jpg`.
-   - **Tối ưu tốc độ cào lâu và chân thực như đồng xu thật:** Dùng bán kính cọ nhỏ gọn **`3.2%`** chiều rộng thẻ (`Math.max(11, Math.round(canvas.width * 0.032))`) và **cần cào thật 78% diện tích mặt thẻ mới đạt 100% và tự động mở bung bức ảnh**.
+   - **Tối ưu tốc độ cào lâu và chân thực như đồng xu thật:** Dùng bán kính cọ nhỏ gọn **`3.2%`** chiều rộng thẻ (`Math.max(11, Math.round(canvas.width * 0.032))`), **cần cào thật 78% diện tích mặt thẻ mới đạt 100% và tự động mở bung bức ảnh**, đồng thời dùng `container.clientWidth` + `ResizeObserver` để tránh reset khi chuyển cảnh 3D.
 
 7. **Trang 06 / 12 (`data-page-index="5"`) — 5. Giấy Gấp Pop-up 3D (`#popup-card-section`)**
    - Hàm: `initInteraction7_PopupCard()`
-   - **Trạng thái mặc định:** Thiệp **gấp kín** (`#popup-book` KHÔNG có class `.is-open`), hiển thị bìa `#popup-closed-cover`. Chạm vào để mở bung mô hình 3D (`img_11.jpg`, `img_01.jpg`, `img_12.jpg`, `img_10.jpg`).
+   - **Trạng thái mặc định:** Thiệp **gấp kín** (`#popup-book` KHÔNG có class `.is-open`), hiển thị bìa `#popup-closed-cover`. Chạm hoặc nhấn `Enter`/`Space` để mở bung mô hình 3D (`img_11.jpg`, `img_01.jpg`, `img_12.jpg`, `img_10.jpg`).
 
 8. **Trang 07 / 12 (`data-page-index="6"`) — 6. Ổ Khóa Mật Mã 12A2 (`#padlock-section`)**
    - Hàm: `initInteraction8_CipherPadlock()`
@@ -174,11 +174,11 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 
 9. **Trang 08 / 12 (`data-page-index="7"`) — 7. Hòm Thư "Lời Chưa Nói" (`#unsaid-mailbox-section`)**
    - Hàm: `initInteraction5_UnsaidMailbox()`
-   - Lưu thư vào `localStorage` (`baotuong_12a2_letters`). Không dùng Giscus.
+   - Lưu thư vào `localStorage` (`baotuong_12a2_letters`) và chống XSS bằng `escapeHtml()`. Không dùng Giscus.
 
 10. **Trang 09 / 12 (`data-page-index="8"`) — 8. Góc Kéo - Thả Sticker & Giấy Note (`#drag-drop-section`)**
     - Hàm: `initInteraction9_DragDropStickers()` (Interact.js).
-    - Tự động sắp xếp tọa độ 2 cột trên điện thoại (`window.refreshCorkboardLayout`) để cả 3 tờ giấy Note (vàng, hồng, xanh lá `.note-blue`), ảnh mini và 3 sticker hiển thị trọn vẹn 100%, không bị khuất mép phải.
+    - Tự động sắp xếp tọa độ 2 cột linh hoạt theo kích thước thực tế trên điện thoại (`window.refreshCorkboardLayout`), hỗ trợ `escapeHtml()` và phím `Enter` khi dán Note mới, sắp xếp lại cả các note người dùng dán thêm khi bấm `"Sắp xếp lại bàn"`.
 
 11. **Trang 10 / 12 (`data-page-index="9"`) — 9. Đèn Pin Rọi Chữ Dạ Quang Ẩn (`#flashlight-section`)**
     - Hàm: `initInteraction10_FlashlightDarkroom()` — Rọi sáng 41 tên thành viên 12A2.
@@ -195,7 +195,7 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 ## 5. HỆ THỐNG ÂM THANH & NHẠC NỀN (`js/main.js`)
 
 - **`window.BgmController`**:
-  - Quản lý thẻ `<audio id="bgm-audio" src="assets/audio/lofi-thanh-xuan.wav" loop>`.
+  - Quản lý thẻ `<audio id="bgm-audio" src="assets/audio/lofi-thanh-xuan.mp3" loop>`.
   - Tự động bật nhạc ở lần chạm đầu tiên (`pointerdown` / `keydown`) nếu trình duyệt chặn autoplay lúc mới vào trang.
   - `pauseForVideo()`: Tạm dừng nhạc nền khi video Retro TV phát.
   - `resumeAfterVideo()`: Tự động bật lại nhạc nền khi video dừng, kết thúc, hoặc người dùng lật sang trang khác.
@@ -217,11 +217,11 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
    - *Quy tắc cho AI sau:* Nếu người dùng gửi thêm video `.mp4` mới, **bắt buộc chạy lệnh `ffmpeg` trên** trước khi đưa vào `assets/video/`.
 2. **Tối ưu hiển thị trọn vẹn trong 1 màn hình điện thoại (Không cần cuộn 2–3 lần):**
    - **Đầu trang siêu gọn (`.floating-controls`):** Gộp tên `TRẠM KÝ ỨC 12A2`, huy hiệu `THPT PHÚ ĐIỀN • 2026 - 2027` và nút bật/tắt nhạc `Lofi: Bật` trên **1 thanh mảnh duy nhất (~34px)** dùng `position: sticky; top: 0;` (đã bỏ khối `.scrapbook-header` cồng kềnh chiếm chỗ ở đầu trang).
-   - **Thanh điều hướng & mục lục 1 dòng (`.compact-book-nav`):** Tích hợp nút `<` (`#btn-prev-page`), thanh 10 nút `.bookmark-tab` trượt ngang 1 dòng (`flex-wrap: nowrap; overflow-x: auto;`) tự động căn giữa tab đang mở (`scrollIntoView`), và nút `>` (`#btn-next-page`).
-   - **Cuối trang siêu mảnh (`.scrapbook-footer-mini`):** Đã bỏ khối footer lớn + thanh chuyển trang lặp lại ở đáy, thay bằng 1 dòng chữ ký mảnh duy nhất (~20px).
-   - **Bên trong cả 10 trang:** Đã tinh chỉnh kích thước, khoảng đệm và lưới hiển thị trên mobile (`@media (max-width: 768px)`) để toàn bộ nội dung từ đầu đến cuối trang (đặc biệt là Bảng Đen, TV Kỷ Niệm, Polaroid 2x2, Bàn Sticker, Đèn Pin 41 tên) hiển thị trọn vẹn ngay trên 1 màn hình.
+   - **Thanh mục lục trên (`.compact-book-nav.top-bookmarks-only`) & thanh chuyển trang dưới (`.bottom-page-turn-bar`):** Tách thanh 12 nút `.bookmark-tab` trượt ngang 1 dòng lên trên cùng (tự động căn giữa tab đang mở bằng `scrollIntoView`), còn nút `< Trang trước` (`#btn-prev-page`), chỉ báo `Trang X / 12` và `Trang tiếp >` (`#btn-next-page`) đặt gọn ở dưới cùng để ngón cái dễ nhấn.
+   - **Cuối trang siêu mảnh (`.scrapbook-footer-mini`):** Đã bỏ khối footer lớn cồng kềnh ở đáy, thay bằng 1 dòng chữ ký mảnh duy nhất (~20px).
+   - **Bên trong cả 12 trang:** Đã tinh chỉnh kích thước, khoảng đệm và lưới hiển thị trên mobile (`@media (max-width: 768px)`) để toàn bộ nội dung từ đầu đến cuối trang (đặc biệt là Bảng Đen, TV Kỷ Niệm, Polaroid 2x2, Bàn Sticker, Đèn Pin 41 tên) hiển thị trọn vẹn ngay trên 1 màn hình.
 3. **Trạng thái gập kín ban đầu:**
-   - Phong bì Intro và Thiệp Pop-up 3D (Trang 5) phải luôn ở trạng thái **gấp kín** khi tải trang để người xem tự tương tác mở.
+   - Phong bì Intro và Thiệp Pop-up 3D (Trang 06 / 12) phải luôn ở trạng thái **gấp kín** khi tải trang để người xem tự tương tác mở.
 
 ---
 

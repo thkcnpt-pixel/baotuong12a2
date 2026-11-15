@@ -109,7 +109,8 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 - **Trang 12 / 12 (`data-page-index="11"`):** Trang Kết Thúc (Lời Chào Tạm Biệt & Hẹn Ngày Hội Ngộ — `#closing-page-section`).
 
 ### A. Hệ thống Chuyển Cảnh Thuyết Trình 3D & Hiệu Ứng Lấp Lánh (`initBookPageFlipSystem` + `initSparkleAndActionFX`)
-- Container: `#book-stage-3d` (`perspective: 1050px`, có gáy sách lò xo `.book-spiral-spine`, nhãn toast `.fx-transition-toast` và luồng sáng quét `.stage-light-sweep`).
+- Container: `#book-stage-3d` (`perspective: 1050px`, có gáy sách lò xo `.book-spiral-spine` và luồng sáng quét `.stage-light-sweep`; **không hiển thị dòng thông báo tên hiệu ứng** để giữ thẩm mỹ tự nhiên).
+- **Thanh chuyển trang & mục lục (`.compact-book-nav.bottom-book-nav`)** được đặt ở **phía dưới `#book-stage-3d`** (gồm nút `< Trước`, 12 tab mục lục trượt ngang 1 dòng và nút `Tiếp >`) để lấp khoảng trống bên dưới và giúp ngón tay cái dễ bấm trên điện thoại.
 - **8 hiệu ứng chuyển cảnh thuyết trình 3D** (chạy đồng thời trang cũ `.is-exiting` bay ra và trang mới `.is-active` bay vào trong 0.82s):
   1. `fx-cube`: Khối Lập Phương 3D (Cube Spin)
   2. `fx-carousel`: Băng Chuyền 3D (Coverflow)
@@ -159,7 +160,7 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 6. **Trang 05 / 12 (`data-page-index="4"`) — 4. Thẻ Cào Ký Ức (`#scratch-card-section`)**
    - Hàm: `initInteraction6_ScratchCard()`
    - Ảnh nền bí mật: `assets/images/12a2/img_08.jpg`.
-   - **Đã khắc phục lỗi khó cào:** Không khởi tạo canvas khi trang đang ẩn (`rect.width === 0`), tự động lấy đúng kích thước thật khi lật tới trang, dùng nét cọ liền mạch (`lineTo` + `arc` với bán kính lớn `12%` chiều rộng thẻ) và **chỉ cần cào 26% diện tích thực tế (hiển thị 100%) là tự động mở bung hoàn toàn bức ảnh**.
+   - **Tối ưu tốc độ cào vừa phải:** Không khởi tạo canvas khi trang đang ẩn (`rect.width === 0`), tự động lấy đúng kích thước thật khi lật tới trang, dùng nét cọ liền mạch (`lineTo` + `arc` với bán kính vừa phải **`6%`** chiều rộng thẻ — bằng một nửa so với trước) và **cần cào 50% diện tích thực tế (một nửa mặt thẻ) mới đạt 100% và tự động mở bung bức ảnh**.
 
 7. **Trang 06 / 12 (`data-page-index="5"`) — 5. Giấy Gấp Pop-up 3D (`#popup-card-section`)**
    - Hàm: `initInteraction7_PopupCard()`

@@ -826,9 +826,9 @@ function initInteraction6_ScratchCard() {
         ctx.fillStyle = '#3b2818';
         ctx.font = `bold ${titleFontSize}px "Special Elite", monospace`;
         ctx.textAlign = 'center';
-        ctx.fillText('✨ CÀO NHẸ ĐỂ MỞ KÝ ỨC 12A2 ✨', w / 2, h / 2 - 8);
+        ctx.fillText('✨ CÀO LỚP NHŨ ĐỂ MỞ KÝ ỨC 12A2 ✨', w / 2, h / 2 - 8);
         ctx.font = `${subFontSize}px "Pangolin", cursive`;
-        ctx.fillText('(Chỉ cần quẹt nhẹ 1-2 đường là ảnh sẽ hiện ra!)', w / 2, h / 2 + 16);
+        ctx.fillText('(Cào khoảng một nửa mặt thẻ để bức ảnh hiện ra!)', w / 2, h / 2 + 16);
 
         if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>0%</strong>';
         isInitialized = true;
@@ -860,7 +860,8 @@ function initInteraction6_ScratchCard() {
 
     function scratchStroke(pos) {
         ctx.globalCompositeOperation = 'destination-out';
-        const brushRadius = Math.max(46, Math.round(canvas.width * 0.12));
+        // Giảm bán kính nét cào xuống còn một nửa so với trước (6% chiều rộng thẻ) để cào lâu và thú vị hơn
+        const brushRadius = Math.max(24, Math.round(canvas.width * 0.06));
 
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -905,11 +906,11 @@ function initInteraction6_ScratchCard() {
             }
 
             const rawPercent = Math.round((transparentPixels / totalSampled) * 100);
-            // Quy đổi: Chỉ cần cào thật 26% diện tích là đạt 100% và tự động bung sáng toàn bộ bức ảnh
-            const displayPercent = Math.min(100, Math.round((rawPercent / 26) * 100));
+            // Quy đổi: Cần cào thật 50% diện tích mặt thẻ mới đạt 100% và bung sáng toàn bộ bức ảnh
+            const displayPercent = Math.min(100, Math.round((rawPercent / 50) * 100));
             if (badgeEl) badgeEl.innerHTML = `Đã cào mở: <strong>${displayPercent}%</strong>`;
 
-            if (rawPercent >= 26) {
+            if (rawPercent >= 50) {
                 canvas.classList.add('is-cleared');
                 if (badgeEl) badgeEl.innerHTML = 'Đã cào mở: <strong>100% (Hoàn tất!) ✨</strong>';
                 if (window.SoundFX) window.SoundFX.playPaperFlip();

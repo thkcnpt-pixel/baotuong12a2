@@ -163,23 +163,18 @@ body.kraft-theme {
 }
 
 /* ==========================================================================
-   THANH CHUYỂN TRANG ĐẶT Ở PHÍA DƯỚI CÙNG MÀN HÌNH (DỄ NHẤN BẰNG NGÓN CÁI)
+   THANH MỤC LỤC 1 -> 10 Ở PHÍA TRÊN & THANH NÚT TRƯỚC/TIẾP Ở PHÍA DƯỚI
    ========================================================================== */
 .compact-book-nav {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: auto;
-    margin-bottom: 2px;
-    position: sticky;
-    bottom: 4px;
-    z-index: 900;
-    background: rgba(244, 234, 213, 0.95);
-    backdrop-filter: blur(6px);
-    border: 1.5px dashed rgba(138, 100, 67, 0.75);
-    padding: 6px 8px;
-    border-radius: 8px;
-    box-shadow: 0 -2px 12px rgba(44, 30, 20, 0.16), 0 3px 10px rgba(44, 30, 20, 0.14);
+    gap: 5px;
+    margin-bottom: 5px;
+    background: rgba(244, 234, 213, 0.92);
+    border: 1px dashed rgba(138, 100, 67, 0.65);
+    padding: 4px 6px;
+    border-radius: 7px;
+    box-shadow: 0 2px 7px rgba(44, 30, 20, 0.1);
 }
 
 .book-bookmarks-bar {
@@ -191,7 +186,7 @@ body.kraft-theme {
     flex: 1;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    padding: 2px 2px;
+    padding: 1px 2px;
 }
 
 .book-bookmarks-bar::-webkit-scrollbar {
@@ -204,10 +199,10 @@ body.kraft-theme {
     color: var(--ink-sepia-dark);
     border: 1px solid #9e7850;
     border-bottom: 2px solid #7d5b36;
-    padding: 5px 10px;
+    padding: 4px 9px;
     border-radius: 5px;
     font-family: var(--font-handwriting-body);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: inline-flex;
@@ -227,11 +222,42 @@ body.kraft-theme {
     box-shadow: 0 2px 5px rgba(140, 45, 25, 0.28);
 }
 
+/* Thanh 2 nút Trang trước / Trang tiếp cố định gọn ở dưới cùng màn hình để dễ nhấn */
+.bottom-page-turn-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    margin-bottom: 2px;
+    position: sticky;
+    bottom: 4px;
+    z-index: 900;
+    background: rgba(244, 234, 213, 0.95);
+    backdrop-filter: blur(6px);
+    border: 1.5px dashed rgba(138, 100, 67, 0.75);
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 -2px 10px rgba(44, 30, 20, 0.14), 0 3px 8px rgba(44, 30, 20, 0.12);
+}
+
+.bottom-page-indicator {
+    font-family: var(--font-typewriter);
+    font-size: 0.78rem;
+    color: var(--ink-sepia-dark);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.bottom-page-indicator strong {
+    color: var(--stamp-red);
+}
+
 .book-turn-btn {
     background: linear-gradient(145deg, #9e341e, #782210);
     color: #fff8eb;
     border: 1px solid #f5d487;
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
     font-family: var(--font-typewriter);
     font-size: 0.78rem;
@@ -240,16 +266,10 @@ body.kraft-theme {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 5px;
     flex-shrink: 0;
     box-shadow: 0 2px 5px rgba(44, 30, 20, 0.2);
     transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.book-turn-btn.icon-only {
-    width: 30px;
-    height: 28px;
-    padding: 0;
 }
 
 .book-turn-btn:hover:not(:disabled) {
@@ -261,6 +281,11 @@ body.kraft-theme {
     opacity: 0.35;
     cursor: not-allowed;
     filter: grayscale(0.4);
+}
+
+/* Ẩn hoàn toàn dòng thông báo hiệu ứng chuyển cảnh */
+.fx-transition-toast {
+    display: none !important;
 }
 
 /* Sân khấu 3D chứa các trang sổ - Hỗ trợ chuyển cảnh thuyết trình 3D đa chiều */
@@ -724,19 +749,22 @@ body.kraft-theme {
     }
 
     .compact-book-nav {
-        margin-top: auto;
-        margin-bottom: 2px;
-        padding: 6px 6px;
+        margin-bottom: 4px;
+        padding: 3px 4px;
     }
 
     .bookmark-tab {
-        padding: 5px 9px;
-        font-size: 0.76rem;
+        padding: 4px 8px;
+        font-size: 0.74rem;
+    }
+
+    .bottom-page-turn-bar {
+        padding: 5px 8px;
     }
 
     .book-turn-btn {
-        padding: 6px 10px;
-        font-size: 0.74rem;
+        padding: 6px 12px;
+        font-size: 0.75rem;
     }
 
     .section-card.book-page {

@@ -302,14 +302,6 @@ function initBookPageFlipSystem() {
         );
     });
 
-    // Tạo nhãn thông báo hiệu ứng 3D trên sân khấu
-    let toastEl = stage3D ? stage3D.querySelector('.fx-transition-toast') : null;
-    if (stage3D && !toastEl) {
-        toastEl = document.createElement('div');
-        toastEl.className = 'fx-transition-toast';
-        stage3D.appendChild(toastEl);
-    }
-    let toastTimer = null;
     let cleanupTimer = null;
     let transitionCounter = 0;
 
@@ -319,16 +311,6 @@ function initBookPageFlipSystem() {
     // Khởi chạy hiệu ứng xuất hiện 3D cho trang đầu tiên
     if (window.VisualFX) {
         window.VisualFX.animatePageEntrance(pages[0]);
-    }
-
-    function showTransitionToast(text) {
-        if (!toastEl) return;
-        toastEl.innerHTML = `✨ Chuyển cảnh: <strong>${text}</strong>`;
-        toastEl.classList.add('is-visible');
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => {
-            toastEl.classList.remove('is-visible');
-        }, 1350);
     }
 
     function goToPage(targetIndex) {
@@ -355,7 +337,6 @@ function initBookPageFlipSystem() {
             stage3D.classList.add('stage-light-sweep');
             if (window.VisualFX) window.VisualFX.burstStageTransition(stage3D);
         }
-        showTransitionToast(styleObj.label);
 
         if (cleanupTimer) clearTimeout(cleanupTimer);
 
@@ -401,10 +382,9 @@ function initBookPageFlipSystem() {
             }
         });
 
-        // 7. Cập nhật tiêu đề số trang và trạng thái nút Trước / Sau
-        const pageTitle = pages[currentPage].getAttribute('data-page-title') || '';
+        // 7. Cập nhật tiêu đề số trang và trạng thái nút Trước / Tiếp
         if (indicatorEl) {
-            indicatorEl.innerHTML = `Trang <strong>${currentPage + 1} / ${totalPages}</strong> • ${pageTitle}`;
+            indicatorEl.innerHTML = `Trang <strong>${currentPage + 1} / ${totalPages}</strong>`;
         }
 
         const isFirst = currentPage === 0;

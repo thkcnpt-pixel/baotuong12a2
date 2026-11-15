@@ -15,8 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- CSS Theme & Interactions -->
-    <link rel="stylesheet" href="css/style.css?v=20261115_3d4">
-    <link rel="stylesheet" href="css/interactions.css?v=20261115_3d4">
+    <link rel="stylesheet" href="css/style.css?v=20261115_3d5">
+    <link rel="stylesheet" href="css/interactions.css?v=20261115_3d5">
 </head>
 <body class="kraft-theme">
 
@@ -80,6 +80,24 @@
          KHUNG SỔ LƯU BÚT LẬT TRANG 3D (INTERACTIVE BOOK)
          ========================================== -->
     <main class="scrapbook-wrapper" id="main-scrapbook">
+
+        <!-- THANH MỤC LỤC CÁC TRANG (MỞ ĐẦU, 1 -> 10, KẾT THÚC) ĐẶT Ở TRÊN CÙNG -->
+        <div class="compact-book-nav top-bookmarks-only">
+            <nav class="book-bookmarks-bar" id="book-bookmarks-bar" aria-label="Mục lục các trang sổ lưu bút">
+                <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-book-bookmark"></i> Mở Đầu</button>
+                <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-camera-retro"></i> 1. Polaroid</button>
+                <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
+                <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-chalkboard"></i> 3. Bảng Đen</button>
+                <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
+                <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
+                <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa</button>
+                <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
+                <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-note-sticky"></i> 8. Sticker</button>
+                <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
+                <button type="button" class="bookmark-tab" data-page="10"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
+                <button type="button" class="bookmark-tab" data-page="11"><i class="fa-solid fa-heart"></i> Kết Thúc</button>
+            </nav>
+        </div>
 
         <!-- ==========================================
              SÂN KHẤU LẬT TRANG 3D (12 TRANG SỔ LƯU BÚT: MỞ ĐẦU + 10 TƯƠNG TÁC + KẾT THÚC)
@@ -721,29 +739,16 @@
             </article>
         </div>
 
-        <!-- THANH CHUYỂN TRANG ĐẶT Ở PHÍA DƯỚI ĐỂ NGÓN TAY DỄ NHẤN (NÚT TRƯỚC + 12 TAB MỤC LỤC + NÚT TIẾP) -->
-        <div class="compact-book-nav bottom-book-nav">
+        <!-- HAI NÚT TRƯỚC VÀ TIẾP ĐẶT Ở PHÍA DƯỚI ĐỂ DỄ NHẤN CHUYỂN TRANG -->
+        <div class="bottom-page-turn-bar">
             <button type="button" id="btn-prev-page" class="book-turn-btn" title="Trang trước" disabled>
-                <i class="fa-solid fa-chevron-left"></i> Trước
+                <i class="fa-solid fa-chevron-left"></i> Trang trước
             </button>
 
-            <nav class="book-bookmarks-bar" id="book-bookmarks-bar" aria-label="Mục lục các trang sổ lưu bút">
-                <button type="button" class="bookmark-tab active" data-page="0"><i class="fa-solid fa-book-bookmark"></i> Mở Đầu</button>
-                <button type="button" class="bookmark-tab" data-page="1"><i class="fa-solid fa-camera-retro"></i> 1. Polaroid</button>
-                <button type="button" class="bookmark-tab" data-page="2"><i class="fa-solid fa-tv"></i> 2. TV Kỷ Niệm</button>
-                <button type="button" class="bookmark-tab" data-page="3"><i class="fa-solid fa-chalkboard"></i> 3. Bảng Đen</button>
-                <button type="button" class="bookmark-tab" data-page="4"><i class="fa-solid fa-hand-sparkles"></i> 4. Thẻ Cào</button>
-                <button type="button" class="bookmark-tab" data-page="5"><i class="fa-solid fa-book-open"></i> 5. Pop-up 3D</button>
-                <button type="button" class="bookmark-tab" data-page="6"><i class="fa-solid fa-lock"></i> 6. Ổ Khóa</button>
-                <button type="button" class="bookmark-tab" data-page="7"><i class="fa-solid fa-envelope-open-text"></i> 7. Hòm Thư</button>
-                <button type="button" class="bookmark-tab" data-page="8"><i class="fa-solid fa-note-sticky"></i> 8. Sticker</button>
-                <button type="button" class="bookmark-tab" data-page="9"><i class="fa-solid fa-bolt-lightning"></i> 9. Đèn Pin</button>
-                <button type="button" class="bookmark-tab" data-page="10"><i class="fa-solid fa-film"></i> 10. Cuộn Phim</button>
-                <button type="button" class="bookmark-tab" data-page="11"><i class="fa-solid fa-heart"></i> Kết Thúc</button>
-            </nav>
+            <span class="bottom-page-indicator" id="book-page-indicator">Trang <strong>1 / 12</strong></span>
 
             <button type="button" id="btn-next-page" class="book-turn-btn" title="Trang tiếp theo">
-                Tiếp <i class="fa-solid fa-chevron-right"></i>
+                Trang tiếp <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
 
@@ -758,7 +763,7 @@
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
     <!-- File JS chính -->
-    <script src="js/main.js?v=20261115_3d4"></script>
-    <script src="js/interactions.js?v=20261115_3d4"></script>
+    <script src="js/main.js?v=20261115_3d5"></script>
+    <script src="js/interactions.js?v=20261115_3d5"></script>
 </body>
 </html>

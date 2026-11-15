@@ -110,7 +110,9 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 
 ### A. Hệ thống Chuyển Cảnh Thuyết Trình 3D & Hiệu Ứng Lấp Lánh (`initBookPageFlipSystem` + `initSparkleAndActionFX`)
 - Container: `#book-stage-3d` (`perspective: 1050px`, có gáy sách lò xo `.book-spiral-spine` và luồng sáng quét `.stage-light-sweep`; **không hiển thị dòng thông báo tên hiệu ứng** để giữ thẩm mỹ tự nhiên).
-- **Thanh chuyển trang & mục lục (`.compact-book-nav.bottom-book-nav`)** được đặt ở **phía dưới `#book-stage-3d`** (gồm nút `< Trước`, 12 tab mục lục trượt ngang 1 dòng và nút `Tiếp >`) để lấp khoảng trống bên dưới và giúp ngón tay cái dễ bấm trên điện thoại.
+- **Bố cục điều hướng tách đôi tối ưu thao tác:**
+  - **Phía trên (`#book-stage-3d`):** Thanh mục lục 12 tab (`.compact-book-nav.top-bookmarks-only` gồm `Mở Đầu`, `1. Polaroid` $\rightarrow$ `10. Cuộn Phim`, `Kết Thúc`) trượt ngang gọn 1 dòng ở trên cùng.
+  - **Phía dưới (`#book-stage-3d`):** Thanh chuyển trang (`.bottom-page-turn-bar`) gồm 2 nút `< Trang trước` (`#btn-prev-page`), chỉ báo `Trang X / 12` (`#book-page-indicator`) và `Trang tiếp >` (`#btn-next-page`) cố định gọn ở dưới để ngón cái dễ nhấn.
 - **8 hiệu ứng chuyển cảnh thuyết trình 3D** (chạy đồng thời trang cũ `.is-exiting` bay ra và trang mới `.is-active` bay vào trong 0.82s):
   1. `fx-cube`: Khối Lập Phương 3D (Cube Spin)
   2. `fx-carousel`: Băng Chuyền 3D (Coverflow)

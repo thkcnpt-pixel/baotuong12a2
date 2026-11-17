@@ -1555,7 +1555,7 @@ function initInteraction11_HorizontalFilmReel() {
         { code: '05A', src: 'assets/images/12a2/img_05.jpg', caption: 'Giây phút tự hào nhận Cờ Thi Đua Hạng Nhất Tuần!' },
         { code: '06A', src: 'assets/images/12a2/img_06.jpg', caption: 'Bữa tiệc bánh kem mừng tuổi mới ngay tại phòng học 12A2' },
         { code: '07A', src: 'assets/images/12a2/img_07.jpg', caption: 'Tiết học Toán Xác Suất vui nhộn và đầy ắp tiếng cười' },
-        { code: '08A', src: 'assets/images/12a2/img_08.jpg', caption: 'Nụ cười ấm áp bên cô giáo và chiếc bánh kem xanh' },
+        { code: '08A', src: 'assets/images/12a2/img_08.jpg', caption: 'Tập thể 12A2 áo dài trắng & sơ mi trắng quây quần thả tim bên Thầy Phú Hữu kính yêu' },
         { code: '09A', src: 'assets/images/12a2/img_09.jpg', caption: 'Vòng tròn đoàn kết 12A2 vỗ tay hát vang trong trại' },
         { code: '10A', src: 'assets/images/12a2/img_10.jpg', caption: 'Đêm lửa trại bùng cháy nhiệt huyết tuổi 18' },
         { code: '11A', src: 'assets/images/12a2/img_11.jpg', caption: 'Cổng trại tre Nguyễn Sinh Sắc rực rỡ cờ đỏ sao vàng' },

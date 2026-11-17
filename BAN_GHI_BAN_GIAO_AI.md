@@ -42,7 +42,7 @@ baotuong12a2/
     │   ├── img_05.jpg          # Lớp nhận Cờ Thi Đua Hạng Nhất Tuần ("Đạt thành tích xuất sắc tuần - Hạng I") + bánh kem
     │   ├── img_06.jpg          # Bữa tiệc bánh kem sinh nhật tập thể tại phòng học 12A2
     │   ├── img_07.jpg          # Tiết học Toán Xác Suất (trên TV lớp có bài toán P = 1 - 0.3*0.4 = 0.88)
-    │   ├── img_08.jpg          # Khoảnh khắc ấm áp bên cô giáo và chiếc bánh kem xanh
+    │   ├── img_08.jpg          # Tập thể 12A2 trong tà áo dài trắng & sơ mi trắng quây quần thả tim bên Thầy Phú Hữu kính yêu trước bảng lớp
     │   ├── img_09.jpg          # Vòng tròn đoàn kết 12A2 mặc áo đồng phục Phú Điền vỗ tay trong trại
     │   ├── img_10.jpg          # Đêm lửa trại bùng cháy của lớp 12A2
     │   ├── img_11.jpg          # Cổng trại tre "Nguyễn Sinh Sắc" rực rỡ cờ đỏ sao vàng

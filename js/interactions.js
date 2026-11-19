@@ -268,21 +268,9 @@ function initSparkleAndActionFX() {
    ========================================================================== */
 function stopAllVideosOnPageLeave() {
     const videoEl = document.getElementById('tv-video-player');
-    const youtubeEl = document.getElementById('tv-youtube-iframe');
 
     if (videoEl && !videoEl.paused) {
         videoEl.pause();
-    }
-
-    const youtubeRawSrc = youtubeEl ? (youtubeEl.getAttribute('src') || '').trim() : '';
-    if (youtubeEl && youtubeRawSrc) {
-        try {
-            youtubeEl.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-        } catch (e) {}
-        if (!youtubeEl.getAttribute('data-src') && /^https?:\/\//i.test(youtubeRawSrc)) {
-            youtubeEl.setAttribute('data-src', youtubeRawSrc);
-        }
-        youtubeEl.removeAttribute('src');
     }
 
     // Khôi phục nhạc nền Lofi Thanh Xuân ngay khi rời trang Video
@@ -536,25 +524,22 @@ function initInteraction2_PolaroidFlip() {
    ========================================================================== */
 function initInteraction3_RetroTV() {
     const channels = [
-        { code: '01', label: 'CH-01 • HỘI TRẠI 12A2', title: 'Khoảnh khắc vui nhộn của 12A2 (Băng #1)', type: 'video', src: 'assets/video/video_01.mp4' },
-        { code: '02', label: 'CH-02 • NỤ CƯỜI TUỔI 18', title: 'Hậu trường lớp học siêu lầy (Băng #2)', type: 'video', src: 'assets/video/video_02.mp4' },
-        { code: '03', label: 'CH-03 • THANH XUÂN RỰC RỠ', title: 'Kỷ niệm bên nhau dưới mái trường (Băng #3)', type: 'video', src: 'assets/video/video_03.mp4' },
-        { code: '04', label: 'CH-04 • GÓC LỚP THÂN QUEN', title: 'Tiếng cười giờ ra chơi 12A2 (Băng #4)', type: 'video', src: 'assets/video/video_04.mp4' },
-        { code: '05', label: 'CH-05 • CHÁY HẾT MÌNH', title: 'Hoạt động tập thể 12A2 (Băng #5)', type: 'video', src: 'assets/video/video_05.mp4' },
-        { code: '06', label: 'CH-06 • KÝ ỨC ĐẸP NHẤT', title: 'Thước phim thanh xuân 12A2 (Băng #6)', type: 'video', src: 'assets/video/video_06.mp4' },
-        { code: '07', label: 'CH-07 • ĐỒNG ĐỘI 12A2', title: 'Cùng nhau tạo nên kỷ niệm (Băng #7)', type: 'video', src: 'assets/video/video_07.mp4' },
-        { code: '08', label: 'CH-08 • NGÀY NẮNG ĐẸP', title: 'Sân trường Phú Điền rực rỡ (Băng #8)', type: 'video', src: 'assets/video/video_08.mp4' },
-        { code: '09', label: 'CH-09 • TUỔI TRẺ CUỒNG NHIỆT', title: 'Không khí náo nhiệt của 12A2 (Băng #9)', type: 'video', src: 'assets/video/video_09.mp4' },
-        { code: '10', label: 'CH-10 • NHỮNG NỤ CƯỜI', title: 'Lưu giữ từng giây phút bên nhau (Băng #10)', type: 'video', src: 'assets/video/video_10.mp4' },
-        { code: '11', label: 'CH-11 • TẠM BIỆT CẤP 3', title: 'Hành trình khép lại mở ra tương lai (Băng #11)', type: 'video', src: 'assets/video/video_11.mp4' },
-        { code: 'YT', label: 'CH-YT • YOUTUBE KỶ NIỆM', title: 'Kênh YouTube Kỷ Niệm 12A2', type: 'youtube', src: '' }
+        { code: '01', label: 'CH-01 • HỘI TRẠI 12A2', title: 'Khoảnh khắc vui nhộn của 12A2 (Băng #1)', src: 'assets/video/video_01.mp4' },
+        { code: '02', label: 'CH-02 • NỤ CƯỜI TUỔI 18', title: 'Hậu trường lớp học siêu lầy (Băng #2)', src: 'assets/video/video_02.mp4' },
+        { code: '03', label: 'CH-03 • THANH XUÂN RỰC RỠ', title: 'Kỷ niệm bên nhau dưới mái trường (Băng #3)', src: 'assets/video/video_03.mp4' },
+        { code: '04', label: 'CH-04 • GÓC LỚP THÂN QUEN', title: 'Tiếng cười giờ ra chơi 12A2 (Băng #4)', src: 'assets/video/video_04.mp4' },
+        { code: '05', label: 'CH-05 • CHÁY HẾT MÌNH', title: 'Hoạt động tập thể 12A2 (Băng #5)', src: 'assets/video/video_05.mp4' },
+        { code: '06', label: 'CH-06 • KÝ ỨC ĐẸP NHẤT', title: 'Thước phim thanh xuân 12A2 (Băng #6)', src: 'assets/video/video_06.mp4' },
+        { code: '07', label: 'CH-07 • ĐỒNG ĐỘI 12A2', title: 'Cùng nhau tạo nên kỷ niệm (Băng #7)', src: 'assets/video/video_07.mp4' },
+        { code: '08', label: 'CH-08 • NGÀY NẮNG ĐẸP', title: 'Sân trường Phú Điền rực rỡ (Băng #8)', src: 'assets/video/video_08.mp4' },
+        { code: '09', label: 'CH-09 • TUỔI TRẺ CUỒNG NHIỆT', title: 'Không khí náo nhiệt của 12A2 (Băng #9)', src: 'assets/video/video_09.mp4' },
+        { code: '10', label: 'CH-10 • NHỮNG NỤ CƯỜI', title: 'Lưu giữ từng giây phút bên nhau (Băng #10)', src: 'assets/video/video_10.mp4' },
+        { code: '11', label: 'CH-11 • TẠM BIỆT CẤP 3', title: 'Hành trình khép lại mở ra tương lai (Băng #11)', src: 'assets/video/video_11.mp4' }
     ];
 
     let currentIndex = 0;
 
     const videoEl = document.getElementById('tv-video-player');
-    const youtubeEl = document.getElementById('tv-youtube-iframe');
-    const ytPlaceholderEl = document.getElementById('tv-youtube-placeholder');
     const noiseEl = document.getElementById('tv-static-noise');
     const osdEl = document.getElementById('tv-osd-channel');
     const ledEl = document.getElementById('tv-channel-led');
@@ -563,7 +548,7 @@ function initInteraction3_RetroTV() {
     const nextBtn = document.getElementById('btn-tv-next');
     const pills = document.querySelectorAll('.tv-ch-pill');
 
-    if (!videoEl || !youtubeEl) return;
+    if (!videoEl) return;
 
     // Tự động tắt nhạc nền Lofi khi video phát & mở lại khi video dừng/kết thúc
     videoEl.addEventListener('play', () => {
@@ -606,52 +591,29 @@ function initInteraction3_RetroTV() {
             pill.classList.toggle('active', idx === currentIndex);
         });
 
-        if (ch.type === 'video') {
-            youtubeEl.removeAttribute('src');
-            youtubeEl.classList.add('hidden');
-            if (ytPlaceholderEl) ytPlaceholderEl.classList.add('hidden');
-            videoEl.classList.remove('hidden');
-            videoEl.pause();
+        videoEl.classList.remove('hidden');
+        videoEl.pause();
 
-            // Cập nhật trực tiếp cả thẻ <source> lẫn thuộc tính src để trình duyệt nạp đúng khung hình đầu tiên
-            const sourceTag = videoEl.querySelector('source');
-            if (sourceTag) sourceTag.src = ch.src;
-            videoEl.src = ch.src;
-            videoEl.currentTime = 0;
-            videoEl.load();
+        // Cập nhật trực tiếp cả thẻ <source> lẫn thuộc tính src để trình duyệt nạp đúng khung hình đầu tiên
+        const sourceTag = videoEl.querySelector('source');
+        if (sourceTag) sourceTag.src = ch.src;
+        videoEl.src = ch.src;
+        videoEl.currentTime = 0;
+        videoEl.load();
 
-            if (autoPlayNow) {
-                const startPlayback = () => {
-                    const p = videoEl.play();
-                    if (p !== undefined) {
-                        p.then(() => {
-                            if (window.BgmController) window.BgmController.pauseForVideo();
-                        }).catch(() => {});
-                    }
-                };
-                if (videoEl.readyState >= 2) {
-                    startPlayback();
-                } else {
-                    videoEl.addEventListener('loadeddata', startPlayback, { once: true });
+        if (autoPlayNow) {
+            const startPlayback = () => {
+                const p = videoEl.play();
+                if (p !== undefined) {
+                    p.then(() => {
+                        if (window.BgmController) window.BgmController.pauseForVideo();
+                    }).catch(() => {});
                 }
-            }
-        } else {
-            videoEl.pause();
-            videoEl.classList.add('hidden');
-
-            const customSrc = (youtubeEl.getAttribute('data-src') || ch.src || '').trim();
-            const hasValidYoutube = Boolean(customSrc) && !customSrc.includes('dQw4w9WgXcQ') && /^https?:\/\//i.test(customSrc);
-
-            if (hasValidYoutube) {
-                if (ytPlaceholderEl) ytPlaceholderEl.classList.add('hidden');
-                youtubeEl.classList.remove('hidden');
-                youtubeEl.src = customSrc;
-                if (window.BgmController) window.BgmController.pauseForVideo();
+            };
+            if (videoEl.readyState >= 2) {
+                startPlayback();
             } else {
-                youtubeEl.removeAttribute('src');
-                youtubeEl.classList.add('hidden');
-                if (ytPlaceholderEl) ytPlaceholderEl.classList.remove('hidden');
-                if (window.BgmController) window.BgmController.resumeAfterVideo();
+                videoEl.addEventListener('loadeddata', startPlayback, { once: true });
             }
         }
     }

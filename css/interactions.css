@@ -463,44 +463,6 @@
     pointer-events: none;
 }
 
-.tv-youtube-placeholder {
-    position: absolute;
-    inset: 0;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 18px;
-    text-align: center;
-    background: radial-gradient(circle at center, #251a12 0%, #0d0a08 100%);
-    color: #f4ead5;
-}
-
-.tv-youtube-placeholder.hidden {
-    display: none;
-}
-
-.tv-youtube-placeholder i {
-    font-size: 2.2rem;
-    color: #ffb703;
-}
-
-.tv-youtube-placeholder strong {
-    font-family: var(--font-typewriter);
-    font-size: 0.9rem;
-    color: #ffd166;
-}
-
-.tv-youtube-placeholder p {
-    font-family: var(--font-handwriting-body);
-    font-size: 0.86rem;
-    max-width: 340px;
-    color: #e6d3b3;
-    line-height: 1.35;
-}
-
 .tv-control-panel {
     background: #332012;
     border: 2px solid #24150a;

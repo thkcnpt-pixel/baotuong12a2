@@ -153,7 +153,7 @@ Website được thiết kế thành **Sổ Lưu Bút Lật Trang 3D** gồm **1
 
 4. **Trang 03 / 12 (`data-page-index="2"`) — 2. Thước Phim Tua Ngược / Retro TV (`#retro-tv-section`)**
    - Hàm: `initInteraction3_RetroTV()`
-   - Gồm 12 kênh: `CH-01` đến `CH-11` phát `assets/video/video_01.mp4` .. `video_11.mp4`, và kênh thứ 12 (`CH-YT`) hiển thị thẻ placeholder sạch đẹp `#tv-youtube-placeholder` khi chưa gắn link YouTube riêng (hoặc tự nhúng `#tv-youtube-iframe` nếu chủ dự án gắn URL thật vào `data-src`).
+   - Gồm 11 kênh: `CH-01` đến `CH-11` phát trực tiếp `assets/video/video_01.mp4` .. `video_11.mp4` (đã bỏ nút và khung YouTube).
    - Chuyển kênh `switchChannel(index, autoPlayNow = true)` tự động phát ngay có cả hình và tiếng, tự tắt nhạc nền Lofi khi phát và bật lại khi dừng/rời trang.
 
 5. **Trang 04 / 12 (`data-page-index="3"`) — 3. Góc Bảng Đen 12A2 (`#chalkboard-section`)**
